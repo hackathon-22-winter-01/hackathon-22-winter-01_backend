@@ -7,22 +7,22 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type API struct{}
+type Handler struct{}
 
-func NewAPI() oapi.ServerInterface {
-	return &API{}
+func New() oapi.ServerInterface {
+	return &Handler{}
 }
 
-func (a *API) Ping(c echo.Context) error {
+func (h *Handler) Ping(c echo.Context) error {
 	return c.String(200, "pong")
 }
 
-func (a *API) GetWs(cardReset echo.Context) error {
+func (h *Handler) GetWs(cardReset echo.Context) error {
 	// TODO: 実装する
 	return echo.NewHTTPError(http.StatusNotImplemented)
 }
 
 // deprecated
-func (a *API) GetWsSchemas(c echo.Context) error {
+func (h *Handler) GetWsSchemas(c echo.Context) error {
 	return echo.NewHTTPError(http.StatusNotImplemented)
 }
