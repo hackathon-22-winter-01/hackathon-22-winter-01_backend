@@ -10,25 +10,22 @@
 
 ### 依存図
 
-←: 依存
-⇠: 実装
+←: 依存 ⇠: 実装
 
 ```mermaid
 classDiagram
 
 class domain { <<struct>> }
-class service { <<interface>> }
-class srvimpl { <<struct>> }
+class ws { <<interface, struct>> }
 class repository { <<interface>> }
 class repoimpl { <<struct>> }
 class handler { <<struct>> }
 class oapi { <<interface>> }
 
-domain <|-- service
+domain <|-- ws
 domain <|-- repository
-service <|.. srvimpl
 repository <|.. repoimpl
-service <|-- handler
+ws <|-- handler
 repository <|-- handler
 handler ..|> oapi
 oapi <|-- main

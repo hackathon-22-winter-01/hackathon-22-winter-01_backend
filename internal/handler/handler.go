@@ -18,7 +18,7 @@ func (h *Handler) Ping(c echo.Context) error {
 }
 
 func (h *Handler) ConnectToWs(cardReset echo.Context) error {
-	// TODO: 実装する
+	// TODO: (usecases/service/ws).ServeWsを読んで、websocketの接続を確立する
 	return echo.NewHTTPError(http.StatusNotImplemented)
 }
 
