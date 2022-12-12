@@ -21,14 +21,14 @@ const (
 	LifeEvent WsRequestType = "lifeEvent"
 )
 
-// Defines values for WsResponseTypeType.
+// Defines values for WsResponseType.
 const (
-	BlockCreated WsResponseTypeType = "blockCreated"
-	CardReset    WsResponseTypeType = "cardReset"
-	CardUsed     WsResponseTypeType = "cardUsed"
-	LifeChanged  WsResponseTypeType = "lifeChanged"
-	RailCreated  WsResponseTypeType = "railCreated"
-	RailMerged   WsResponseTypeType = "railMerged"
+	BlockCreated WsResponseType = "blockCreated"
+	CardReset    WsResponseType = "cardReset"
+	CardUsed     WsResponseType = "cardUsed"
+	LifeChanged  WsResponseType = "lifeChanged"
+	RailCreated  WsResponseType = "railCreated"
+	RailMerged   WsResponseType = "railMerged"
 )
 
 // CardId defines model for CardId.
@@ -127,12 +127,7 @@ type WsResponseBodyRailMerged struct {
 }
 
 // WsResponseType defines model for WsResponseType.
-type WsResponseType struct {
-	Type WsResponseTypeType `json:"type"`
-}
-
-// WsResponseTypeType defines model for WsResponseType.Type.
-type WsResponseTypeType string
+type WsResponseType string
 
 // UseWsSchemasJSONRequestBody defines body for UseWsSchemas for application/json ContentType.
 type UseWsSchemasJSONRequestBody = WsRequest

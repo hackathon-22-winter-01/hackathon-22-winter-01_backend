@@ -144,19 +144,14 @@ components:
         - body
     WsResponseType:
       title: WsResponseType
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - lifeChanged
-            - cardUsed
-            - cardReset
-            - railCreated
-            - railMerged
-            - blockCreated
-      required:
-        - type
+      type: string
+      enum:
+        - lifeChanged
+        - cardUsed
+        - cardReset
+        - railCreated
+        - railMerged
+        - blockCreated
     WsResponseBodyLifeChanged:
       type: object
       properties:
