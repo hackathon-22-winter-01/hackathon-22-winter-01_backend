@@ -145,6 +145,7 @@ components:
             - $ref: '#/components/schemas/WsResponseBodyRailCreated'
             - $ref: '#/components/schemas/WsResponseBodyRailMerged'
             - $ref: '#/components/schemas/WsResponseBodyBlockCreated'
+          description: イベントの情報
       required:
         - type
         - body
@@ -169,6 +170,7 @@ components:
           type: integer
           maximum: 3
           minimum: 0
+          description: 変動後のライフ
       required:
         - playerId
         - new

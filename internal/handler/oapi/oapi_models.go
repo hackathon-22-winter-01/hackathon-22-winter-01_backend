@@ -85,13 +85,14 @@ type WsRequestType string
 
 // WsResponse Websocket接続中にサーバーから受信するオブジェクト
 type WsResponse struct {
+	// Body イベントの情報
 	Body WsResponse_Body `json:"body"`
 
 	// Type イベントの種類
 	Type WsResponseType `json:"type"`
 }
 
-// WsResponse_Body defines model for WsResponse.Body.
+// WsResponse_Body イベントの情報
 type WsResponse_Body struct {
 	union json.RawMessage
 }
@@ -130,6 +131,7 @@ type WsResponseBodyCardUsed struct {
 
 // WsResponseBodyLifeChanged ライフの変動情報
 type WsResponseBodyLifeChanged struct {
+	// New 変動後のライフ
 	New int `json:"new"`
 
 	// PlayerId プレイヤーUUID
