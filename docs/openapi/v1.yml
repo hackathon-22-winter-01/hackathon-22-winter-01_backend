@@ -65,28 +65,44 @@ components:
       title: PlayerId
       type: string
       format: uuid
+      description: プレイヤーUUID
     CardId:
       title: CardId
       type: string
       format: uuid
+      description: カードUUID
     RailId:
       title: RailId
       type: string
       format: uuid
+      description: レールUUID
     CardType:
       title: CardType
       type: string
       enum:
         - createRail
+      description: カードの効果の種類
     LifeEventType:
       title: LifeEventType
       type: string
       enum:
         - decrement
+      description: ライフに関するイベントの種類
+    Card:
+      title: Card
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/CardId'
+        type:
+          $ref: '#/components/schemas/CardType'
+      required:
+        - id
+        - type
+      description: カード情報
     WsRequest:
       title: WsRequest
       type: object
-      description: Websocket接続後、クライアントからサーバーに送信する
       properties:
         type:
           $ref: '#/components/schemas/WsRequestType'
@@ -94,15 +110,18 @@ components:
           oneOf:
             - $ref: '#/components/schemas/WsRequestBodyLifeEvent'
             - $ref: '#/components/schemas/WsRequestBodyCardEvent'
+          description: イベントの情報
       required:
         - type
         - body
+      description: Websocket接続中にサーバーに送信するオブジェクト
     WsRequestType:
       title: WsRequestType
       type: string
       enum:
         - lifeEvent
         - cardEvent
+      description: イベントの種類
     WsRequestBodyLifeEvent:
       title: WsRequestBodyLifeEvent
       type: object
@@ -111,6 +130,7 @@ components:
           $ref: '#/components/schemas/LifeEventType'
       required:
         - type
+      description: ライフに関するイベントの情報
     WsRequestBodyCardEvent:
       title: WsRequestBodyCardEvent
       type: object
@@ -122,6 +142,7 @@ components:
       required:
         - id
         - type
+      description: カードに関するイベントの情報
     WsResponse:
       title: WsResponse
       type: object
@@ -136,9 +157,11 @@ components:
             - $ref: '#/components/schemas/WsResponseBodyRailCreated'
             - $ref: '#/components/schemas/WsResponseBodyRailMerged'
             - $ref: '#/components/schemas/WsResponseBodyBlockCreated'
+          description: イベントの情報
       required:
         - type
         - body
+      description: Websocket接続中にサーバーから受信するオブジェクト
     WsResponseType:
       title: WsResponseType
       type: string
@@ -149,6 +172,7 @@ components:
         - railCreated
         - railMerged
         - blockCreated
+      description: イベントの種類
     WsResponseBodyLifeChanged:
       type: object
       properties:
@@ -158,9 +182,11 @@ components:
           type: integer
           maximum: 3
           minimum: 0
+          description: 変動後のライフ
       required:
         - playerId
         - new
+      description: ライフの変動情報
     WsResponseBodyCardUsed:
       type: object
       properties:
@@ -171,6 +197,7 @@ components:
       required:
         - id
         - playerId
+      description: カードの使用情報
     WsResponseBodyCardReset:
       type: array
       items:
@@ -181,18 +208,12 @@ components:
           cards:
             type: array
             items:
-              type: object
-              properties:
-                id:
-                  $ref: '#/components/schemas/CardId'
-                type:
-                  $ref: '#/components/schemas/CardType'
-              required:
-                - id
-                - type
+              $ref: '#/components/schemas/Card'
+            description: リセットされたカードのリスト
         required:
           - playerId
           - cards
+      description: 各プレイヤーのカードのリセット情報
     WsResponseBodyRailCreated:
       type: object
       properties:
@@ -209,6 +230,7 @@ components:
         - parentId
         - attackerId
         - targetId
+      description: 新規レールの作成情報
     WsResponseBodyRailMerged:
       type: object
       properties:
@@ -222,6 +244,7 @@ components:
         - childId
         - parentId
         - playerId
+      description: レールのマージ情報
     WsResponseBodyBlockCreated:
       type: object
       properties:
@@ -232,6 +255,7 @@ components:
       required:
         - attackerId
         - targetId
+      description: 新規障害物の作成情報
 tags:
   - name: ping
     description: Ping API
