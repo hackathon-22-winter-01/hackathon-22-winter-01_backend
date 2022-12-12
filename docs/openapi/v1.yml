@@ -37,28 +37,6 @@ paths:
         - サーバー → クライアント (受信)
           - `#/components/schemas/WsResponse`型のJSON文字列をサーバーに送信します
           - `type`が`XXX`のとき`body`の型は`#/components/schemas/WsResponseBodyXXX`です
-  /ws-schemas:
-    get:
-      summary: oapi-codegenのための仮エンドポイント (使用できません)
-      tags:
-        - ws
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WsResponse'
-      operationId: use-ws-schemas
-      deprecated: true
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WsRequest'
-      description: |-
-        oapi-codegenが使用していないスキーマを生成しないためここで使用していることにしています
-        エンドポイントとしては使用できません
 components:
   schemas:
     PlayerId:
