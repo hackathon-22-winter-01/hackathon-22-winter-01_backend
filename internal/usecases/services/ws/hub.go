@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 )
 
 type Hub struct {
@@ -60,4 +61,13 @@ func (h *Hub) unregister(client *Client) {
 
 	close(client.send)
 	delete(h.clients, client.userID)
+}
+
+func (h *Hub) bloadcast(res *oapi.WsResponse) {
+	h.mux.RLock()
+	defer h.mux.RUnlock()
+
+	for _, client := range h.clients {
+		client.send <- res
+	}
 }
