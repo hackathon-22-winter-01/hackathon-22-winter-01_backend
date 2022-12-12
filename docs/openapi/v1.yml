@@ -232,7 +232,7 @@ components:
         - playerId
     WsResponseBodyBlockCreated:
       type: object
-      properties:
+      propertie/home/ras/misc/go/hackathon-22-winter-01/internals:
         attackerId:
           $ref: '#/components/schemas/PlayerId'
         targetId:
