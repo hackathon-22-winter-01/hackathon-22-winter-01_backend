@@ -75,12 +75,9 @@ components:
       format: uuid
     CardType:
       title: CardType
-      type: object
-      properties:
-        id:
-          type: string
-      required:
-        - id
+      type: string
+      enum:
+        - createRail
     LifeEventType:
       title: LifeEventType
       type: string

@@ -10,6 +10,11 @@ import (
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 )
 
+// Defines values for CardType.
+const (
+	CreateRail CardType = "createRail"
+)
+
 // Defines values for LifeEventType.
 const (
 	Decrement LifeEventType = "decrement"
@@ -35,9 +40,7 @@ const (
 type CardId = openapi_types.UUID
 
 // CardType defines model for CardType.
-type CardType struct {
-	Id string `json:"id"`
-}
+type CardType string
 
 // LifeEventType defines model for LifeEventType.
 type LifeEventType string
