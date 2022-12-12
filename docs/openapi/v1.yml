@@ -30,7 +30,6 @@ paths:
       operationId: connect-to-ws
       description: |-
         Websocketを用いて双方向通信を行う
-
         - クライアント → サーバー (送信)
           - `#/components/schemas/WsRequest`型のJSON文字列をサーバーに送信します
           - `type`が`XXX`のとき`body`の型は`#/components/schemas/WsRequestBodyXXX`です
