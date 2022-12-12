@@ -14,10 +14,10 @@ type ServerInterface interface {
 	Ping(ctx echo.Context) error
 	// GET /ws
 	// (GET /ws)
-	GetWs(ctx echo.Context) error
+	ConnectToWs(ctx echo.Context) error
 	// oapi-codegenのための仮エンドポイント (使用できません)
 	// (GET /ws-schemas)
-	GetWsSchemas(ctx echo.Context) error
+	UseWsSchemas(ctx echo.Context) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -34,21 +34,21 @@ func (w *ServerInterfaceWrapper) Ping(ctx echo.Context) error {
 	return err
 }
 
-// GetWs converts echo context to params.
-func (w *ServerInterfaceWrapper) GetWs(ctx echo.Context) error {
+// ConnectToWs converts echo context to params.
+func (w *ServerInterfaceWrapper) ConnectToWs(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetWs(ctx)
+	err = w.Handler.ConnectToWs(ctx)
 	return err
 }
 
-// GetWsSchemas converts echo context to params.
-func (w *ServerInterfaceWrapper) GetWsSchemas(ctx echo.Context) error {
+// UseWsSchemas converts echo context to params.
+func (w *ServerInterfaceWrapper) UseWsSchemas(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetWsSchemas(ctx)
+	err = w.Handler.UseWsSchemas(ctx)
 	return err
 }
 
@@ -81,7 +81,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.GET(baseURL+"/ping", wrapper.Ping)
-	router.GET(baseURL+"/ws", wrapper.GetWs)
-	router.GET(baseURL+"/ws-schemas", wrapper.GetWsSchemas)
+	router.GET(baseURL+"/ws", wrapper.ConnectToWs)
+	router.GET(baseURL+"/ws-schemas", wrapper.UseWsSchemas)
 
 }

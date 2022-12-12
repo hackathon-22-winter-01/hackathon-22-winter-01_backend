@@ -27,7 +27,7 @@ paths:
       responses:
         '200':
           description: OK
-      operationId: get-ws
+      operationId: connect-to-ws
       description: |-
         Websocketを用いて双方向通信を行う
 
@@ -49,7 +49,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WsResponse'
-      operationId: get-ws-schemas
+      operationId: use-ws-schemas
       deprecated: true
       requestBody:
         content:
@@ -232,7 +232,7 @@ components:
         - playerId
     WsResponseBodyBlockCreated:
       type: object
-      propertie/home/ras/misc/go/hackathon-22-winter-01/internals:
+      properties:
         attackerId:
           $ref: '#/components/schemas/PlayerId'
         targetId:

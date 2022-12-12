@@ -134,8 +134,8 @@ type WsResponseType struct {
 // WsResponseTypeType defines model for WsResponseType.Type.
 type WsResponseTypeType string
 
-// GetWsSchemasJSONRequestBody defines body for GetWsSchemas for application/json ContentType.
-type GetWsSchemasJSONRequestBody = WsRequest
+// UseWsSchemasJSONRequestBody defines body for UseWsSchemas for application/json ContentType.
+type UseWsSchemasJSONRequestBody = WsRequest
 
 // AsWsRequestBodyLifeEvent returns the union data inside the WsRequest_Body as a WsRequestBodyLifeEvent
 func (t WsRequest_Body) AsWsRequestBodyLifeEvent() (WsRequestBodyLifeEvent, error) {
