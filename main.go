@@ -10,7 +10,7 @@ import (
 
 const baseURL = "/api/v1"
 
-var port = getEnvOrPanic("APP_PORT")
+var port = getEnv("APP_PORT", ":8080")
 
 func main() {
 	e := echo.New()
@@ -22,10 +22,10 @@ func main() {
 	e.Logger.Fatal(e.Start(port))
 }
 
-func getEnvOrPanic(key string) string {
+func getEnv(key string, def string) string {
 	value, ok := os.LookupEnv(key)
 	if !ok {
-		panic("environment variable " + key + " is not set")
+		return def
 	}
 
 	return value
