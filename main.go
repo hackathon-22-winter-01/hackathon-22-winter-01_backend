@@ -20,9 +20,7 @@ func main() {
 	e.Use(middleware.Recover())
 
 	api := handler.NewAPI()
-
-	h := oapi.NewStrictHandler(api, nil)
-	oapi.RegisterHandlersWithBaseURL(e, h, baseURL)
+	oapi.RegisterHandlersWithBaseURL(e, api, baseURL)
 
 	e.Logger.Fatal(e.Start(port))
 }

@@ -1,5 +1,4 @@
 package: oapi
 generate:
   echo-server: true
-  strict-server: true
 output: oapi_server.go

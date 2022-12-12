@@ -14,14 +14,9 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            text/plain:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                required:
-                  - message
+                type: string
       operationId: ping
       description: ヘルスチェック用のエンドポイント
   /ws:
@@ -246,5 +241,7 @@ components:
         - attackerId
         - targetId
 tags:
+  - name: ping
+    description: Ping API
   - name: ws
     description: Websocket API

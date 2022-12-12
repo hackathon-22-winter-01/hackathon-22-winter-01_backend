@@ -1,28 +1,28 @@
 package handler
 
 import (
-	"context"
+	"net/http"
 
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/interfaces/handler/oapi"
+	"github.com/labstack/echo/v4"
 )
 
 type API struct{}
 
-func NewAPI() oapi.StrictServerInterface {
+func NewAPI() oapi.ServerInterface {
 	return &API{}
 }
 
-func (a *API) Ping(ctx context.Context, request oapi.PingRequestObject) (oapi.PingResponseObject, error) {
-	return oapi.Ping200JSONResponse{
-		Message: "pong",
-	}, nil
+func (a *API) Ping(c echo.Context) error {
+	return c.String(200, "pong")
 }
 
-func (a *API) GetWs(ctx context.Context, request oapi.GetWsRequestObject) (oapi.GetWsResponseObject, error) {
-	panic("implement me")
+func (a *API) GetWs(cardReset echo.Context) error {
+	// TODO: 実装する
+	return echo.NewHTTPError(http.StatusNotImplemented)
 }
 
 // deprecated
-func (a *API) GetWsSchemas(ctx context.Context, request oapi.GetWsSchemasRequestObject) (oapi.GetWsSchemasResponseObject, error) {
-	return oapi.GetWsSchemas200JSONResponse{}, nil
+func (a *API) GetWsSchemas(c echo.Context) error {
+	return echo.NewHTTPError(http.StatusNotImplemented)
 }
