@@ -21,5 +21,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v3
       - uses: golangci/golangci-lint-action@v3
