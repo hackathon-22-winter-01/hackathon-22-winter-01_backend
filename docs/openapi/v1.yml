@@ -1,0 +1,231 @@
+openapi: 3.1.0
+info:
+  title: hackathon_22_winter_01
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /ws:
+    get:
+      summary: GET /ws
+      tags:
+        - ws
+      responses:
+        '200':
+          description: OK
+      operationId: get-ws
+      description: |-
+        Websocketを用いて双方向通信を行う
+
+        - クライアント → サーバー (送信)
+          - `#/components/schemas/WsRequest`型のJSON文字列をサーバーに送信します
+          - `type`が`XXX`のとき`body`の型は`#/components/schemas/WsRequestBodyXXX`です
+        - サーバー → クライアント (受信)
+          - `#/components/schemas/WsResponse`型のJSON文字列をサーバーに送信します
+          - `type`が`XXX`のとき`body`の型は`#/components/schemas/WsResponseBodyXXX`です
+  /ws-schemas:
+    get:
+      summary: oapi-codegenのための仮エンドポイント (使用できません)
+      tags:
+        - ws
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WsResponse'
+      operationId: get-ws-schemas
+      deprecated: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WsRequest'
+      description: |-
+        oapi-codegenが使用していないスキーマを生成しないためここで使用していることにしています
+        エンドポイントとしては使用できません
+components:
+  schemas:
+    PlayerId:
+      title: PlayerId
+      type: string
+      format: uuid
+    CardId:
+      title: CardId
+      type: string
+      format: uuid
+    RailId:
+      title: RailId
+      type: string
+      format: uuid
+    CardType:
+      title: CardType
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+        - id
+    LifeEventType:
+      title: LifeEventType
+      type: string
+      enum:
+        - decrement
+    WsRequest:
+      title: WsRequest
+      type: object
+      description: Websocket接続後、クライアントからサーバーに送信する
+      properties:
+        type:
+          $ref: '#/components/schemas/WsRequestType'
+        body:
+          oneOf:
+            - $ref: '#/components/schemas/WsRequestBodyLifeEvent'
+            - $ref: '#/components/schemas/WsRequestBodyCardEvent'
+      required:
+        - type
+        - body
+    WsRequestType:
+      title: WsRequestType
+      type: string
+      enum:
+        - lifeEvent
+        - cardEvent
+    WsRequestBodyLifeEvent:
+      title: WsRequestBodyLifeEvent
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/LifeEventType'
+      required:
+        - type
+    WsRequestBodyCardEvent:
+      title: WsRequestBodyCardEvent
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/CardId'
+        type:
+          $ref: '#/components/schemas/CardType'
+      required:
+        - id
+        - type
+    WsResponse:
+      title: WsResponse
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/WsResponseType'
+        body:
+          oneOf:
+            - $ref: '#/components/schemas/WsResponseBodyLifeChanged'
+            - $ref: '#/components/schemas/WsResponseBodyCardUsed'
+            - $ref: '#/components/schemas/WsResponseBodyCardReset'
+            - $ref: '#/components/schemas/WsResponseBodyRailCreated'
+            - $ref: '#/components/schemas/WsResponseBodyRailMerged'
+            - $ref: '#/components/schemas/WsResponseBodyBlockCreated'
+      required:
+        - type
+        - body
+    WsResponseType:
+      title: WsResponseType
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - lifeChanged
+            - cardUsed
+            - cardReset
+            - railCreated
+            - railMerged
+            - blockCreated
+      required:
+        - type
+    WsResponseBodyLifeChanged:
+      type: object
+      properties:
+        playerId:
+          $ref: '#/components/schemas/PlayerId'
+        new:
+          type: integer
+          maximum: 3
+          minimum: 0
+      required:
+        - playerId
+        - new
+    WsResponseBodyCardUsed:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/CardId'
+        playerId:
+          $ref: '#/components/schemas/PlayerId'
+      required:
+        - id
+        - playerId
+    WsResponseBodyCardReset:
+      type: array
+      items:
+        type: object
+        properties:
+          playerId:
+            $ref: '#/components/schemas/PlayerId'
+          cards:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  $ref: '#/components/schemas/CardId'
+                type:
+                  $ref: '#/components/schemas/CardType'
+              required:
+                - id
+                - type
+        required:
+          - playerId
+          - cards
+    WsResponseBodyRailCreated:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/RailId'
+        parentId:
+          $ref: '#/components/schemas/RailId'
+        attackerId:
+          $ref: '#/components/schemas/PlayerId'
+        targetId:
+          $ref: '#/components/schemas/PlayerId'
+      required:
+        - id
+        - parentId
+        - attackerId
+        - targetId
+    WsResponseBodyRailMerged:
+      type: object
+      properties:
+        childId:
+          $ref: '#/components/schemas/RailId'
+        parentId:
+          $ref: '#/components/schemas/RailId'
+        playerId:
+          $ref: '#/components/schemas/PlayerId'
+      required:
+        - childId
+        - parentId
+        - playerId
+    WsResponseBodyBlockCreated:
+      type: object
+      properties:
+        attackerId:
+          $ref: '#/components/schemas/PlayerId'
+        targetId:
+          $ref: '#/components/schemas/PlayerId'
+      required:
+        - attackerId
+        - targetId
+tags:
+  - name: ws
+    description: Websocket API
