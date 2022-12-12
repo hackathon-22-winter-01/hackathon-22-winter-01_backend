@@ -36,6 +36,15 @@ const (
 	RailMerged   WsResponseType = "railMerged"
 )
 
+// Card カード情報
+type Card struct {
+	// Id カードUUID
+	Id CardId `json:"id"`
+
+	// Type カードの効果の種類
+	Type CardType `json:"type"`
+}
+
 // CardId カードUUID
 type CardId = openapi_types.UUID
 
@@ -108,13 +117,8 @@ type WsResponseBodyBlockCreated struct {
 
 // WsResponseBodyCardReset 各プレイヤーのカードのリセット情報
 type WsResponseBodyCardReset = []struct {
-	Cards []struct {
-		// Id カードUUID
-		Id CardId `json:"id"`
-
-		// Type カードの効果の種類
-		Type CardType `json:"type"`
-	} `json:"cards"`
+	// Cards リセットされたカードのリスト
+	Cards []Card `json:"cards"`
 
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`

@@ -88,6 +88,18 @@ components:
       enum:
         - decrement
       description: ライフに関するイベントの種類
+    Card:
+      title: Card
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/CardId'
+        type:
+          $ref: '#/components/schemas/CardType'
+      required:
+        - id
+        - type
+      description: カード情報
     WsRequest:
       title: WsRequest
       type: object
@@ -196,15 +208,8 @@ components:
           cards:
             type: array
             items:
-              type: object
-              properties:
-                id:
-                  $ref: '#/components/schemas/CardId'
-                type:
-                  $ref: '#/components/schemas/CardType'
-              required:
-                - id
-                - type
+              $ref: '#/components/schemas/Card'
+            description: リセットされたカードのリスト
         required:
           - playerId
           - cards
