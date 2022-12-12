@@ -98,6 +98,7 @@ components:
           oneOf:
             - $ref: '#/components/schemas/WsRequestBodyLifeEvent'
             - $ref: '#/components/schemas/WsRequestBodyCardEvent'
+          description: イベントの情報
       required:
         - type
         - body

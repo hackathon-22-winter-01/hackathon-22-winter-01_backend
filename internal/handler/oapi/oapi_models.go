@@ -53,13 +53,14 @@ type RailId = openapi_types.UUID
 
 // WsRequest Websocket接続中にサーバーに送信するオブジェクト
 type WsRequest struct {
+	// Body イベントの情報
 	Body WsRequest_Body `json:"body"`
 
 	// Type イベントの種類
 	Type WsRequestType `json:"type"`
 }
 
-// WsRequest_Body defines model for WsRequest.Body.
+// WsRequest_Body イベントの情報
 type WsRequest_Body struct {
 	union json.RawMessage
 }
