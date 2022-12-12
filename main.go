@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 const baseURL = "/api/v1"
@@ -14,6 +15,9 @@ var port = getEnv("APP_PORT", ":8080")
 
 func main() {
 	e := echo.New()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
 	api := handler.NewAPI()
 
 	h := oapi.NewStrictHandler(api, nil)
