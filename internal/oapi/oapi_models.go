@@ -10,132 +10,167 @@ import (
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 )
 
+// Defines values for CardType.
+const (
+	CardTypeCreateRail CardType = "createRail"
+)
+
 // Defines values for LifeEventType.
 const (
-	Decrement LifeEventType = "decrement"
+	LifeEventTypeDecrement LifeEventType = "decrement"
 )
 
 // Defines values for WsRequestType.
 const (
-	CardEvent WsRequestType = "cardEvent"
-	LifeEvent WsRequestType = "lifeEvent"
+	WsRequestTypeCardEvent WsRequestType = "cardEvent"
+	WsRequestTypeLifeEvent WsRequestType = "lifeEvent"
 )
 
-// Defines values for WsResponseTypeType.
+// Defines values for WsResponseType.
 const (
-	BlockCreated WsResponseTypeType = "blockCreated"
-	CardReset    WsResponseTypeType = "cardReset"
-	CardUsed     WsResponseTypeType = "cardUsed"
-	LifeChanged  WsResponseTypeType = "lifeChanged"
-	RailCreated  WsResponseTypeType = "railCreated"
-	RailMerged   WsResponseTypeType = "railMerged"
+	WsResponseTypeBlockCreated WsResponseType = "blockCreated"
+	WsResponseTypeCardReset    WsResponseType = "cardReset"
+	WsResponseTypeCardUsed     WsResponseType = "cardUsed"
+	WsResponseTypeLifeChanged  WsResponseType = "lifeChanged"
+	WsResponseTypeRailCreated  WsResponseType = "railCreated"
+	WsResponseTypeRailMerged   WsResponseType = "railMerged"
 )
 
-// CardId defines model for CardId.
+// Card カード情報
+type Card struct {
+	// Id カードUUID
+	Id CardId `json:"id"`
+
+	// Type カードの効果の種類
+	Type CardType `json:"type"`
+}
+
+// CardId カードUUID
 type CardId = openapi_types.UUID
 
-// CardType defines model for CardType.
-type CardType struct {
-	Id string `json:"id"`
-}
+// CardType カードの効果の種類
+type CardType string
 
-// LifeEventType defines model for LifeEventType.
+// LifeEventType ライフに関するイベントの種類
 type LifeEventType string
 
-// PlayerId defines model for PlayerId.
+// PlayerId プレイヤーUUID
 type PlayerId = openapi_types.UUID
 
-// RailId defines model for RailId.
+// RailId レールUUID
 type RailId = openapi_types.UUID
 
-// WsRequest Websocket接続後、クライアントからサーバーに送信する
+// WsRequest Websocket接続中にサーバーに送信するオブジェクト
 type WsRequest struct {
+	// Body イベントの情報
 	Body WsRequest_Body `json:"body"`
-	Type WsRequestType  `json:"type"`
+
+	// Type イベントの種類
+	Type WsRequestType `json:"type"`
 }
 
-// WsRequest_Body defines model for WsRequest.Body.
+// WsRequest_Body イベントの情報
 type WsRequest_Body struct {
 	union json.RawMessage
 }
 
-// WsRequestBodyCardEvent defines model for WsRequestBodyCardEvent.
+// WsRequestBodyCardEvent カードに関するイベントの情報
 type WsRequestBodyCardEvent struct {
-	Id   CardId   `json:"id"`
+	// Id カードUUID
+	Id CardId `json:"id"`
+
+	// Type カードの効果の種類
 	Type CardType `json:"type"`
 }
 
-// WsRequestBodyLifeEvent defines model for WsRequestBodyLifeEvent.
+// WsRequestBodyLifeEvent ライフに関するイベントの情報
 type WsRequestBodyLifeEvent struct {
+	// Type ライフに関するイベントの種類
 	Type LifeEventType `json:"type"`
 }
 
-// WsRequestType defines model for WsRequestType.
+// WsRequestType イベントの種類
 type WsRequestType string
 
-// WsResponse defines model for WsResponse.
+// WsResponse Websocket接続中にサーバーから受信するオブジェクト
 type WsResponse struct {
+	// Body イベントの情報
 	Body WsResponse_Body `json:"body"`
-	Type WsResponseType  `json:"type"`
+
+	// Type イベントの種類
+	Type WsResponseType `json:"type"`
 }
 
-// WsResponse_Body defines model for WsResponse.Body.
+// WsResponse_Body イベントの情報
 type WsResponse_Body struct {
 	union json.RawMessage
 }
 
-// WsResponseBodyBlockCreated defines model for WsResponseBodyBlockCreated.
+// WsResponseBodyBlockCreated 新規障害物の作成情報
 type WsResponseBodyBlockCreated struct {
+	// AttackerId プレイヤーUUID
 	AttackerId PlayerId `json:"attackerId"`
-	TargetId   PlayerId `json:"targetId"`
+
+	// TargetId プレイヤーUUID
+	TargetId PlayerId `json:"targetId"`
 }
 
-// WsResponseBodyCardReset defines model for WsResponseBodyCardReset.
+// WsResponseBodyCardReset 各プレイヤーのカードのリセット情報
 type WsResponseBodyCardReset = []struct {
-	Cards []struct {
-		Id   CardId   `json:"id"`
-		Type CardType `json:"type"`
-	} `json:"cards"`
+	// Cards リセットされたカードのリスト
+	Cards []Card `json:"cards"`
+
+	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
 }
 
-// WsResponseBodyCardUsed defines model for WsResponseBodyCardUsed.
+// WsResponseBodyCardUsed カードの使用情報
 type WsResponseBodyCardUsed struct {
-	Id       CardId   `json:"id"`
+	// Id カードUUID
+	Id CardId `json:"id"`
+
+	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
 }
 
-// WsResponseBodyLifeChanged defines model for WsResponseBodyLifeChanged.
+// WsResponseBodyLifeChanged ライフの変動情報
 type WsResponseBodyLifeChanged struct {
-	New      int      `json:"new"`
+	// New 変動後のライフ
+	New int `json:"new"`
+
+	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
 }
 
-// WsResponseBodyRailCreated defines model for WsResponseBodyRailCreated.
+// WsResponseBodyRailCreated 新規レールの作成情報
 type WsResponseBodyRailCreated struct {
+	// AttackerId プレイヤーUUID
 	AttackerId PlayerId `json:"attackerId"`
-	Id         RailId   `json:"id"`
-	ParentId   RailId   `json:"parentId"`
-	TargetId   PlayerId `json:"targetId"`
+
+	// Id レールUUID
+	Id RailId `json:"id"`
+
+	// ParentId レールUUID
+	ParentId RailId `json:"parentId"`
+
+	// TargetId プレイヤーUUID
+	TargetId PlayerId `json:"targetId"`
 }
 
-// WsResponseBodyRailMerged defines model for WsResponseBodyRailMerged.
+// WsResponseBodyRailMerged レールのマージ情報
 type WsResponseBodyRailMerged struct {
-	ChildId  RailId   `json:"childId"`
-	ParentId RailId   `json:"parentId"`
+	// ChildId レールUUID
+	ChildId RailId `json:"childId"`
+
+	// ParentId レールUUID
+	ParentId RailId `json:"parentId"`
+
+	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
 }
 
-// WsResponseType defines model for WsResponseType.
-type WsResponseType struct {
-	Type WsResponseTypeType `json:"type"`
-}
-
-// WsResponseTypeType defines model for WsResponseType.Type.
-type WsResponseTypeType string
-
-// UseWsSchemasJSONRequestBody defines body for UseWsSchemas for application/json ContentType.
-type UseWsSchemasJSONRequestBody = WsRequest
+// WsResponseType イベントの種類
+type WsResponseType string
 
 // AsWsRequestBodyLifeEvent returns the union data inside the WsRequest_Body as a WsRequestBodyLifeEvent
 func (t WsRequest_Body) AsWsRequestBodyLifeEvent() (WsRequestBodyLifeEvent, error) {

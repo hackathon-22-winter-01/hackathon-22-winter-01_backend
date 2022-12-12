@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/handler/oapi"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws"
 	"github.com/labstack/echo/v4"
 )

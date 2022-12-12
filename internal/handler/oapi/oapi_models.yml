@@ -1,4 +1,0 @@
-package: oapi
-generate:
-  models: true
-output: oapi_models.go

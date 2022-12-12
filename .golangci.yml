@@ -1,0 +1,15 @@
+linters:
+  enable:
+    # default linters
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    # additional linters
+    - nlreturn
+    - predeclared
+    - reassign
+    - revive
