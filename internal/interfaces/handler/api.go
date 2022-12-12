@@ -2,7 +2,8 @@ package handler
 
 import (
 	"context"
-	"hackathon-22-winter-01/internal/interfaces/handler/oapi"
+
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/interfaces/handler/oapi"
 )
 
 type API struct{}

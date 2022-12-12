@@ -1,4 +1,4 @@
-module hackathon-22-winter-01
+module github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend
 
 go 1.19
 

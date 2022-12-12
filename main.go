@@ -1,9 +1,10 @@
 package main
 
 import (
-	"hackathon-22-winter-01/internal/interfaces/handler"
-	"hackathon-22-winter-01/internal/interfaces/handler/oapi"
 	"os"
+
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/interfaces/handler"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/interfaces/handler/oapi"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
