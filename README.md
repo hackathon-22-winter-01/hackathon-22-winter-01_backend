@@ -6,7 +6,7 @@
 
 ## 開発者メモ
 
-- [openapi](./docs/openapi/v1.yml)を変更したら`go generate ./...`を実行
+- [openapi](./docs/openapi/v1.yml)を変更したら`make go-gen`を実行
 
 ### 依存図
 

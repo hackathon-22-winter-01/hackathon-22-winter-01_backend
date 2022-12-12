@@ -21,3 +21,6 @@ run:
 
 lint:
 	golangci-lint run --fix ./...
+
+go-gen:
+	go generate ./...
