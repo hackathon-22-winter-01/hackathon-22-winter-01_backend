@@ -14,6 +14,9 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// GET /ping
+	// (GET /ping)
+	Ping(ctx echo.Context) error
 	// GET /ws
 	// (GET /ws)
 	GetWs(ctx echo.Context) error
@@ -25,6 +28,15 @@ type ServerInterface interface {
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler ServerInterface
+}
+
+// Ping converts echo context to params.
+func (w *ServerInterfaceWrapper) Ping(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.Ping(ctx)
+	return err
 }
 
 // GetWs converts echo context to params.
@@ -73,9 +85,28 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
+	router.GET(baseURL+"/ping", wrapper.Ping)
 	router.GET(baseURL+"/ws", wrapper.GetWs)
 	router.GET(baseURL+"/ws-schemas", wrapper.GetWsSchemas)
 
+}
+
+type PingRequestObject struct {
+}
+
+type PingResponseObject interface {
+	VisitPingResponse(w http.ResponseWriter) error
+}
+
+type Ping200JSONResponse struct {
+	Message string `json:"message"`
+}
+
+func (response Ping200JSONResponse) VisitPingResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type GetWsRequestObject struct {
@@ -112,6 +143,9 @@ func (response GetWsSchemas200JSONResponse) VisitGetWsSchemasResponse(w http.Res
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// GET /ping
+	// (GET /ping)
+	Ping(ctx context.Context, request PingRequestObject) (PingResponseObject, error)
 	// GET /ws
 	// (GET /ws)
 	GetWs(ctx context.Context, request GetWsRequestObject) (GetWsResponseObject, error)
@@ -131,6 +165,29 @@ func NewStrictHandler(ssi StrictServerInterface, middlewares []StrictMiddlewareF
 type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
+}
+
+// Ping operation middleware
+func (sh *strictHandler) Ping(ctx echo.Context) error {
+	var request PingRequestObject
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.Ping(ctx.Request().Context(), request.(PingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "Ping")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(PingResponseObject); ok {
+		return validResponse.VisitPingResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("Unexpected response type: %T", response)
+	}
+	return nil
 }
 
 // GetWs operation middleware

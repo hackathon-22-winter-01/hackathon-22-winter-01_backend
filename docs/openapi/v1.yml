@@ -5,6 +5,25 @@ info:
 servers:
   - url: 'http://localhost:3000'
 paths:
+  /ping:
+    get:
+      summary: GET /ping
+      tags:
+        - ping
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+      operationId: ping
+      description: ヘルスチェック用のエンドポイント
   /ws:
     get:
       summary: GET /ws
