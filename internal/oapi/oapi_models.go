@@ -12,28 +12,28 @@ import (
 
 // Defines values for CardType.
 const (
-	CreateRail CardType = "createRail"
+	CardTypeCreateRail CardType = "createRail"
 )
 
 // Defines values for LifeEventType.
 const (
-	Decrement LifeEventType = "decrement"
+	LifeEventTypeDecrement LifeEventType = "decrement"
 )
 
 // Defines values for WsRequestType.
 const (
-	CardEvent WsRequestType = "cardEvent"
-	LifeEvent WsRequestType = "lifeEvent"
+	WsRequestTypeCardEvent WsRequestType = "cardEvent"
+	WsRequestTypeLifeEvent WsRequestType = "lifeEvent"
 )
 
 // Defines values for WsResponseType.
 const (
-	BlockCreated WsResponseType = "blockCreated"
-	CardReset    WsResponseType = "cardReset"
-	CardUsed     WsResponseType = "cardUsed"
-	LifeChanged  WsResponseType = "lifeChanged"
-	RailCreated  WsResponseType = "railCreated"
-	RailMerged   WsResponseType = "railMerged"
+	WsResponseTypeBlockCreated WsResponseType = "blockCreated"
+	WsResponseTypeCardReset    WsResponseType = "cardReset"
+	WsResponseTypeCardUsed     WsResponseType = "cardUsed"
+	WsResponseTypeLifeChanged  WsResponseType = "lifeChanged"
+	WsResponseTypeRailCreated  WsResponseType = "railCreated"
+	WsResponseTypeRailMerged   WsResponseType = "railMerged"
 )
 
 // Card カード情報
