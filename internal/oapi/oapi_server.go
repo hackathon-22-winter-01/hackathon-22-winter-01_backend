@@ -15,9 +15,6 @@ type ServerInterface interface {
 	// GET /ws
 	// (GET /ws)
 	ConnectToWs(ctx echo.Context) error
-	// oapi-codegenのための仮エンドポイント (使用できません)
-	// (GET /ws-schemas)
-	UseWsSchemas(ctx echo.Context) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -40,15 +37,6 @@ func (w *ServerInterfaceWrapper) ConnectToWs(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.ConnectToWs(ctx)
-	return err
-}
-
-// UseWsSchemas converts echo context to params.
-func (w *ServerInterfaceWrapper) UseWsSchemas(ctx echo.Context) error {
-	var err error
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.UseWsSchemas(ctx)
 	return err
 }
 
@@ -82,6 +70,5 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 	router.GET(baseURL+"/ping", wrapper.Ping)
 	router.GET(baseURL+"/ws", wrapper.ConnectToWs)
-	router.GET(baseURL+"/ws-schemas", wrapper.UseWsSchemas)
 
 }

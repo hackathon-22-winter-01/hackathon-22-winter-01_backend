@@ -172,9 +172,6 @@ type WsResponseBodyRailMerged struct {
 // WsResponseType イベントの種類
 type WsResponseType string
 
-// UseWsSchemasJSONRequestBody defines body for UseWsSchemas for application/json ContentType.
-type UseWsSchemasJSONRequestBody = WsRequest
-
 // AsWsRequestBodyLifeEvent returns the union data inside the WsRequest_Body as a WsRequestBodyLifeEvent
 func (t WsRequest_Body) AsWsRequestBodyLifeEvent() (WsRequestBodyLifeEvent, error) {
 	var body WsRequestBodyLifeEvent
