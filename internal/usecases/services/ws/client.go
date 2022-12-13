@@ -42,11 +42,6 @@ func NewClient(hub *Hub, userID uuid.UUID, conn *websocket.Conn, logger echo.Log
 	}
 }
 
-// readPump pumps messages from the websocket connection to the hub.
-//
-// The application runs readPump in a per-connection goroutine. The application
-// ensures that there is at most one reader on a connection by executing all
-// reads from this goroutine.
 func (client *Client) readPump() {
 	defer func() {
 		client.hub.Unregister(client)
@@ -68,7 +63,6 @@ func (client *Client) readPump() {
 			break
 		}
 
-		//TODO Handler
 		if err := client.callEventHandler(req); err != nil {
 			client.logger.Error("error: %v", err)
 
@@ -77,12 +71,7 @@ func (client *Client) readPump() {
 	}
 }
 
-// writePump pumps messages from the hub to the websocket connection.
-//
-// A goroutine running writePump is started for each connection. The
-// application ensures that there is at most one writer to a connection by
-// executing all writes from this goroutine.
-func (client *Client) writePump() {
+func (client *Client) writePump() error {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
@@ -92,68 +81,59 @@ func (client *Client) writePump() {
 		select {
 		case message, ok := <-client.send:
 			if err := client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
-				client.logger.Error("error:", err.Error())
 
-				return
+				return err
 			}
 			if !ok {
-				// The hub closed the channel.
 				if err := client.conn.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
-					client.logger.Error("error:", err.Error())
+					return err
 				}
 
-				return
+				return nil
 			}
 
 			w, err := client.conn.NextWriter(websocket.TextMessage)
 			if err != nil {
-				client.logger.Error("error: %v", err)
 
-				return
+				return err
 			}
 
 			buf, err := json.Marshal(message)
 			if err != nil {
-				client.logger.Error("error: %v", err)
 
-				return
+				return err
 			}
 
 			if _, err := w.Write(buf); err != nil {
-				client.logger.Error("error:", err.Error())
 
-				return
+				return err
 			}
 
 			for i := 0; i < len(client.send); i++ {
 				buf, err = json.Marshal(<-client.send)
 				if err != nil {
-					client.logger.Error("error: %v", err)
 
-					return
+					return err
 				}
 
 				if _, err := w.Write(buf); err != nil {
-					client.logger.Error("error:", err.Error())
 
-					return
+					return err
 				}
 			}
 
 			if err := w.Close(); err != nil {
-				client.logger.Error("error: %v", err)
 
-				return
+				return err
 			}
 		case <-ticker.C:
 			if err := client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
-				client.logger.Error("error:", err.Error())
 
-				return
+				return err
 			}
 			if err := client.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 
-				return
+				return err
 			}
 		}
 	}
