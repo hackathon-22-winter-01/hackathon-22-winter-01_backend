@@ -27,13 +27,12 @@ func (h *Handler) ConnectToWs(c echo.Context) error {
 	// TODO: (usecases/service/ws).ServeWsを読んで、websocketの接続を確立する
 
 	uid := uuid.New()
+	// c.Response().WriteHeader(http.StatusNoContent)
 	err := h.stream.ServeWS(c.Response().Writer, c.Request(), uid)
 	if err != nil {
-		c.Response().WriteHeader(http.StatusInternalServerError)
 
-		return nil
+		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
-	c.Response().WriteHeader(http.StatusNoContent)
 
 	return nil
 }
