@@ -14,10 +14,12 @@ type Handler struct {
 }
 
 func New(stream ws.Streamer) oapi.ServerInterface {
+
 	return &Handler{stream}
 }
 
 func (h *Handler) Ping(c echo.Context) error {
+
 	return c.String(200, "pong")
 }
 
@@ -28,13 +30,16 @@ func (h *Handler) ConnectToWs(c echo.Context) error {
 	err := h.stream.ServeWS(c.Response().Writer, c.Request(), uid)
 	if err != nil {
 		c.Response().WriteHeader(http.StatusInternalServerError)
+
 		return nil
 	}
 	c.Response().WriteHeader(http.StatusNoContent)
+
 	return nil
 }
 
 // deprecated
 func (h *Handler) UseWsSchemas(c echo.Context) error {
+
 	return echo.NewHTTPError(http.StatusNotImplemented)
 }

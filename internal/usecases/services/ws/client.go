@@ -26,16 +26,16 @@ const (
 
 type Client struct {
 	hub    *Hub
-	userId uuid.UUID
+	userID uuid.UUID
 	conn   *websocket.Conn
 	send   chan *oapi.WsResponse
 	logger echo.Logger
 }
 
-func NewClient(hub *Hub, userId uuid.UUID, conn *websocket.Conn, logger echo.Logger) *Client {
+func NewClient(hub *Hub, userID uuid.UUID, conn *websocket.Conn, logger echo.Logger) *Client {
 	return &Client{
 		hub:    hub,
-		userId: userId,
+		userID: userID,
 		conn:   conn,
 		send:   make(chan *oapi.WsResponse, 256),
 		logger: logger,
@@ -53,20 +53,25 @@ func (client *Client) readPump() {
 		client.conn.Close()
 	}()
 	client.conn.SetReadLimit(maxMessageSize)
-	client.conn.SetReadDeadline(time.Now().Add(pongWait))
-	client.conn.SetPongHandler(func(string) error { client.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	if err := client.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
+		client.logger.Error("error:", err.Error())
+	}
+
+	client.conn.SetPongHandler(func(string) error { return client.conn.SetReadDeadline(time.Now().Add(pongWait)) })
 	for {
 		req := new(oapi.WsRequest)
 		if err := client.conn.ReadJSON(req); err != nil {
 			if !websocket.IsCloseError(err) && !websocket.IsUnexpectedCloseError(err) {
 				client.logger.Error("websocket error occurred:", err.Error())
 			}
+
 			break
 		}
 
 		//TODO Handler
 		if err := client.callEventHandler(req); err != nil {
 			client.logger.Error("error: %v", err)
+
 			break
 		}
 	}
@@ -86,44 +91,68 @@ func (client *Client) writePump() {
 	for {
 		select {
 		case message, ok := <-client.send:
-			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+				client.logger.Error("error:", err.Error())
+
+				return
+			}
 			if !ok {
 				// The hub closed the channel.
-				client.conn.WriteMessage(websocket.CloseMessage, []byte{})
+				if err := client.conn.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
+					client.logger.Error("error:", err.Error())
+				}
+
 				return
 			}
 
 			w, err := client.conn.NextWriter(websocket.TextMessage)
 			if err != nil {
 				client.logger.Error("error: %v", err)
+
 				return
 			}
 
 			buf, err := json.Marshal(message)
 			if err != nil {
 				client.logger.Error("error: %v", err)
+
 				return
 			}
 
-			w.Write(buf)
+			if _, err := w.Write(buf); err != nil {
+				client.logger.Error("error:", err.Error())
+
+				return
+			}
 
 			for i := 0; i < len(client.send); i++ {
 				buf, err = json.Marshal(<-client.send)
 				if err != nil {
 					client.logger.Error("error: %v", err)
+
 					return
 				}
 
-				w.Write(buf)
+				if _, err := w.Write(buf); err != nil {
+					client.logger.Error("error:", err.Error())
+
+					return
+				}
 			}
 
 			if err := w.Close(); err != nil {
 				client.logger.Error("error: %v", err)
+
 				return
 			}
 		case <-ticker.C:
-			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+				client.logger.Error("error:", err.Error())
+
+				return
+			}
 			if err := client.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+
 				return
 			}
 		}

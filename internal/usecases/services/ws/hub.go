@@ -36,8 +36,8 @@ func (h *Hub) Run() {
 		case client := <-h.registerCh:
 			h.register(client)
 		case client := <-h.unregisterCh:
-			if _, ok := h.clients[client.userId]; !ok {
-				h.Unregister(client)
+			if _, ok := h.clients[client.userID]; !ok {
+				h.unregister(client)
 			}
 		}
 	}
@@ -47,17 +47,17 @@ func (h *Hub) register(client *Client) {
 	h.mux.Lock()
 	defer h.mux.Unlock()
 
-	client.logger.Infof("register client: %s", client.userId.String())
+	client.logger.Infof("register client: %s", client.userID.String())
 
-	h.clients[client.userId] = client
+	h.clients[client.userID] = client
 }
 
 func (h *Hub) unregister(client *Client) {
 	h.mux.Lock()
 	defer h.mux.Unlock()
 
-	client.logger.Infof("unregister client: %s", client.userId.String())
+	client.logger.Infof("unregister client: %s", client.userID.String())
 
 	close(client.send)
-	delete(h.clients, client.userId)
+	delete(h.clients, client.userID)
 }
