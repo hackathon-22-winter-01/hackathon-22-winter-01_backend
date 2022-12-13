@@ -7,6 +7,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/labstack/echo/v4 v4.9.1
+	golang.org/x/sync v0.1.0
 )
 
 require (
