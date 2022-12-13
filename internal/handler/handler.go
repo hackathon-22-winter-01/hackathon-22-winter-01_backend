@@ -14,7 +14,7 @@ type Handler struct {
 }
 
 func New(stream ws.Streamer) oapi.ServerInterface {
-	return &Handler{}
+	return &Handler{stream}
 }
 
 func (h *Handler) Ping(c echo.Context) error {
@@ -27,9 +27,11 @@ func (h *Handler) ConnectToWs(c echo.Context) error {
 	uid := uuid.New()
 	err := h.stream.ServeWS(c.Response().Writer, c.Request(), uid)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError)
+		c.Response().WriteHeader(http.StatusInternalServerError)
+		return nil
 	}
-	return echo.NewHTTPError(http.StatusNoContent)
+	c.Response().WriteHeader(http.StatusNoContent)
+	return nil
 }
 
 // deprecated

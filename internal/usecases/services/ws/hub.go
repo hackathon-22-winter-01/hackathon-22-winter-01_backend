@@ -15,8 +15,10 @@ type Hub struct {
 
 func NewHub() *Hub {
 	return &Hub{
+		clients:      make(map[uuid.UUID]*Client),
 		registerCh:   make(chan *Client),
 		unregisterCh: make(chan *Client),
+		mux:          sync.RWMutex{},
 	}
 }
 

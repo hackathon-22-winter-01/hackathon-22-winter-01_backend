@@ -56,16 +56,19 @@ func (client *Client) readPump() {
 	client.conn.SetReadDeadline(time.Now().Add(pongWait))
 	client.conn.SetPongHandler(func(string) error { client.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
-		req := new(oapi.WsRequest_Body)
+		req := new(oapi.WsRequest)
 		if err := client.conn.ReadJSON(req); err != nil {
-			client.logger.Error("error: %v", err)
-			// if websocket.IsCloseError(err) {
-			// 	log.Printf("error: %v", err)
-			// }
+			if !websocket.IsCloseError(err) && !websocket.IsUnexpectedCloseError(err) {
+				client.logger.Error("websocket error occurred:", err.Error())
+			}
 			break
 		}
 
 		//TODO Handler
+		if err := client.callEventHandler(req); err != nil {
+			client.logger.Error("error: %v", err)
+			break
+		}
 	}
 }
 

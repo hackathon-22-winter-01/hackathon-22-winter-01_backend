@@ -23,12 +23,15 @@ type streamer struct {
 
 func NewStreamer(hub *Hub, logger echo.Logger) Streamer {
 	stream := &streamer{
-		hub:      hub,
-		upgrader: websocket.Upgrader{},
-		logger:   logger,
+		hub: hub,
+		upgrader: websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+		},
+		logger: logger,
 	}
-
-	// stream.Run()
+	stream.Run()
 	return stream
 }
 
