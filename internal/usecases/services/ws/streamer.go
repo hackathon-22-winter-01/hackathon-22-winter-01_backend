@@ -8,7 +8,6 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/labstack/echo/v4"
-	"golang.org/x/sync/errgroup"
 )
 
 type Streamer interface {
@@ -43,7 +42,6 @@ func (s *streamer) Run() {
 }
 
 func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.UUID) error {
-	var eg errgroup.Group
 	conn, err := s.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 
@@ -56,12 +54,12 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.U
 		return fmt.Errorf("failed to add new client: %w", err)
 	}
 
-	eg.Go(client.writePump)
+	go func() {
+		if err := client.writePump(); err != nil {
+			s.logger.Error(err)
+		}
+	}()
 	go client.readPump()
-
-	if err := eg.Wait(); err != nil {
-		return fmt.Errorf("failed to wait for goroutines: %w", err)
-	}
 
 	client.send <- &oapi.WsResponse{
 		Type: "Hello",
