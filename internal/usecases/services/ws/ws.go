@@ -51,7 +51,7 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userId uuid.U
 	go client.readPump()
 
 	client.send <- &oapi.WsResponse{
-		Type: oapi.WsResponseType{Type: "connected"},
+		Type: "Hello",
 		Body: oapi.WsResponse_Body{},
 	}
 
