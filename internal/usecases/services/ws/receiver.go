@@ -52,6 +52,16 @@ func (h *Hub) handleEvent(req *oapi.WsRequest) error {
 
 		return nil
 
+	case oapi.WsRequestTypeRailMergeEvent:
+		res, err := h.sendRailMerged()
+		if err != nil {
+			return err
+		}
+
+		h.bloadcast(res)
+
+		return nil
+
 	default:
 		return errors.New("invalid request type")
 	}

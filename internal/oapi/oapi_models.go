@@ -23,8 +23,9 @@ const (
 
 // Defines values for WsRequestType.
 const (
-	WsRequestTypeCardEvent WsRequestType = "cardEvent"
-	WsRequestTypeLifeEvent WsRequestType = "lifeEvent"
+	WsRequestTypeCardEvent      WsRequestType = "cardEvent"
+	WsRequestTypeLifeEvent      WsRequestType = "lifeEvent"
+	WsRequestTypeRailMergeEvent WsRequestType = "railMergeEvent"
 )
 
 // Defines values for WsResponseType.
@@ -87,6 +88,15 @@ type WsRequestBodyCardEvent struct {
 type WsRequestBodyLifeEvent struct {
 	// Type ライフに関するイベントの種類
 	Type LifeEventType `json:"type"`
+}
+
+// WsRequestBodyReilMergeEvent レールのマージに関するイベントの情報
+type WsRequestBodyReilMergeEvent struct {
+	// ChildId レールUUID
+	ChildId RailId `json:"childId"`
+
+	// ParentId レールUUID
+	ParentId RailId `json:"parentId"`
 }
 
 // WsRequestType イベントの種類
@@ -205,6 +215,32 @@ func (t *WsRequest_Body) FromWsRequestBodyCardEvent(v WsRequestBodyCardEvent) er
 
 // MergeWsRequestBodyCardEvent performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodyCardEvent
 func (t *WsRequest_Body) MergeWsRequestBodyCardEvent(v WsRequestBodyCardEvent) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsWsRequestBodyReilMergeEvent returns the union data inside the WsRequest_Body as a WsRequestBodyReilMergeEvent
+func (t WsRequest_Body) AsWsRequestBodyReilMergeEvent() (WsRequestBodyReilMergeEvent, error) {
+	var body WsRequestBodyReilMergeEvent
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWsRequestBodyReilMergeEvent overwrites any union data inside the WsRequest_Body as the provided WsRequestBodyReilMergeEvent
+func (t *WsRequest_Body) FromWsRequestBodyReilMergeEvent(v WsRequestBodyReilMergeEvent) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWsRequestBodyReilMergeEvent performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodyReilMergeEvent
+func (t *WsRequest_Body) MergeWsRequestBodyReilMergeEvent(v WsRequestBodyReilMergeEvent) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err

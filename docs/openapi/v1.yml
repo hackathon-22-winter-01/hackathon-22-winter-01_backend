@@ -88,6 +88,7 @@ components:
           oneOf:
             - $ref: '#/components/schemas/WsRequestBodyLifeEvent'
             - $ref: '#/components/schemas/WsRequestBodyCardEvent'
+            - $ref: '#/components/schemas/WsRequestBodyReilMergeEvent'
           description: イベントの情報
       required:
         - type
@@ -99,6 +100,7 @@ components:
       enum:
         - lifeEvent
         - cardEvent
+        - railMergeEvent
       description: イベントの種類
     WsRequestBodyLifeEvent:
       title: WsRequestBodyLifeEvent
@@ -121,6 +123,18 @@ components:
         - id
         - type
       description: カードに関するイベントの情報
+    WsRequestBodyReilMergeEvent:
+      title: WsRequestBodyReilMergeEvent
+      type: object
+      properties:
+        childId:
+          $ref: '#/components/schemas/RailId'
+        parentId:
+          $ref: '#/components/schemas/RailId'
+      required:
+        - childId
+        - parentId
+      description: レールのマージに関するイベントの情報
     WsResponse:
       title: WsResponse
       type: object
