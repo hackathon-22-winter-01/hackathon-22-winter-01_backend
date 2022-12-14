@@ -34,9 +34,3 @@ func (h *Handler) ConnectToWs(c echo.Context) error {
 
 	return nil
 }
-
-// deprecated
-func (h *Handler) UseWsSchemas(c echo.Context) error {
-
-	return echo.NewHTTPError(http.StatusNotImplemented)
-}
