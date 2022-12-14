@@ -76,15 +76,7 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.U
 func (s *streamer) addNewClient(userID uuid.UUID, conn *websocket.Conn) (*Client, error) {
 	client := NewClient(s.hub, userID, conn, s.logger)
 	s.hub.Register(client)
-
-	s.hub.mux.Lock()
-	defer s.hub.mux.Unlock()
-
-	_, ok := s.hub.clients[userID]
-
-	if !ok {
-		s.hub.clients[userID] = client
-	}
+	s.hub.clients.LoadOrStore(userID, client)
 
 	return client, nil
 }
