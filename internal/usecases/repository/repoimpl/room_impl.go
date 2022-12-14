@@ -39,8 +39,28 @@ func (r *roomRepository) JoinRoom(jr *repository.JoinRoomArgs) (*domain.Room, uu
 	return room, uid, nil
 }
 
-func (r *roomRepository) CreateRoom(cr *repository.CreateRoomArgs) error {
-	panic("implement me")
+func (r *roomRepository) CreateRoom(cr *repository.CreateRoomArgs) (*domain.Room, error) {
+
+	rid := uuid.New()
+	if _, ok := r.rooms[rid]; ok {
+		return nil, repository.ErrAlreadyExists
+	}
+
+	uid := uuid.New()
+
+	room := &domain.Room{
+		ID: rid,
+		Players: []domain.Player{
+			{
+				ID:   uid,
+				Name: cr.UserName,
+			},
+		},
+	}
+
+	r.rooms[rid] = room
+
+	return room, nil
 }
 
 func (r *roomRepository) GetRoom(rid uuid.UUID) (*domain.Room, error) {

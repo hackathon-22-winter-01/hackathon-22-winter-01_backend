@@ -7,13 +7,13 @@ import (
 
 type RoomRepository interface {
 	JoinRoom(jr *JoinRoomArgs) (*domain.Room, uuid.UUID, error)
-	CreateRoom(cr *CreateRoomArgs) error
+	CreateRoom(cr *CreateRoomArgs) (*domain.Room, error)
 	GetRoom(rid uuid.UUID) (*domain.Room, error)
 	DeleteRoom(rid uuid.UUID) error
 }
 
 type CreateRoomArgs struct {
-	UserId uuid.UUID
+	UserName string
 }
 
 type JoinRoomArgs struct {
