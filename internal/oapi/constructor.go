@@ -1,6 +1,6 @@
 package oapi
 
-func NewWsResponse(typ WsResponseType) *WsResponse {
+func WsResponseFromType(typ WsResponseType) *WsResponse {
 	return &WsResponse{
 		Type: typ,
 	}

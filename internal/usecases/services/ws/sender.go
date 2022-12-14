@@ -7,7 +7,7 @@ import (
 func (h *Hub) sendLifeChanged() (*oapi.WsResponse, error) {
 	b := oapi.WsResponseBodyLifeChanged{}
 
-	res := oapi.NewWsResponse(oapi.WsResponseTypeLifeChanged)
+	res := oapi.WsResponseFromType(oapi.WsResponseTypeLifeChanged)
 	if err := res.Body.FromWsResponseBodyLifeChanged(b); err != nil {
 		return nil, err
 	}
@@ -18,7 +18,7 @@ func (h *Hub) sendLifeChanged() (*oapi.WsResponse, error) {
 func (h *Hub) sendCardReset() (*oapi.WsResponse, error) {
 	b := oapi.WsResponseBodyCardReset{}
 
-	res := oapi.NewWsResponse(oapi.WsResponseTypeCardReset)
+	res := oapi.WsResponseFromType(oapi.WsResponseTypeCardReset)
 	if err := res.Body.FromWsResponseBodyCardReset(b); err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func (h *Hub) sendCardReset() (*oapi.WsResponse, error) {
 func (h *Hub) sendRailCreated() (*oapi.WsResponse, error) {
 	b := oapi.WsResponseBodyRailCreated{}
 
-	res := oapi.NewWsResponse(oapi.WsResponseTypeRailCreated)
+	res := oapi.WsResponseFromType(oapi.WsResponseTypeRailCreated)
 	if err := res.Body.FromWsResponseBodyRailCreated(b); err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (h *Hub) sendRailCreated() (*oapi.WsResponse, error) {
 func (h *Hub) sendRailMerged() (*oapi.WsResponse, error) {
 	b := oapi.WsResponseBodyRailMerged{}
 
-	res := oapi.NewWsResponse(oapi.WsResponseTypeRailMerged)
+	res := oapi.WsResponseFromType(oapi.WsResponseTypeRailMerged)
 	if err := res.Body.FromWsResponseBodyRailMerged(b); err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (h *Hub) sendRailMerged() (*oapi.WsResponse, error) {
 func (h *Hub) sendBlockCreated() (*oapi.WsResponse, error) {
 	b := oapi.WsResponseBodyBlockCreated{}
 
-	res := oapi.NewWsResponse(oapi.WsResponseTypeBlockCreated)
+	res := oapi.WsResponseFromType(oapi.WsResponseTypeBlockCreated)
 	if err := res.Body.FromWsResponseBodyBlockCreated(b); err != nil {
 		return nil, err
 	}
