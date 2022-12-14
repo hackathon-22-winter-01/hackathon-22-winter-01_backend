@@ -47,11 +47,15 @@ func (client *Client) readPump() error {
 		client.conn.Close()
 	}()
 	client.conn.SetReadLimit(maxMessageSize)
+
 	if err := client.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
 		return err
 	}
 
-	client.conn.SetPongHandler(func(string) error { return client.conn.SetReadDeadline(time.Now().Add(pongWait)) })
+	client.conn.SetPongHandler(func(string) error {
+		return client.conn.SetReadDeadline(time.Now().Add(pongWait))
+	})
+
 	for {
 		req := new(oapi.WsRequest)
 		if err := client.conn.ReadJSON(req); err != nil {
@@ -76,12 +80,14 @@ func (client *Client) writePump() error {
 		ticker.Stop()
 		client.conn.Close()
 	}()
+
 	for {
 		select {
 		case message, ok := <-client.send:
 			if err := client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
 				return err
 			}
+
 			if !ok {
 				if err := client.conn.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
 					return err

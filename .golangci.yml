@@ -12,3 +12,4 @@ linters:
     - predeclared
     - reassign
     - revive
+    - wsl
