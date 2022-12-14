@@ -129,7 +129,6 @@ components:
         body:
           oneOf:
             - $ref: '#/components/schemas/WsResponseBodyLifeChanged'
-            - $ref: '#/components/schemas/WsResponseBodyCardUsed'
             - $ref: '#/components/schemas/WsResponseBodyCardReset'
             - $ref: '#/components/schemas/WsResponseBodyRailCreated'
             - $ref: '#/components/schemas/WsResponseBodyRailMerged'
@@ -144,7 +143,6 @@ components:
       type: string
       enum:
         - lifeChanged
-        - cardUsed
         - cardReset
         - railCreated
         - railMerged
@@ -164,17 +162,6 @@ components:
         - playerId
         - new
       description: ライフの変動情報
-    WsResponseBodyCardUsed:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/CardId'
-        playerId:
-          $ref: '#/components/schemas/PlayerId'
-      required:
-        - id
-        - playerId
-      description: カードの使用情報
     WsResponseBodyCardReset:
       type: array
       items:

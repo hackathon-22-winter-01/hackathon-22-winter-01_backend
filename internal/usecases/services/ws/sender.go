@@ -15,17 +15,6 @@ func (h *Hub) sendLifeChanged() (*oapi.WsResponse, error) {
 	return res, nil
 }
 
-func (h *Hub) sendCardUsed() (*oapi.WsResponse, error) {
-	b := oapi.WsResponseBodyCardUsed{}
-
-	res := oapi.NewWsResponse(oapi.WsResponseTypeCardUsed)
-	if err := res.Body.FromWsResponseBodyCardUsed(b); err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
 func (h *Hub) sendCardReset() (*oapi.WsResponse, error) {
 	b := oapi.WsResponseBodyCardReset{}
 

@@ -30,7 +30,6 @@ const (
 const (
 	WsResponseTypeBlockCreated WsResponseType = "blockCreated"
 	WsResponseTypeCardReset    WsResponseType = "cardReset"
-	WsResponseTypeCardUsed     WsResponseType = "cardUsed"
 	WsResponseTypeLifeChanged  WsResponseType = "lifeChanged"
 	WsResponseTypeRailCreated  WsResponseType = "railCreated"
 	WsResponseTypeRailMerged   WsResponseType = "railMerged"
@@ -119,15 +118,6 @@ type WsResponseBodyBlockCreated struct {
 type WsResponseBodyCardReset = []struct {
 	// Cards リセットされたカードのリスト
 	Cards []Card `json:"cards"`
-
-	// PlayerId プレイヤーUUID
-	PlayerId PlayerId `json:"playerId"`
-}
-
-// WsResponseBodyCardUsed カードの使用情報
-type WsResponseBodyCardUsed struct {
-	// Id カードUUID
-	Id CardId `json:"id"`
 
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
@@ -250,32 +240,6 @@ func (t *WsResponse_Body) FromWsResponseBodyLifeChanged(v WsResponseBodyLifeChan
 
 // MergeWsResponseBodyLifeChanged performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyLifeChanged
 func (t *WsResponse_Body) MergeWsResponseBodyLifeChanged(v WsResponseBodyLifeChanged) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JsonMerge(b, t.union)
-	t.union = merged
-	return err
-}
-
-// AsWsResponseBodyCardUsed returns the union data inside the WsResponse_Body as a WsResponseBodyCardUsed
-func (t WsResponse_Body) AsWsResponseBodyCardUsed() (WsResponseBodyCardUsed, error) {
-	var body WsResponseBodyCardUsed
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromWsResponseBodyCardUsed overwrites any union data inside the WsResponse_Body as the provided WsResponseBodyCardUsed
-func (t *WsResponse_Body) FromWsResponseBodyCardUsed(v WsResponseBodyCardUsed) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeWsResponseBodyCardUsed performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyCardUsed
-func (t *WsResponse_Body) MergeWsResponseBodyCardUsed(v WsResponseBodyCardUsed) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
