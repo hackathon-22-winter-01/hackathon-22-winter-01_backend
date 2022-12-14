@@ -44,13 +44,11 @@ func (s *streamer) Run() {
 func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.UUID) error {
 	conn, err := s.upgrader.Upgrade(w, r, nil)
 	if err != nil {
-
 		return fmt.Errorf("failed to upgrade the HTTP server connection to the WebSocket protocol: %w", err)
 	}
 
 	client, err := s.addNewClient(userID, conn)
 	if err != nil {
-
 		return fmt.Errorf("failed to add new client: %w", err)
 	}
 
