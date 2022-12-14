@@ -13,9 +13,9 @@ import (
 
 const baseURL = "/api/v1"
 
-var port = getEnv("APP_PORT", ":8080")
-
 func main() {
+	port := getEnv("APP_PORT", ":8080")
+
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
