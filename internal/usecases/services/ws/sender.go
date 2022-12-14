@@ -1,8 +1,22 @@
 package ws
 
 import (
+	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 )
+
+func (h *Hub) sendConnected(playerID uuid.UUID) (*oapi.WsResponse, error) {
+	b := oapi.WsResponseBodyConnected{
+		PlayerId: playerID,
+	}
+
+	res := oapi.WsResponseFromType(oapi.WsResponseTypeConnected)
+	if err := res.Body.FromWsResponseBodyConnected(b); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
 
 func (h *Hub) sendLifeChanged() (*oapi.WsResponse, error) {
 	b := oapi.WsResponseBodyLifeChanged{}
