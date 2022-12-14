@@ -21,6 +21,7 @@ func TestWs(t *testing.T) {
 	// Websocketクライアントを接続
 	c, _, err := websocket.DefaultDialer.Dial("ws://localhost:8081/api/v1/ws", nil)
 	require.NoError(t, err)
+
 	defer c.Close()
 
 	var (
@@ -38,7 +39,10 @@ func TestWs(t *testing.T) {
 	require.NoError(t, c.ReadJSON(&res))
 	b, err := res.Body.AsWsResponseBodyConnected()
 	require.NoError(t, err)
+
 	playerID = b.PlayerId
+
 	require.NoError(t, expectedResBody.FromWsResponseBodyConnected(oapi.WsResponseBodyConnected{PlayerId: playerID}))
+
 	assertResponse(oapi.WsResponseTypeConnected)
 }
