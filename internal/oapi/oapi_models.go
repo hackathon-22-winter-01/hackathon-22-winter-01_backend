@@ -32,6 +32,7 @@ const (
 const (
 	WsResponseTypeBlockCreated WsResponseType = "blockCreated"
 	WsResponseTypeCardReset    WsResponseType = "cardReset"
+	WsResponseTypeConnected    WsResponseType = "connected"
 	WsResponseTypeLifeChanged  WsResponseType = "lifeChanged"
 	WsResponseTypeRailCreated  WsResponseType = "railCreated"
 	WsResponseTypeRailMerged   WsResponseType = "railMerged"
@@ -130,6 +131,12 @@ type WsResponseBodyCardReset = []struct {
 	// Cards リセットされたカードのリスト
 	Cards []Card `json:"cards"`
 
+	// PlayerId プレイヤーUUID
+	PlayerId PlayerId `json:"playerId"`
+}
+
+// WsResponseBodyConnected 接続したプレイヤーのID
+type WsResponseBodyConnected struct {
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
 }
@@ -258,6 +265,32 @@ func (t WsRequest_Body) MarshalJSON() ([]byte, error) {
 
 func (t *WsRequest_Body) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsWsResponseBodyConnected returns the union data inside the WsResponse_Body as a WsResponseBodyConnected
+func (t WsResponse_Body) AsWsResponseBodyConnected() (WsResponseBodyConnected, error) {
+	var body WsResponseBodyConnected
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWsResponseBodyConnected overwrites any union data inside the WsResponse_Body as the provided WsResponseBodyConnected
+func (t *WsResponse_Body) FromWsResponseBodyConnected(v WsResponseBodyConnected) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWsResponseBodyConnected performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyConnected
+func (t *WsResponse_Body) MergeWsResponseBodyConnected(v WsResponseBodyConnected) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
 	return err
 }
 

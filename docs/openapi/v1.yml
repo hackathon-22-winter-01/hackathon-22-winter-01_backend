@@ -143,6 +143,7 @@ components:
           $ref: '#/components/schemas/WsResponseType'
         body:
           oneOf:
+            - $ref: '#/components/schemas/WsResponseBodyConnected'
             - $ref: '#/components/schemas/WsResponseBodyLifeChanged'
             - $ref: '#/components/schemas/WsResponseBodyCardReset'
             - $ref: '#/components/schemas/WsResponseBodyRailCreated'
@@ -157,12 +158,21 @@ components:
       title: WsResponseType
       type: string
       enum:
+        - connected
         - lifeChanged
         - cardReset
         - railCreated
         - railMerged
         - blockCreated
       description: イベントの種類
+    WsResponseBodyConnected:
+      type: object
+      properties:
+        playerId:
+          $ref: '#/components/schemas/PlayerId'
+      required:
+        - playerId
+      description: 接続したプレイヤーのID
     WsResponseBodyLifeChanged:
       type: object
       properties:
