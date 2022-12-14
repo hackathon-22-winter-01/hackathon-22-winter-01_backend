@@ -31,3 +31,18 @@ func (h *Handler) ConnectToWs(c echo.Context) error {
 
 	return nil
 }
+
+func (h *Handler) JoinRoom(c echo.Context) error {
+
+	req := new(oapi.)
+
+	return nil
+}
+
+func (h *Handler) CreateRoom(c echo.Context) error {
+	return nil
+}
+
+func (h *Handler) GetRoom(c echo.Context) error {
+	return nil
+}
