@@ -64,9 +64,21 @@ func (r *roomRepository) CreateRoom(cr *repository.CreateRoomArgs) (*domain.Room
 }
 
 func (r *roomRepository) GetRoom(rid uuid.UUID) (*domain.Room, error) {
-	panic("implement me")
+
+	room, ok := r.rooms[rid]
+	if !ok {
+		return nil, repository.ErrNotFound
+	}
+
+	return room, nil
 }
 
 func (r *roomRepository) DeleteRoom(rid uuid.UUID) error {
-	panic("implement me")
+	if _, ok := r.rooms[rid]; !ok {
+		return repository.ErrNotFound
+	}
+
+	delete(r.rooms, rid)
+
+	return nil
 }
