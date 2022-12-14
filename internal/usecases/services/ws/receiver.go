@@ -6,7 +6,7 @@ import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 )
 
-func (h *hub) handleEvent(req *oapi.WsRequest) error {
+func (h *Hub) handleEvent(req *oapi.WsRequest) error {
 	switch req.Type {
 	case oapi.WsRequestTypeCardEvent:
 		b, err := req.Body.AsWsRequestBodyCardEvent()

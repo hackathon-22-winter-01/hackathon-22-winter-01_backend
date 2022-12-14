@@ -4,7 +4,7 @@ import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 )
 
-func (h *hub) sendLifeChanged() (*oapi.WsResponse, error) {
+func (h *Hub) sendLifeChanged() (*oapi.WsResponse, error) {
 	b := oapi.WsResponseBodyLifeChanged{}
 
 	res := oapi.NewWsResponse(oapi.WsResponseTypeLifeChanged)
@@ -15,7 +15,7 @@ func (h *hub) sendLifeChanged() (*oapi.WsResponse, error) {
 	return res, nil
 }
 
-func (h *hub) sendCardUsed() (*oapi.WsResponse, error) {
+func (h *Hub) sendCardUsed() (*oapi.WsResponse, error) {
 	b := oapi.WsResponseBodyCardUsed{}
 
 	res := oapi.NewWsResponse(oapi.WsResponseTypeCardUsed)
@@ -26,7 +26,7 @@ func (h *hub) sendCardUsed() (*oapi.WsResponse, error) {
 	return res, nil
 }
 
-func (h *hub) sendCardReset() (*oapi.WsResponse, error) {
+func (h *Hub) sendCardReset() (*oapi.WsResponse, error) {
 	b := oapi.WsResponseBodyCardReset{}
 
 	res := oapi.NewWsResponse(oapi.WsResponseTypeCardReset)
@@ -37,7 +37,7 @@ func (h *hub) sendCardReset() (*oapi.WsResponse, error) {
 	return res, nil
 }
 
-func (h *hub) sendRailCreated() (*oapi.WsResponse, error) {
+func (h *Hub) sendRailCreated() (*oapi.WsResponse, error) {
 	b := oapi.WsResponseBodyRailCreated{}
 
 	res := oapi.NewWsResponse(oapi.WsResponseTypeRailCreated)
@@ -48,7 +48,7 @@ func (h *hub) sendRailCreated() (*oapi.WsResponse, error) {
 	return res, nil
 }
 
-func (h *hub) sendRailMerged() (*oapi.WsResponse, error) {
+func (h *Hub) sendRailMerged() (*oapi.WsResponse, error) {
 	b := oapi.WsResponseBodyRailMerged{}
 
 	res := oapi.NewWsResponse(oapi.WsResponseTypeRailMerged)
@@ -59,7 +59,7 @@ func (h *hub) sendRailMerged() (*oapi.WsResponse, error) {
 	return res, nil
 }
 
-func (h *hub) sendBlockCreated() (*oapi.WsResponse, error) {
+func (h *Hub) sendBlockCreated() (*oapi.WsResponse, error) {
 	b := oapi.WsResponseBodyBlockCreated{}
 
 	res := oapi.NewWsResponse(oapi.WsResponseTypeBlockCreated)
