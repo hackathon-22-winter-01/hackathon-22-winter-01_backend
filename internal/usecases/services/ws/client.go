@@ -1,7 +1,6 @@
 package ws
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
@@ -91,34 +90,10 @@ func (client *Client) writePump() error {
 				return nil
 			}
 
-			w, err := client.conn.NextWriter(websocket.TextMessage)
-			if err != nil {
+			if err := client.conn.WriteJSON(message); err != nil {
 				return err
 			}
 
-			buf, err := json.Marshal(message)
-			if err != nil {
-				return err
-			}
-
-			if _, err := w.Write(buf); err != nil {
-				return err
-			}
-
-			for i := 0; i < len(client.send); i++ {
-				buf, err = json.Marshal(<-client.send)
-				if err != nil {
-					return err
-				}
-
-				if _, err := w.Write(buf); err != nil {
-					return err
-				}
-			}
-
-			if err := w.Close(); err != nil {
-				return err
-			}
 		case <-ticker.C:
 			if err := client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
 				return err
