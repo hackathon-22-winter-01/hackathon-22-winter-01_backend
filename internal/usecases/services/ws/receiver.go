@@ -22,6 +22,14 @@ func (h *Hub) handleEvent(req *oapi.WsRequest) error {
 			}
 
 			h.bloadcast(res)
+
+		case oapi.CardTypeCreateBlock:
+			res, err := h.sendBlockCreated()
+			if err != nil {
+				return err
+			}
+
+			h.bloadcast(res)
 		}
 
 		return nil

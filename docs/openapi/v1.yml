@@ -58,6 +58,7 @@ components:
       type: string
       enum:
         - createRail
+        - createBlock
       description: カードの効果の種類
     LifeEventType:
       title: LifeEventType

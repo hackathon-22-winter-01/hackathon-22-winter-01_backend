@@ -12,7 +12,8 @@ import (
 
 // Defines values for CardType.
 const (
-	CardTypeCreateRail CardType = "createRail"
+	CardTypeCreateBlock CardType = "createBlock"
+	CardTypeCreateRail  CardType = "createRail"
 )
 
 // Defines values for LifeEventType.
