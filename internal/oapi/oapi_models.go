@@ -12,7 +12,8 @@ import (
 
 // Defines values for CardType.
 const (
-	CardTypeCreateRail CardType = "createRail"
+	CardTypeCreateBlock CardType = "createBlock"
+	CardTypeCreateRail  CardType = "createRail"
 )
 
 // Defines values for LifeEventType.
@@ -22,15 +23,15 @@ const (
 
 // Defines values for WsRequestType.
 const (
-	WsRequestTypeCardEvent WsRequestType = "cardEvent"
-	WsRequestTypeLifeEvent WsRequestType = "lifeEvent"
+	WsRequestTypeCardEvent      WsRequestType = "cardEvent"
+	WsRequestTypeLifeEvent      WsRequestType = "lifeEvent"
+	WsRequestTypeRailMergeEvent WsRequestType = "railMergeEvent"
 )
 
 // Defines values for WsResponseType.
 const (
 	WsResponseTypeBlockCreated WsResponseType = "blockCreated"
 	WsResponseTypeCardReset    WsResponseType = "cardReset"
-	WsResponseTypeCardUsed     WsResponseType = "cardUsed"
 	WsResponseTypeLifeChanged  WsResponseType = "lifeChanged"
 	WsResponseTypeRailCreated  WsResponseType = "railCreated"
 	WsResponseTypeRailMerged   WsResponseType = "railMerged"
@@ -89,6 +90,15 @@ type WsRequestBodyLifeEvent struct {
 	Type LifeEventType `json:"type"`
 }
 
+// WsRequestBodyReilMergeEvent レールのマージに関するイベントの情報
+type WsRequestBodyReilMergeEvent struct {
+	// ChildId レールUUID
+	ChildId RailId `json:"childId"`
+
+	// ParentId レールUUID
+	ParentId RailId `json:"parentId"`
+}
+
 // WsRequestType イベントの種類
 type WsRequestType string
 
@@ -119,15 +129,6 @@ type WsResponseBodyBlockCreated struct {
 type WsResponseBodyCardReset = []struct {
 	// Cards リセットされたカードのリスト
 	Cards []Card `json:"cards"`
-
-	// PlayerId プレイヤーUUID
-	PlayerId PlayerId `json:"playerId"`
-}
-
-// WsResponseBodyCardUsed カードの使用情報
-type WsResponseBodyCardUsed struct {
-	// Id カードUUID
-	Id CardId `json:"id"`
 
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
@@ -224,6 +225,32 @@ func (t *WsRequest_Body) MergeWsRequestBodyCardEvent(v WsRequestBodyCardEvent) e
 	return err
 }
 
+// AsWsRequestBodyReilMergeEvent returns the union data inside the WsRequest_Body as a WsRequestBodyReilMergeEvent
+func (t WsRequest_Body) AsWsRequestBodyReilMergeEvent() (WsRequestBodyReilMergeEvent, error) {
+	var body WsRequestBodyReilMergeEvent
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWsRequestBodyReilMergeEvent overwrites any union data inside the WsRequest_Body as the provided WsRequestBodyReilMergeEvent
+func (t *WsRequest_Body) FromWsRequestBodyReilMergeEvent(v WsRequestBodyReilMergeEvent) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWsRequestBodyReilMergeEvent performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodyReilMergeEvent
+func (t *WsRequest_Body) MergeWsRequestBodyReilMergeEvent(v WsRequestBodyReilMergeEvent) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
 func (t WsRequest_Body) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -250,32 +277,6 @@ func (t *WsResponse_Body) FromWsResponseBodyLifeChanged(v WsResponseBodyLifeChan
 
 // MergeWsResponseBodyLifeChanged performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyLifeChanged
 func (t *WsResponse_Body) MergeWsResponseBodyLifeChanged(v WsResponseBodyLifeChanged) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JsonMerge(b, t.union)
-	t.union = merged
-	return err
-}
-
-// AsWsResponseBodyCardUsed returns the union data inside the WsResponse_Body as a WsResponseBodyCardUsed
-func (t WsResponse_Body) AsWsResponseBodyCardUsed() (WsResponseBodyCardUsed, error) {
-	var body WsResponseBodyCardUsed
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromWsResponseBodyCardUsed overwrites any union data inside the WsResponse_Body as the provided WsResponseBodyCardUsed
-func (t *WsResponse_Body) FromWsResponseBodyCardUsed(v WsResponseBodyCardUsed) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeWsResponseBodyCardUsed performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyCardUsed
-func (t *WsResponse_Body) MergeWsResponseBodyCardUsed(v WsResponseBodyCardUsed) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
