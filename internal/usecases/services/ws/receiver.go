@@ -30,6 +30,9 @@ func (h *Hub) handleEvent(req *oapi.WsRequest) error {
 			}
 
 			h.bloadcast(res)
+
+		default:
+			return errors.New("invalid card type")
 		}
 
 		return nil
@@ -48,6 +51,9 @@ func (h *Hub) handleEvent(req *oapi.WsRequest) error {
 			}
 
 			h.bloadcast(res)
+
+		default:
+			return errors.New("invalid life type")
 		}
 
 		return nil
