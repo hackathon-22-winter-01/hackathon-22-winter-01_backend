@@ -2,7 +2,7 @@ package sync
 
 import "sync"
 
-// Map is a wrapper of sync.Map to provide type-safe methods.
+// Map sync.Mapの型付きラッパー
 type Map[K, V any] struct {
 	sync.Map
 }
