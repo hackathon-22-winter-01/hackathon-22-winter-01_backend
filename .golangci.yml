@@ -9,7 +9,6 @@ linters:
     - typecheck
     - unused
     # additional linters
-    - nlreturn
     - predeclared
     - reassign
     - revive

@@ -42,7 +42,7 @@ func NewClient(hub *Hub, userID uuid.UUID, conn *websocket.Conn, logger echo.Log
 	}
 }
 
-func (client *Client) readPump() {
+func (client *Client) readPump() error {
 	defer func() {
 		client.hub.Unregister(client)
 		client.conn.Close()
@@ -69,6 +69,8 @@ func (client *Client) readPump() {
 			break
 		}
 	}
+
+	return nil
 }
 
 func (client *Client) writePump() error {

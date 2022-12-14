@@ -59,7 +59,11 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.U
 			s.logger.Error(err)
 		}
 	}()
-	go client.readPump()
+	go func() {
+		if err := client.readPump(); err != nil {
+			s.logger.Error(err)
+		}
+	}()
 
 	client.send <- &oapi.WsResponse{
 		Type: "Hello",
