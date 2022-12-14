@@ -81,7 +81,6 @@ func (client *Client) writePump() error {
 		select {
 		case message, ok := <-client.send:
 			if err := client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
-
 				return err
 			}
 			if !ok {
@@ -94,45 +93,47 @@ func (client *Client) writePump() error {
 
 			w, err := client.conn.NextWriter(websocket.TextMessage)
 			if err != nil {
-
 				return err
 			}
 
 			buf, err := json.Marshal(message)
 			if err != nil {
-
 				return err
 			}
 
 			if _, err := w.Write(buf); err != nil {
-
 				return err
 			}
 
 			for i := 0; i < len(client.send); i++ {
 				buf, err = json.Marshal(<-client.send)
 				if err != nil {
-
 					return err
 				}
 
 				if _, err := w.Write(buf); err != nil {
-
 					return err
 				}
 			}
 
 			if err := w.Close(); err != nil {
-
 				return err
 			}
 		case <-ticker.C:
 			if err := client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
-
 				return err
 			}
-			if err := client.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 
+			if err := client.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+				return err
+			}
+
+			res, err := client.hub.sendCardReset()
+			if err != nil {
+				return err
+			}
+
+			if err := client.conn.WriteJSON(res); err != nil {
 				return err
 			}
 		}
