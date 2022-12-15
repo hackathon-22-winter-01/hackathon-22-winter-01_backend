@@ -8,18 +8,8 @@ import (
 var CommonRoomID = uuid.New()
 
 type RoomRepository interface {
-	JoinRoom(jr *JoinRoomArgs) (*domain.Room, uuid.UUID, error)
-	CreateRoom(cr *CreateRoomArgs) (*domain.Room, error)
-	GetRoom(rid uuid.UUID) (*domain.Room, error)
-	DeleteRoom(rid uuid.UUID) error
 	FindRoom(roomID uuid.UUID) (*domain.Room, error)
-}
-
-type CreateRoomArgs struct {
-	PlayerName string
-}
-
-type JoinRoomArgs struct {
-	RoomId     uuid.UUID
-	PlayerName string
+	JoinRoom(roomID uuid.UUID, player *domain.Player) error
+	CreateRoom(player *domain.Player) (*domain.Room, error)
+	DeleteRoom(rid uuid.UUID) error
 }

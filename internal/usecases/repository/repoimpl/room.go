@@ -45,3 +45,32 @@ func (r *roomRepository) JoinRoom(roomID uuid.UUID, player *domain.Player) error
 
 	return nil
 }
+
+// よくわかっていない
+func (r *roomRepository) CreateRoom(player *domain.Player) (*domain.Room, error) {
+
+	roomID := uuid.New()
+
+	room := domain.NewRoom(roomID)
+
+	room.Players = append(room.Players, player)
+
+	_, ok := r.roomMap.LoadOrStore(roomID, room)
+
+	if ok {
+		return nil, errors.New("部屋が既に存在します")
+	}
+
+	return room, nil
+}
+
+func (r *roomRepository) DeleteRoom(roomID uuid.UUID) error {
+	_, ok := r.roomMap.Load(roomID)
+	if !ok {
+		return errors.New("部屋が存在しません")
+	}
+
+	r.roomMap.Delete(roomID)
+
+	return nil
+}
