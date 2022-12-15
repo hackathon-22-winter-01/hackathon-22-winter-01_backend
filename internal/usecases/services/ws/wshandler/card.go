@@ -27,9 +27,8 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 	}
 
 	var (
-		newRail     = domain.NewRail()
-		beforeRails = []*domain.Rail{newRail}
-		afterRails  = []*domain.Rail{}
+		beforeRails = []*domain.Rail{target.Main}
+		afterRails  = []*domain.Rail{target.Main}
 		res         *oapi.WsResponse
 	)
 
@@ -38,7 +37,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		if l := len(target.Events); l > 0 {
 			lastEvent := target.Events[l-1]
 			beforeRails = lastEvent.AfterRails
-			afterRails = append(beforeRails, newRail)
+			afterRails = append(beforeRails, domain.NewRail())
 		}
 
 		res, err = oapi.NewWsResponseRailCreated(jst.Now(), uuid.New(), target.Main.ID, h.playerID, b.TargetId)
@@ -47,6 +46,12 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		}
 
 	case oapi.CardTypeCreateBlock:
+		if l := len(target.Events); l > 0 {
+			lastEvent := target.Events[l-1]
+			beforeRails = lastEvent.AfterRails
+			afterRails = lastEvent.AfterRails
+		}
+
 		res, err = oapi.NewWsResponseBlockCreated(jst.Now(), h.playerID, b.TargetId)
 		if err != nil {
 			return err
