@@ -1,9 +1,9 @@
 openapi: 3.1.0
 info:
   title: hackathon_22_winter_01
-  version: "1.0"
+  version: '1.0'
 servers:
-  - url: "http://localhost:8080"
+  - url: 'http://localhost:8080'
 paths:
   /rooms/new:
     post:
@@ -11,19 +11,19 @@ paths:
       tags:
         - rooms
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Room"
+                $ref: '#/components/schemas/Room'
       operationId: createRoom
       description: 新しい部屋を作成する
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateRoomRequest"
+              $ref: '#/components/schemas/CreateRoomRequest'
         description: 部屋の情報
   /rooms/join:
     post:
@@ -31,19 +31,19 @@ paths:
       tags:
         - rooms
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Room"
+                $ref: '#/components/schemas/Room'
       operationId: joinRoom
       description: 部屋に参加する
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/JoinRoomRequest"
+              $ref: '#/components/schemas/JoinRoomRequest'
         description: 部屋の情報
   /rooms/{roomId}:
     get:
@@ -51,12 +51,12 @@ paths:
       tags:
         - rooms
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Room"
+                $ref: '#/components/schemas/Room'
       operationId: getRoom
       description: 部屋の情報を取得する
       parameters:
@@ -64,7 +64,7 @@ paths:
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/RoomId"
+            $ref: '#/components/schemas/RoomId'
           description: ルームUUID
   /ping:
     get:
@@ -72,7 +72,7 @@ paths:
       tags:
         - ping
       responses:
-        "200":
+        '200':
           description: OK
           content:
             text/plain:
@@ -86,7 +86,7 @@ paths:
       tags:
         - ws
       responses:
-        "200":
+        '200':
           description: OK
       operationId: connect-to-ws
       description: |-
@@ -137,9 +137,9 @@ components:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/CardId"
+          $ref: '#/components/schemas/CardId'
         type:
-          $ref: "#/components/schemas/CardType"
+          $ref: '#/components/schemas/CardType'
       required:
         - id
         - type
@@ -149,11 +149,11 @@ components:
       type: object
       properties:
         roomId:
-          $ref: "#/components/schemas/RoomId"
+          $ref: '#/components/schemas/RoomId'
         players:
           type: array
           items:
-            $ref: "#/components/schemas/Player"
+            $ref: '#/components/schemas/Player'
           description: プレイヤーのリスト
         startedAt:
           type: string
@@ -163,14 +163,14 @@ components:
       type: object
       properties:
         playerId:
-          $ref: "#/components/schemas/PlayerId"
+          $ref: '#/components/schemas/PlayerId'
         mainRail:
-          $ref: "#/components/schemas/Rail"
+          $ref: '#/components/schemas/Rail'
           description: メインのレール
         rails:
           type: array
           items:
-            $ref: "#/components/schemas/Rail"
+            $ref: '#/components/schemas/Rail'
           description: プレイヤーのレールのリスト
         # TODO: 定義する
         # blocks:
@@ -195,7 +195,7 @@ components:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/RailId"
+          $ref: '#/components/schemas/RailId'
       required:
         - id
       description: レール情報
@@ -214,7 +214,7 @@ components:
       type: object
       properties:
         roomId:
-          $ref: "#/components/schemas/RoomId"
+          $ref: '#/components/schemas/RoomId'
           description: 部屋のID
         playerName:
           type: string
@@ -228,13 +228,13 @@ components:
       type: object
       properties:
         type:
-          $ref: "#/components/schemas/WsRequestType"
+          $ref: '#/components/schemas/WsRequestType'
         body:
           oneOf:
-            - $ref: "#/components/schemas/WsRequestBodyGameStartEvent"
-            - $ref: "#/components/schemas/WsRequestBodyLifeEvent"
-            - $ref: "#/components/schemas/WsRequestBodyCardEvent"
-            - $ref: "#/components/schemas/WsRequestBodyReilMergeEvent"
+            - $ref: '#/components/schemas/WsRequestBodyGameStartEvent'
+            - $ref: '#/components/schemas/WsRequestBodyLifeEvent'
+            - $ref: '#/components/schemas/WsRequestBodyCardEvent'
+            - $ref: '#/components/schemas/WsRequestBodyReilMergeEvent'
           description: イベントの情報
       required:
         - type
@@ -264,7 +264,7 @@ components:
       type: object
       properties:
         type:
-          $ref: "#/components/schemas/LifeEventType"
+          $ref: '#/components/schemas/LifeEventType'
       required:
         - type
       description: ライフに関するイベントの情報
@@ -273,11 +273,11 @@ components:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/CardId"
+          $ref: '#/components/schemas/CardId'
         targetId:
-          $ref: "#/components/schemas/PlayerId"
+          $ref: '#/components/schemas/PlayerId'
         type:
-          $ref: "#/components/schemas/CardType"
+          $ref: '#/components/schemas/CardType'
       required:
         - id
         - targetId
@@ -288,9 +288,9 @@ components:
       type: object
       properties:
         childId:
-          $ref: "#/components/schemas/RailId"
+          $ref: '#/components/schemas/RailId'
         parentId:
-          $ref: "#/components/schemas/RailId"
+          $ref: '#/components/schemas/RailId'
       required:
         - childId
         - parentId
@@ -300,16 +300,16 @@ components:
       type: object
       properties:
         type:
-          $ref: "#/components/schemas/WsResponseType"
+          $ref: '#/components/schemas/WsResponseType'
         body:
           oneOf:
-            - $ref: "#/components/schemas/WsResponseBodyConnected"
-            - $ref: "#/components/schemas/WsResponseBodyGameStarted"
-            - $ref: "#/components/schemas/WsResponseBodyLifeChanged"
-            - $ref: "#/components/schemas/WsResponseBodyCardReset"
-            - $ref: "#/components/schemas/WsResponseBodyRailCreated"
-            - $ref: "#/components/schemas/WsResponseBodyRailMerged"
-            - $ref: "#/components/schemas/WsResponseBodyBlockCreated"
+            - $ref: '#/components/schemas/WsResponseBodyConnected'
+            - $ref: '#/components/schemas/WsResponseBodyGameStarted'
+            - $ref: '#/components/schemas/WsResponseBodyLifeChanged'
+            - $ref: '#/components/schemas/WsResponseBodyCardReset'
+            - $ref: '#/components/schemas/WsResponseBodyRailCreated'
+            - $ref: '#/components/schemas/WsResponseBodyRailMerged'
+            - $ref: '#/components/schemas/WsResponseBodyBlockCreated'
           description: イベントの情報
         eventTime:
           type: string
@@ -336,7 +336,7 @@ components:
       type: object
       properties:
         playerId:
-          $ref: "#/components/schemas/PlayerId"
+          $ref: '#/components/schemas/PlayerId'
       required:
         - playerId
       description: 接続したプレイヤーのID
@@ -346,12 +346,12 @@ components:
         players:
           type: array
           items:
-            $ref: "#/components/schemas/Player"
+            $ref: '#/components/schemas/Player'
           description: 各プレイヤーの情報
         cards:
           type: array
           items:
-            $ref: "#/components/schemas/Card"
+            $ref: '#/components/schemas/Card'
           description: ゲーム開始時のカードのリスト
       required:
         - players
@@ -361,7 +361,7 @@ components:
       type: object
       properties:
         playerId:
-          $ref: "#/components/schemas/PlayerId"
+          $ref: '#/components/schemas/PlayerId'
         new:
           type: integer
           maximum: 3
@@ -377,11 +377,11 @@ components:
         type: object
         properties:
           playerId:
-            $ref: "#/components/schemas/PlayerId"
+            $ref: '#/components/schemas/PlayerId'
           cards:
             type: array
             items:
-              $ref: "#/components/schemas/Card"
+              $ref: '#/components/schemas/Card'
             description: リセットされたカードのリスト
         required:
           - playerId
@@ -391,13 +391,13 @@ components:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/RailId"
+          $ref: '#/components/schemas/RailId'
         parentId:
-          $ref: "#/components/schemas/RailId"
+          $ref: '#/components/schemas/RailId'
         attackerId:
-          $ref: "#/components/schemas/PlayerId"
+          $ref: '#/components/schemas/PlayerId'
         targetId:
-          $ref: "#/components/schemas/PlayerId"
+          $ref: '#/components/schemas/PlayerId'
       required:
         - id
         - parentId
@@ -408,11 +408,11 @@ components:
       type: object
       properties:
         childId:
-          $ref: "#/components/schemas/RailId"
+          $ref: '#/components/schemas/RailId'
         parentId:
-          $ref: "#/components/schemas/RailId"
+          $ref: '#/components/schemas/RailId'
         playerId:
-          $ref: "#/components/schemas/PlayerId"
+          $ref: '#/components/schemas/PlayerId'
       required:
         - childId
         - parentId
@@ -422,9 +422,9 @@ components:
       type: object
       properties:
         attackerId:
-          $ref: "#/components/schemas/PlayerId"
+          $ref: '#/components/schemas/PlayerId'
         targetId:
-          $ref: "#/components/schemas/PlayerId"
+          $ref: '#/components/schemas/PlayerId'
       required:
         - attackerId
         - targetId
