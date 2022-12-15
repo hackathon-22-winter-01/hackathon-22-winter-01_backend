@@ -72,7 +72,7 @@ func TestWs(t *testing.T) {
 		require.Len(t, resbody.Players, consts.PlayerLimit)
 		for j, p := range resbody.Players {
 			require.Equal(t, pids[j], p.PlayerId)
-			require.Equal(t, 3, p.Life)
+			require.Equal(t, consts.MaxLife, p.Life)
 
 			// レールを記録しておく
 			if i == 0 {
@@ -137,6 +137,28 @@ func TestWs(t *testing.T) {
 			require.Equal(t, oapi.WsResponseBodyBlockCreated{
 				AttackerId: pids[1],
 				TargetId:   pids[0],
+			}, resbody)
+		})
+	})
+
+	t.Run("プレイヤー0が障害物に当たってライフが1減少する", func(t *testing.T) {
+		b := oapi.WsRequest_Body{}
+		require.NoError(t, b.FromWsRequestBodyLifeEvent(
+			oapi.WsRequestBodyLifeEvent{
+				Type: oapi.LifeEventTypeDecrement,
+			},
+		))
+		mustWriteWsRequest(t, conns[0], oapi.WsRequestTypeLifeEvent, b)
+
+		// 各プレイヤーは結果を受信する
+		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+			res := readWsResponse(t, c)
+			resbody, err := res.Body.AsWsResponseBodyLifeChanged()
+			require.NoError(t, err)
+			require.Equal(t, oapi.WsResponseTypeLifeChanged, res.Type)
+			require.Equal(t, oapi.WsResponseBodyLifeChanged{
+				PlayerId: pids[0],
+				New:      2,
 			}, resbody)
 		})
 	})

@@ -8,6 +8,7 @@ import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
 	"github.com/labstack/echo/v4"
 	"github.com/shiguredo/websocket"
 )
@@ -253,9 +254,36 @@ func (c *Client) handleLifeEvent(body oapi.WsRequest_Body) error {
 		return err
 	}
 
+	room, err := c.hub.roomRepo.FindRoom(repository.CommonRoomID)
+	if err != nil {
+		return err
+	}
+
+	target, ok := room.FindPlayer(c.userID)
+	if !ok {
+		return errors.New("player not found")
+	}
+
+	now := nowInJST()
+	target.LifeEvents = append(target.LifeEvents, domain.NewLifeEvent(
+		uuid.New(),
+		domain.LifeEventDecrement,
+		now,
+	))
+
 	switch b.Type {
 	case oapi.LifeEventTypeDecrement:
-		res, err := oapi.NewWsResponseLifeChanged(nowInJST())
+		life := consts.MaxLife
+
+		for _, e := range target.LifeEvents {
+			if e.Type == domain.LifeEventDecrement {
+				life--
+			}
+		}
+
+		// TODO: ライフが0になったらゲームオーバー
+
+		res, err := oapi.NewWsResponseLifeChanged(now, c.userID, life)
 		if err != nil {
 			return err
 		}

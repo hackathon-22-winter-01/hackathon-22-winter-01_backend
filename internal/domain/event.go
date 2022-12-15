@@ -52,3 +52,11 @@ type LifeEventType uint8
 const (
 	LifeEventDecrement LifeEventType = iota
 )
+
+func NewLifeEvent(id uuid.UUID, typ LifeEventType, createdAt time.Time) *LifeEvent {
+	return &LifeEvent{
+		ID:        id,
+		Type:      typ,
+		CreatedAt: createdAt,
+	}
+}
