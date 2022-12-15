@@ -50,9 +50,9 @@ func (h *wsHandler) handleRailMergeEvent(body oapi.WsRequest_Body) error {
 		}
 	}
 
-	target.Events = append(target.Events, domain.NewCardEvent(
+	target.Events = append(target.Events, domain.NewRailEvent(
 		uuid.New(),
-		domain.RailMerged,
+		domain.RailEventMerged,
 		uuid.Nil,
 		h.playerID,
 		beforeRails,

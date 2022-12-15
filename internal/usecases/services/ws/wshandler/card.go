@@ -63,9 +63,9 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 
 	h.sender.Bloadcast(room.ID, res)
 
-	target.Events = append(target.Events, domain.NewCardEvent(
+	target.Events = append(target.Events, domain.NewRailEvent(
 		uuid.New(),
-		domain.RailCreated,
+		domain.RailEventCreated,
 		h.playerID,
 		target.ID,
 		beforeRails,
