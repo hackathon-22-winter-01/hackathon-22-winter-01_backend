@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/gorilla/websocket"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
 	"github.com/labstack/echo/v4"
+	"github.com/shiguredo/websocket"
 )
 
 const (
