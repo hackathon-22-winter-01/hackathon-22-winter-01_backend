@@ -6,8 +6,8 @@ import "github.com/google/uuid"
 type Player struct {
 	ID         uuid.UUID
 	Name       string
-	Main       Rail
-	Cards      []Card
-	Events     []CardEvent
-	LifeEvents []LifeEvent
+	Main       *Rail
+	Cards      []*Card
+	Events     []*CardEvent
+	LifeEvents []*LifeEvent
 }
