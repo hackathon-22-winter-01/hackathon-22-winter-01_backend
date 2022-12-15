@@ -193,38 +193,30 @@ func (c *Client) handleCardEvent(body oapi.WsRequest_Body) error {
 		return err
 	}
 
-	var res *oapi.WsResponse
+	room, err := c.hub.roomRepo.FindRoom(repository.CommonRoomID)
+	if err != nil {
+		return err
+	}
+
+	target, ok := room.FindPlayer(b.TargetId)
+	if !ok {
+		return errors.New("player not found")
+	}
+
+	var (
+		newRail     = domain.NewRail()
+		beforeRails = []*domain.Rail{newRail}
+		afterRails  = []*domain.Rail{}
+		res         *oapi.WsResponse
+	)
 
 	switch b.Type {
 	case oapi.CardTypeCreateRail:
-		room, err := c.hub.roomRepo.FindRoom(repository.CommonRoomID)
-		if err != nil {
-			return err
-		}
-
-		target, ok := room.FindPlayer(b.TargetId)
-		if !ok {
-			return errors.New("player not found")
-		}
-
-		newRail := domain.NewRail()
-		beforeRails := []*domain.Rail{newRail}
-		afterRails := []*domain.Rail{}
-
 		if l := len(target.Events); l > 0 {
 			lastEvent := target.Events[l-1]
 			beforeRails = lastEvent.AfterRails
 			afterRails = append(beforeRails, newRail)
 		}
-
-		target.Events = append(target.Events, domain.NewCardEvent(
-			uuid.New(),
-			domain.RailCreated,
-			c.userID,
-			target.ID,
-			beforeRails,
-			afterRails,
-		))
 
 		res, err = oapi.NewWsResponseRailCreated(nowInJST(), uuid.New(), target.Main.ID, c.userID, b.TargetId)
 		if err != nil {
@@ -242,6 +234,15 @@ func (c *Client) handleCardEvent(body oapi.WsRequest_Body) error {
 	}
 
 	c.bloadcast(res)
+
+	target.Events = append(target.Events, domain.NewCardEvent(
+		uuid.New(),
+		domain.RailCreated,
+		c.userID,
+		target.ID,
+		beforeRails,
+		afterRails,
+	))
 
 	return nil
 }
