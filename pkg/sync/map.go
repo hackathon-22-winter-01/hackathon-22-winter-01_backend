@@ -11,6 +11,15 @@ func (m *Map[K, V]) Delete(key K) {
 	m.Map.Delete(key)
 }
 
+func (m *Map[K, V]) Load(key K) (value V, ok bool) {
+	v, ok := m.Map.Load(key)
+	if !ok {
+		return
+	}
+
+	return v.(V), true
+}
+
 func (m *Map[K, V]) LoadOrStore(key K, value V) (actual V, loaded bool) {
 	v, loaded := m.Map.LoadOrStore(key, value)
 	actual = v.(V)
