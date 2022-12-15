@@ -58,6 +58,11 @@ paths:
           - `type`が`XXX`のとき`body`の型は`#/components/schemas/WsResponseBodyXXX`です
 components:
   schemas:
+    RoomId:
+      title: RoomId
+      type: string
+      format: uuid
+      description: ルームUUID
     PlayerId:
       title: PlayerId
       type: string
@@ -98,6 +103,32 @@ components:
         - id
         - type
       description: カード情報
+    Room:
+      title: Room
+      type: object
+      description: ルーム情報
+      properties:
+        roomId:
+          $ref: "#/components/schemas/RoomId"
+        playerId:
+          $ref: "#/components/schemas/PlayerId"
+        hostId:
+          $ref: "#/components/schemas/PlayerId"
+        players:
+          type: array
+          description: 現在ルームにいるメンバーの情報
+          items:
+            $ref: "#/components/schemas/Player"
+    Player:
+      title: Player
+      type: object
+      description: プレイヤー情報
+      properties:
+        playerId:
+          $ref: "#/components/schemas/PlayerId"
+        playerName:
+          title: Player名
+          type: string
     WsRequest:
       title: WsRequest
       type: object

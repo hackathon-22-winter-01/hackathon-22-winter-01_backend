@@ -33,7 +33,7 @@ func (r *roomRepository) JoinRoom(jr *repository.JoinRoomArgs) (*domain.Room, uu
 
 	room.Players = append(room.Players, domain.Player{
 		ID:   uid,
-		Name: jr.UserName,
+		Name: jr.PlayerName,
 	})
 
 	return room, uid, nil
@@ -53,7 +53,7 @@ func (r *roomRepository) CreateRoom(cr *repository.CreateRoomArgs) (*domain.Room
 		Players: []domain.Player{
 			{
 				ID:   uid,
-				Name: cr.UserName,
+				Name: cr.PlayerName,
 			},
 		},
 	}

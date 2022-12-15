@@ -13,10 +13,10 @@ type RoomRepository interface {
 }
 
 type CreateRoomArgs struct {
-	UserName string
+	PlayerName string
 }
 
 type JoinRoomArgs struct {
-	RoomId   uuid.UUID
-	UserName string
+	RoomId     uuid.UUID
+	PlayerName string
 }
