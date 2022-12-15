@@ -1,14 +1,11 @@
 package ws
 
 import (
-	"errors"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws/wshandler"
 	"github.com/labstack/echo/v4"
 	"github.com/shiguredo/websocket"
 )
@@ -60,6 +57,7 @@ func (c *Client) readPump() error {
 		return c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	})
 
+	wh := wshandler.NewWsHandler(c.userID, c.hub.roomRepo, c)
 	for {
 		req := new(oapi.WsRequest)
 		if err := c.conn.ReadJSON(req); err != nil {
@@ -70,7 +68,7 @@ func (c *Client) readPump() error {
 			break
 		}
 
-		if err := c.handleEvent(req); err != nil {
+		if err := wh.HandleEvent(req); err != nil {
 			return err
 		}
 	}
@@ -125,189 +123,10 @@ func (c *Client) writePump() error {
 	}
 }
 
-func (c *Client) bloadcast(res *oapi.WsResponse) {
+func (c *Client) Bloadcast(roomID uuid.UUID, res *oapi.WsResponse) {
 	// TODO: 全クライアントに送信してしまうためルーム内のクライアントだけに絞る
 	c.hub.clients.Range(func(_ uuid.UUID, client *Client) bool {
 		client.send <- res
 		return true
 	})
-}
-
-func (c *Client) handleEvent(req *oapi.WsRequest) error {
-	switch req.Type {
-	case oapi.WsRequestTypeGameStartEvent:
-		return c.handleGameStartEvent(req.Body)
-
-	case oapi.WsRequestTypeCardEvent:
-		return c.handleCardEvent(req.Body)
-
-	case oapi.WsRequestTypeLifeEvent:
-		return c.handleLifeEvent(req.Body)
-
-	case oapi.WsRequestTypeRailMergeEvent:
-		return c.handleRailMergeEvent(req.Body)
-
-	default:
-		return errors.New("invalid request type")
-	}
-}
-
-func (c *Client) handleGameStartEvent(body oapi.WsRequest_Body) error {
-	_, err := body.AsWsRequestBodyGameStartEvent()
-	if err != nil {
-		return err
-	}
-
-	// TODO: 初期カードを決めるロジックを書く
-	// テスト時は固定する
-	cards := []oapi.Card{
-		{Id: uuid.New(), Type: oapi.CardTypeCreateRail},
-		{Id: uuid.New(), Type: oapi.CardTypeCreateBlock},
-		{Id: uuid.New(), Type: oapi.CardTypeCreateRail},
-		{Id: uuid.New(), Type: oapi.CardTypeCreateBlock},
-		{Id: uuid.New(), Type: oapi.CardTypeCreateRail},
-	}
-
-	room, err := c.hub.roomRepo.FindRoom(repository.CommonRoomID) // TODO 適切なIDを指定する
-	if err != nil {
-		return err
-	}
-
-	players := make([]oapi.Player, len(room.Players))
-	for i, p := range room.Players {
-		players[i] = oapi.PlayerFromDomain(p)
-	}
-
-	res, err := oapi.NewWsResponseGameStarted(nowInJST(), cards, players)
-	if err != nil {
-		return err
-	}
-
-	c.bloadcast(res)
-
-	return nil
-}
-
-func (c *Client) handleCardEvent(body oapi.WsRequest_Body) error {
-	b, err := body.AsWsRequestBodyCardEvent()
-	if err != nil {
-		return err
-	}
-
-	room, err := c.hub.roomRepo.FindRoom(repository.CommonRoomID)
-	if err != nil {
-		return err
-	}
-
-	target, ok := room.FindPlayer(b.TargetId)
-	if !ok {
-		return errors.New("player not found")
-	}
-
-	var (
-		newRail     = domain.NewRail()
-		beforeRails = []*domain.Rail{newRail}
-		afterRails  = []*domain.Rail{}
-		res         *oapi.WsResponse
-	)
-
-	switch b.Type {
-	case oapi.CardTypeCreateRail:
-		if l := len(target.Events); l > 0 {
-			lastEvent := target.Events[l-1]
-			beforeRails = lastEvent.AfterRails
-			afterRails = append(beforeRails, newRail)
-		}
-
-		res, err = oapi.NewWsResponseRailCreated(nowInJST(), uuid.New(), target.Main.ID, c.userID, b.TargetId)
-		if err != nil {
-			return err
-		}
-
-	case oapi.CardTypeCreateBlock:
-		res, err = oapi.NewWsResponseBlockCreated(nowInJST(), c.userID, b.TargetId)
-		if err != nil {
-			return err
-		}
-
-	default:
-		return errors.New("invalid card type")
-	}
-
-	c.bloadcast(res)
-
-	target.Events = append(target.Events, domain.NewCardEvent(
-		uuid.New(),
-		domain.RailCreated,
-		c.userID,
-		target.ID,
-		beforeRails,
-		afterRails,
-	))
-
-	return nil
-}
-
-func (c *Client) handleLifeEvent(body oapi.WsRequest_Body) error {
-	b, err := body.AsWsRequestBodyLifeEvent()
-	if err != nil {
-		return err
-	}
-
-	room, err := c.hub.roomRepo.FindRoom(repository.CommonRoomID)
-	if err != nil {
-		return err
-	}
-
-	target, ok := room.FindPlayer(c.userID)
-	if !ok {
-		return errors.New("player not found")
-	}
-
-	now := nowInJST()
-	target.LifeEvents = append(target.LifeEvents, domain.NewLifeEvent(
-		uuid.New(),
-		domain.LifeEventDecrement,
-		now,
-	))
-
-	switch b.Type {
-	case oapi.LifeEventTypeDecrement:
-		life := consts.MaxLife
-
-		for _, e := range target.LifeEvents {
-			if e.Type == domain.LifeEventDecrement {
-				life--
-			}
-		}
-
-		// TODO: ライフが0になったらゲームオーバー
-
-		res, err := oapi.NewWsResponseLifeChanged(now, c.userID, life)
-		if err != nil {
-			return err
-		}
-
-		c.bloadcast(res)
-
-	default:
-		return errors.New("invalid life type")
-	}
-
-	return nil
-}
-
-func (c *Client) handleRailMergeEvent(_ oapi.WsRequest_Body) error {
-	res, err := oapi.NewWsResponseRailMerged(nowInJST())
-	if err != nil {
-		return err
-	}
-
-	c.bloadcast(res)
-
-	return nil
-}
-
-func nowInJST() time.Time {
-	return time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60))
 }
