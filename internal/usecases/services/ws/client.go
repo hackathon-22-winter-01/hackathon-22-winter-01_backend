@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
 	"github.com/labstack/echo/v4"
@@ -196,7 +197,36 @@ func (c *Client) handleCardEvent(body oapi.WsRequest_Body) error {
 
 	switch b.Type {
 	case oapi.CardTypeCreateRail:
-		res, err = oapi.NewWsResponseRailCreated()
+		room, err := c.hub.roomRepo.FindRoom(repository.CommonRoomID)
+		if err != nil {
+			return err
+		}
+
+		target, ok := room.FindPlayer(b.TargetId)
+		if !ok {
+			return errors.New("player not found")
+		}
+
+		newRail := domain.NewRail()
+		beforeRails := []*domain.Rail{newRail}
+		afterRails := []*domain.Rail{}
+
+		if l := len(target.Events); l > 0 {
+			lastEvent := target.Events[l-1]
+			beforeRails = lastEvent.AfterRails
+			afterRails = append(beforeRails, newRail)
+		}
+
+		target.Events = append(target.Events, domain.NewCardEvent(
+			uuid.New(),
+			domain.RailCreated,
+			c.userID,
+			target.ID,
+			beforeRails,
+			afterRails,
+		))
+
+		res, err = oapi.NewWsResponseRailCreated(uuid.New(), target.Main.ID, c.userID, b.TargetId)
 		if err != nil {
 			return err
 		}

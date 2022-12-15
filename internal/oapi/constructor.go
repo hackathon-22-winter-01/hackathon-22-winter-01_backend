@@ -57,8 +57,13 @@ func NewWsResponseCardReset() (*WsResponse, error) {
 	return res, nil
 }
 
-func NewWsResponseRailCreated() (*WsResponse, error) {
-	b := WsResponseBodyRailCreated{}
+func NewWsResponseRailCreated(railID, parentRailID, attackerID, targetID uuid.UUID) (*WsResponse, error) {
+	b := WsResponseBodyRailCreated{
+		Id:         railID,
+		ParentId:   parentRailID,
+		AttackerId: attackerID,
+		TargetId:   targetID,
+	}
 
 	res := WsResponseFromType(WsResponseTypeRailCreated)
 	if err := res.Body.FromWsResponseBodyRailCreated(b); err != nil {

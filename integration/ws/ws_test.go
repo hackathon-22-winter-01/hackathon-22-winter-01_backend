@@ -19,10 +19,12 @@ import (
 
 func TestWs(t *testing.T) {
 	var (
-		conns = make([]*websocket.Conn, consts.PlayerLimit)
-		pids  = make([]uuid.UUID, consts.PlayerLimit)
-		cards = make([][]oapi.Card, consts.PlayerLimit)
-		wg    = new(sync.WaitGroup)
+		conns     = make([]*websocket.Conn, consts.PlayerLimit)
+		pids      = make([]uuid.UUID, consts.PlayerLimit)
+		cards     = make([][]oapi.Card, consts.PlayerLimit)
+		mainRails = make([]oapi.Rail, consts.PlayerLimit)
+		rails     = make([][]oapi.Rail, consts.PlayerLimit)
+		wg        = new(sync.WaitGroup)
 	)
 
 	// Streamerを起動
@@ -62,30 +64,58 @@ func TestWs(t *testing.T) {
 
 	// 各クライアントはゲーム開始通知を受信
 	forEachClientAsync(t, wg, conns, func(i int, c *websocket.Conn) {
-		players := make([]oapi.Player, consts.PlayerLimit)
-		for j, pid := range pids {
-			players[j] = oapi.Player{
-				PlayerId: pid,
-				Life:     3,
-			}
-		}
-
 		res := readWsResponse(t, c)
 		resbody, err := res.Body.AsWsResponseBodyGameStarted()
 		require.NoError(t, err)
 		require.Equal(t, oapi.WsResponseTypeGameStarted, res.Type)
-		require.Equal(t, players, resbody.Players)
 		require.Len(t, resbody.Cards, 5) // ここではCardsの中身は問わない
+		require.Len(t, resbody.Players, consts.PlayerLimit)
+		for j, p := range resbody.Players {
+			require.Equal(t, pids[j], p.PlayerId)
+			require.Equal(t, 3, p.Life)
+
+			// レールを記録しておく
+			if i == 0 {
+				mainRails[j] = p.MainRail
+				rails[j] = p.Rails
+			}
+		}
 
 		// カードを記録しておく
 		cards[i] = resbody.Cards
 	})
 
-	t.Run("クライアント1がクライアント0に対してカードを出して障害物を生成する", func(t *testing.T) {
+	t.Run("クライアント1がクライアント0に対してカードを出してレールを生成する", func(t *testing.T) {
 		// FIXME: t.Parallel()を付けて実行するとFAILする
 		// Received unexpected error:
 		// write tcp 127.0.0.1:38046->127.0.0.1:35689: use of closed network connection
 
+		// クライアント1がクライアント0に対してカードを出す
+		card := cards[1][0]
+		b := oapi.WsRequest_Body{}
+		require.NoError(t, b.FromWsRequestBodyCardEvent(
+			oapi.WsRequestBodyCardEvent{
+				Id:       card.Id,
+				TargetId: pids[0],
+				Type:     card.Type,
+			},
+		))
+		mustWriteWsRequest(t, conns[1], oapi.WsRequestTypeCardEvent, b)
+
+		// 各クライアントは結果を受信する
+		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+			res := readWsResponse(t, c)
+			resbody, err := res.Body.AsWsResponseBodyRailCreated()
+			require.NoError(t, err)
+			require.Equal(t, oapi.WsResponseTypeRailCreated, res.Type)
+			// 作成されたレールのID以外の確認
+			require.Equal(t, mainRails[0].Id, resbody.ParentId)
+			require.Equal(t, pids[1], resbody.AttackerId)
+			require.Equal(t, pids[0], resbody.TargetId)
+		})
+	})
+
+	t.Run("クライアント1がクライアント0に対してカードを出して障害物を生成する", func(t *testing.T) {
 		// クライアント1がクライアント0に対してカードを出す
 		card := cards[1][1]
 		b := oapi.WsRequest_Body{}
