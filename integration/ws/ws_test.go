@@ -15,15 +15,17 @@ import (
 
 func TestWs(t *testing.T) {
 	var (
-		conns = make([]*websocket.Conn, 4)
-		pids  = make([]uuid.UUID, 4)
+		n     = 4
+		conns = make([]*websocket.Conn, n)
+		pids  = make([]uuid.UUID, n)
 	)
 
 	// Streamerを起動
 	h := ws.NewHub()
 	s := ws.NewStreamer(h, echo.New().Logger) // TODO: loggerのためにechoを使っているのを直す
 
-	for i := 0; i < 4; i++ {
+	// n個のクライアントをWebsocketに接続
+	for i := 0; i < n; i++ {
 		pids[i] = uuid.New()
 
 		// Websocketクライアントを接続
