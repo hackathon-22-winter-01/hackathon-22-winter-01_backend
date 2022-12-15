@@ -157,12 +157,13 @@ func (c *Client) handleGameStartEvent(body oapi.WsRequest_Body) error {
 	}
 
 	// TODO: 初期カードを決めるロジックを書く
+	// テスト時は固定する
 	cards := []oapi.Card{
 		{Id: uuid.New(), Type: oapi.CardTypeCreateRail},
+		{Id: uuid.New(), Type: oapi.CardTypeCreateBlock},
 		{Id: uuid.New(), Type: oapi.CardTypeCreateRail},
 		{Id: uuid.New(), Type: oapi.CardTypeCreateBlock},
-		{Id: uuid.New(), Type: oapi.CardTypeCreateBlock},
-		{Id: uuid.New(), Type: oapi.CardTypeCreateBlock},
+		{Id: uuid.New(), Type: oapi.CardTypeCreateRail},
 	}
 
 	room, err := c.hub.roomRepo.FindRoom(repository.CommonRoomID) // TODO 適切なIDを指定する
@@ -201,7 +202,7 @@ func (c *Client) handleCardEvent(body oapi.WsRequest_Body) error {
 		}
 
 	case oapi.CardTypeCreateBlock:
-		res, err = oapi.NewWsResponseBlockCreated()
+		res, err = oapi.NewWsResponseBlockCreated(c.userID, b.TargetId)
 		if err != nil {
 			return err
 		}

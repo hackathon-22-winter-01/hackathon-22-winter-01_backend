@@ -21,6 +21,7 @@ func TestWs(t *testing.T) {
 	var (
 		conns = make([]*websocket.Conn, consts.PlayerLimit)
 		pids  = make([]uuid.UUID, consts.PlayerLimit)
+		cards = make([][]oapi.Card, consts.PlayerLimit)
 		wg    = new(sync.WaitGroup)
 	)
 
@@ -60,10 +61,10 @@ func TestWs(t *testing.T) {
 	mustWriteWsRequest(t, conns[0], oapi.WsRequestTypeGameStartEvent, b)
 
 	// 各クライアントはゲーム開始通知を受信
-	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+	forEachClientAsync(t, wg, conns, func(i int, c *websocket.Conn) {
 		players := make([]oapi.Player, consts.PlayerLimit)
-		for i, pid := range pids {
-			players[i] = oapi.Player{
+		for j, pid := range pids {
+			players[j] = oapi.Player{
 				PlayerId: pid,
 				Life:     3,
 			}
@@ -75,5 +76,38 @@ func TestWs(t *testing.T) {
 		require.Equal(t, oapi.WsResponseTypeGameStarted, res.Type)
 		require.Equal(t, players, resbody.Players)
 		require.Len(t, resbody.Cards, 5) // ここではCardsの中身は問わない
+
+		// カードを記録しておく
+		cards[i] = resbody.Cards
+	})
+
+	t.Run("クライアント1がクライアント0に対してカードを出して障害物を生成する", func(t *testing.T) {
+		// FIXME: t.Parallel()を付けて実行するとFAILする
+		// Received unexpected error:
+		// write tcp 127.0.0.1:38046->127.0.0.1:35689: use of closed network connection
+
+		// クライアント1がクライアント0に対してカードを出す
+		card := cards[1][1]
+		b := oapi.WsRequest_Body{}
+		require.NoError(t, b.FromWsRequestBodyCardEvent(
+			oapi.WsRequestBodyCardEvent{
+				Id:       card.Id,
+				TargetId: pids[0],
+				Type:     card.Type,
+			},
+		))
+		mustWriteWsRequest(t, conns[1], oapi.WsRequestTypeCardEvent, b)
+
+		// 各クライアントは結果を受信する
+		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+			res := readWsResponse(t, c)
+			resbody, err := res.Body.AsWsResponseBodyBlockCreated()
+			require.NoError(t, err)
+			require.Equal(t, oapi.WsResponseTypeBlockCreated, res.Type)
+			require.Equal(t, oapi.WsResponseBodyBlockCreated{
+				AttackerId: pids[1],
+				TargetId:   pids[0],
+			}, resbody)
+		})
 	})
 }

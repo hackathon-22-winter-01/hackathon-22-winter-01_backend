@@ -161,10 +161,13 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/CardId'
+        targetId:
+          $ref: '#/components/schemas/PlayerId'
         type:
           $ref: '#/components/schemas/CardType'
       required:
         - id
+        - targetId
         - type
       description: カードに関するイベントの情報
     WsRequestBodyReilMergeEvent:

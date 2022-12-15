@@ -79,8 +79,11 @@ func NewWsResponseRailMerged() (*WsResponse, error) {
 	return res, nil
 }
 
-func NewWsResponseBlockCreated() (*WsResponse, error) {
-	b := WsResponseBodyBlockCreated{}
+func NewWsResponseBlockCreated(attackerID uuid.UUID, targetID uuid.UUID) (*WsResponse, error) {
+	b := WsResponseBodyBlockCreated{
+		AttackerId: attackerID,
+		TargetId:   targetID,
+	}
 
 	res := WsResponseFromType(WsResponseTypeBlockCreated)
 	if err := res.Body.FromWsResponseBodyBlockCreated(b); err != nil {

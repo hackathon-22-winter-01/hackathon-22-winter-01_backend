@@ -92,6 +92,9 @@ type WsRequestBodyCardEvent struct {
 	// Id カードUUID
 	Id CardId `json:"id"`
 
+	// TargetId プレイヤーUUID
+	TargetId PlayerId `json:"targetId"`
+
 	// Type カードの効果の種類
 	Type CardType `json:"type"`
 }
