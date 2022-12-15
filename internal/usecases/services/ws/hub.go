@@ -2,7 +2,7 @@ package ws
 
 import (
 	"github.com/google/uuid"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/sync"
 )
 
@@ -10,13 +10,15 @@ type Hub struct {
 	clients      sync.Map[uuid.UUID, *Client]
 	registerCh   chan *Client
 	unregisterCh chan *Client
+	roomRepo     repository.RoomRepository
 }
 
-func NewHub() *Hub {
+func NewHub(roomRepo repository.RoomRepository) *Hub {
 	return &Hub{
 		clients:      sync.Map[uuid.UUID, *Client]{},
 		registerCh:   make(chan *Client),
 		unregisterCh: make(chan *Client),
+		roomRepo:     roomRepo,
 	}
 }
 
@@ -40,11 +42,4 @@ func (h *Hub) Run() {
 			h.clients.Delete(client.userID)
 		}
 	}
-}
-
-func (h *Hub) bloadcast(res *oapi.WsResponse) {
-	h.clients.Range(func(_ uuid.UUID, client *Client) bool {
-		client.send <- res
-		return true
-	})
 }
