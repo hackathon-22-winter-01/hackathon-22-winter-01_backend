@@ -24,3 +24,7 @@ lint:
 
 go-gen:
 	go generate ./...
+
+TESTFLAGS ?= -cover -shuffle=on -race
+test:
+	go test -v ./... $(TESTFLAGS)
