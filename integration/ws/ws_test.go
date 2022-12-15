@@ -12,13 +12,13 @@ import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository/repoimpl"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
 )
 
 func TestWs(t *testing.T) {
 	var (
-		n     = 4
 		conns = make([]*websocket.Conn, n)
 		pids  = make([]uuid.UUID, n)
 		wg    = new(sync.WaitGroup)
@@ -30,7 +30,7 @@ func TestWs(t *testing.T) {
 	s := ws.NewStreamer(h, echo.New().Logger) // TODO: loggerのためにechoを使っているのを直す
 
 	// n個のクライアントをWebsocketに接続
-	for i := 0; i < n; i++ {
+	for i := 0; i < consts.PlayerLimit; i++ {
 		pids[i] = uuid.New()
 
 		// Websocketクライアントを接続
@@ -61,7 +61,7 @@ func TestWs(t *testing.T) {
 
 	// 各クライアントはゲーム開始通知を受信
 	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
-		players := make([]oapi.Player, n)
+		players := make([]oapi.Player, consts.PlayerLimit)
 		for i, pid := range pids {
 			players[i] = oapi.Player{
 				PlayerId: pid,
