@@ -1,10 +1,13 @@
 package oapi
 
-import "github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
+import (
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
+)
 
 func PlayerFromDomain(dp *domain.Player) Player {
 	var (
-		life  = 3
+		life  = consts.MaxLife
 		rails = []Rail{
 			{Id: dp.Main.ID},
 		}

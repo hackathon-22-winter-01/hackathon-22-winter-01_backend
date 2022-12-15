@@ -42,8 +42,11 @@ func NewWsResponseGameStarted(eventTime time.Time, cards []Card, players []Playe
 	return res, nil
 }
 
-func NewWsResponseLifeChanged(eventTime time.Time) (*WsResponse, error) {
-	b := WsResponseBodyLifeChanged{}
+func NewWsResponseLifeChanged(eventTime time.Time, playerID uuid.UUID, newLife int) (*WsResponse, error) {
+	b := WsResponseBodyLifeChanged{
+		PlayerId: playerID,
+		New:      newLife,
+	}
 
 	res := WsResponseFromType(WsResponseTypeLifeChanged, eventTime)
 
