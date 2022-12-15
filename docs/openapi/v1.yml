@@ -103,6 +103,20 @@ components:
         - id
         - type
       description: カード情報
+    Room:
+      title: Room
+      type: object
+      properties:
+        roomId:
+          $ref: "#/components/schemas/RoomId"
+        players:
+          type: array
+          items:
+            $ref: "#/components/schemas/Player"
+          description: プレイヤーのリスト
+        startedAt:
+          type: string
+          description: ゲーム開始時刻
     Player:
       title: Player
       type: object
@@ -135,6 +149,16 @@ components:
         # - blocks
         - life
       description: プレイヤー情報
+    CreateRoomRequest:
+      title: CreateRoomRequest
+      type: object
+      properties:
+        playerName:
+          type: string
+          description: プレイヤーの名前
+      required:
+        - playerName
+      description: 部屋を作成する際に送信するリクエスト
     WsRequest:
       title: WsRequest
       type: object

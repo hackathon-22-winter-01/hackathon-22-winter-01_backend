@@ -20,6 +20,10 @@ func (m *Map[K, V]) Load(key K) (value V, ok bool) {
 	return v.(V), true
 }
 
+func (m *Map[K, V]) Store(key K, value V) {
+	m.sm.Store(key, value)
+}
+
 func (m *Map[K, V]) LoadOrStore(key K, value V) (actual V, loaded bool) {
 	v, loaded := m.sm.LoadOrStore(key, value)
 	actual = v.(V)
