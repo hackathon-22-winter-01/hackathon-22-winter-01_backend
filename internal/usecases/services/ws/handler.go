@@ -25,7 +25,7 @@ func (h *Hub) handleEvent(req *oapi.WsRequest) error {
 			{Id: uuid.New(), Type: oapi.CardTypeCreateBlock},
 		}
 
-		room, err := h.roomRepo.FindRoom(repository.CommonRoomId) // TODO 適切なIDを指定する
+		room, err := h.roomRepo.FindRoom(repository.CommonRoomID) // TODO 適切なIDを指定する
 		if err != nil {
 			return err
 		}

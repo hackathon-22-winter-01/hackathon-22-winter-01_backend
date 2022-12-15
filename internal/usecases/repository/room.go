@@ -6,7 +6,7 @@ import (
 )
 
 // TODO: 消す
-var CommonRoomId = uuid.New()
+var CommonRoomID = uuid.New()
 
 type RoomRepository interface {
 	FindRoom(roomID uuid.UUID) (*domain.Room, error)

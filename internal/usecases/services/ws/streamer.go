@@ -54,7 +54,7 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.U
 		return fmt.Errorf("failed to add new client: %w", err)
 	}
 
-	if err := s.hub.roomRepo.JoinRoom(repository.CommonRoomId, domain.NewPlayer(userID, "test")); err != nil {
+	if err := s.hub.roomRepo.JoinRoom(repository.CommonRoomID, domain.NewPlayer(userID, "test")); err != nil {
 		return fmt.Errorf("failed to join room: %w", err)
 	}
 
