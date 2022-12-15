@@ -103,7 +103,7 @@ func TestWs(t *testing.T) {
 		mustWriteWsRequest(t, conns[1], oapi.WsRequestTypeCardEvent, b)
 
 		// 各プレイヤーは結果を受信する
-		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		forEachClientAsync(t, wg, conns, func(i int, c *websocket.Conn) {
 			res := readWsResponse(t, c)
 			resbody, err := res.Body.AsWsResponseBodyRailCreated()
 			require.NoError(t, err)
@@ -112,6 +112,11 @@ func TestWs(t *testing.T) {
 			require.Equal(t, mainRails[0].Id, resbody.ParentId)
 			require.Equal(t, pids[1], resbody.AttackerId)
 			require.Equal(t, pids[0], resbody.TargetId)
+
+			// レールの更新
+			if i == 0 {
+				rails[0] = append(rails[0], oapi.Rail{Id: resbody.Id})
+			}
 		})
 	})
 
@@ -142,6 +147,7 @@ func TestWs(t *testing.T) {
 	})
 
 	t.Run("プレイヤー0が障害物に当たってライフが1減少する", func(t *testing.T) {
+		// プレイヤー0がライフ減少のリクエストを出す
 		b := oapi.WsRequest_Body{}
 		require.NoError(t, b.FromWsRequestBodyLifeEvent(
 			oapi.WsRequestBodyLifeEvent{
@@ -159,6 +165,31 @@ func TestWs(t *testing.T) {
 			require.Equal(t, oapi.WsResponseBodyLifeChanged{
 				PlayerId: pids[0],
 				New:      2,
+			}, resbody)
+		})
+	})
+
+	t.Run("プレイヤー0がレールをmainにマージする", func(t *testing.T) {
+		// プレイヤー0がレールマージのリクエストを出す
+		b := oapi.WsRequest_Body{}
+		require.NoError(t, b.FromWsRequestBodyRailMergeEvent(
+			oapi.WsRequestBodyRailMergeEvent{
+				ChildId:  rails[0][1].Id, // rails[0] = [main, プレイヤー1のカードで生成されたレール]
+				ParentId: mainRails[0].Id,
+			},
+		))
+		mustWriteWsRequest(t, conns[0], oapi.WsRequestTypeRailMergeEvent, b)
+
+		// 各プレイヤーは結果を受信する
+		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+			res := readWsResponse(t, c)
+			resbody, err := res.Body.AsWsResponseBodyRailMerged()
+			require.NoError(t, err)
+			require.Equal(t, oapi.WsResponseTypeRailMerged, res.Type)
+			require.Equal(t, oapi.WsResponseBodyRailMerged{
+				ChildId:  rails[0][1].Id,
+				ParentId: mainRails[0].Id,
+				PlayerId: pids[0],
 			}, resbody)
 		})
 	})
