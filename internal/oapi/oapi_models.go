@@ -5,6 +5,7 @@ package oapi
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
@@ -69,12 +70,24 @@ type Player struct {
 	// Life プレイヤーのライフ
 	Life int `json:"life"`
 
+	// MainRail レール情報
+	MainRail Rail `json:"mainRail"`
+
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
+
+	// Rails プレイヤーのレールのリスト
+	Rails []Rail `json:"rails"`
 }
 
 // PlayerId プレイヤーUUID
 type PlayerId = openapi_types.UUID
+
+// Rail レール情報
+type Rail struct {
+	// Id レールUUID
+	Id RailId `json:"id"`
+}
 
 // RailId レールUUID
 type RailId = openapi_types.UUID
@@ -113,6 +126,9 @@ type WsRequestBodyCardEvent struct {
 	// Id カードUUID
 	Id CardId `json:"id"`
 
+	// TargetId プレイヤーUUID
+	TargetId PlayerId `json:"targetId"`
+
 	// Type カードの効果の種類
 	Type CardType `json:"type"`
 }
@@ -145,6 +161,9 @@ type WsRequestType string
 type WsResponse struct {
 	// Body イベントの情報
 	Body WsResponse_Body `json:"body"`
+
+	// EventTime イベントの発生時刻
+	EventTime time.Time `json:"eventTime"`
 
 	// Type イベントの種類
 	Type WsResponseType `json:"type"`

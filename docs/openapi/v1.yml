@@ -123,15 +123,15 @@ components:
       properties:
         playerId:
           $ref: "#/components/schemas/PlayerId"
+        mainRail:
+          $ref: "#/components/schemas/Rail"
+          description: メインのレール
+        rails:
+          type: array
+          items:
+            $ref: "#/components/schemas/Rail"
+          description: プレイヤーのレールのリスト
         # TODO: 定義する
-        # mainRail:
-        #   $ref: '#/components/schemas/Rail'
-        #   description: メインのレール
-        # rails:
-        #   type: array
-        #   items:
-        #     $ref: '#/components/schemas/Rail'
-        #   description: プレイヤーのレールのリスト
         # blocks:
         #   type: array
         #   items:
@@ -144,11 +144,20 @@ components:
           description: プレイヤーのライフ
       required:
         - playerId
-        # - mainRail
-        # - rails
+        - mainRail
+        - rails
         # - blocks
         - life
       description: プレイヤー情報
+    Rail:
+      title: Rail
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/RailId"
+      required:
+        - id
+      description: レール情報
     CreateRoomRequest:
       title: CreateRoomRequest
       type: object
@@ -210,10 +219,13 @@ components:
       properties:
         id:
           $ref: "#/components/schemas/CardId"
+        targetId:
+          $ref: "#/components/schemas/PlayerId"
         type:
           $ref: "#/components/schemas/CardType"
       required:
         - id
+        - targetId
         - type
       description: カードに関するイベントの情報
     WsRequestBodyReilMergeEvent:
@@ -244,9 +256,14 @@ components:
             - $ref: "#/components/schemas/WsResponseBodyRailMerged"
             - $ref: "#/components/schemas/WsResponseBodyBlockCreated"
           description: イベントの情報
+        eventTime:
+          type: string
+          format: date-time
+          description: イベントの発生時刻
       required:
         - type
         - body
+        - eventTime
       description: Websocket接続中にサーバーから受信するオブジェクト
     WsResponseType:
       title: WsResponseType

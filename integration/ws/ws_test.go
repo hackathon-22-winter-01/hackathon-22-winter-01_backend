@@ -19,9 +19,12 @@ import (
 
 func TestWs(t *testing.T) {
 	var (
-		conns = make([]*websocket.Conn, consts.PlayerLimit)
-		pids  = make([]uuid.UUID, consts.PlayerLimit)
-		wg    = new(sync.WaitGroup)
+		conns     = make([]*websocket.Conn, consts.PlayerLimit)
+		pids      = make([]uuid.UUID, consts.PlayerLimit)
+		cards     = make([][]oapi.Card, consts.PlayerLimit)
+		mainRails = make([]oapi.Rail, consts.PlayerLimit)
+		rails     = make([][]oapi.Rail, consts.PlayerLimit)
+		wg        = new(sync.WaitGroup)
 	)
 
 	// Streamerを起動
@@ -59,21 +62,104 @@ func TestWs(t *testing.T) {
 	))
 	mustWriteWsRequest(t, conns[0], oapi.WsRequestTypeGameStartEvent, b)
 
-	// 各クライアントはゲーム開始通知を受信
-	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
-		players := make([]oapi.Player, consts.PlayerLimit)
-		for i, pid := range pids {
-			players[i] = oapi.Player{
-				PlayerId: pid,
-				Life:     3,
-			}
-		}
-
+	// 各プレイヤーはゲーム開始通知を受信
+	forEachClientAsync(t, wg, conns, func(i int, c *websocket.Conn) {
 		res := readWsResponse(t, c)
 		resbody, err := res.Body.AsWsResponseBodyGameStarted()
 		require.NoError(t, err)
 		require.Equal(t, oapi.WsResponseTypeGameStarted, res.Type)
-		require.Equal(t, players, resbody.Players)
 		require.Len(t, resbody.Cards, 5) // ここではCardsの中身は問わない
+		require.Len(t, resbody.Players, consts.PlayerLimit)
+		for j, p := range resbody.Players {
+			require.Equal(t, pids[j], p.PlayerId)
+			require.Equal(t, consts.MaxLife, p.Life)
+
+			// レールを記録しておく
+			if i == 0 {
+				mainRails[j] = p.MainRail
+				rails[j] = p.Rails
+			}
+		}
+
+		// カードを記録しておく
+		cards[i] = resbody.Cards
+	})
+
+	t.Run("プレイヤー1がプレイヤー0に対してカードを出してレールを生成する", func(t *testing.T) {
+		// FIXME: t.Parallel()を付けて実行するとFAILする
+		// Received unexpected error:
+		// write tcp 127.0.0.1:38046->127.0.0.1:35689: use of closed network connection
+
+		// プレイヤー1がプレイヤー0に対してカードを出す
+		card := cards[1][0]
+		b := oapi.WsRequest_Body{}
+		require.NoError(t, b.FromWsRequestBodyCardEvent(
+			oapi.WsRequestBodyCardEvent{
+				Id:       card.Id,
+				TargetId: pids[0],
+				Type:     card.Type,
+			},
+		))
+		mustWriteWsRequest(t, conns[1], oapi.WsRequestTypeCardEvent, b)
+
+		// 各プレイヤーは結果を受信する
+		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+			res := readWsResponse(t, c)
+			resbody, err := res.Body.AsWsResponseBodyRailCreated()
+			require.NoError(t, err)
+			require.Equal(t, oapi.WsResponseTypeRailCreated, res.Type)
+			// 作成されたレールのID以外の確認
+			require.Equal(t, mainRails[0].Id, resbody.ParentId)
+			require.Equal(t, pids[1], resbody.AttackerId)
+			require.Equal(t, pids[0], resbody.TargetId)
+		})
+	})
+
+	t.Run("プレイヤー1がプレイヤー0に対してカードを出して障害物を生成する", func(t *testing.T) {
+		// プレイヤー1がプレイヤー0に対してカードを出す
+		card := cards[1][1]
+		b := oapi.WsRequest_Body{}
+		require.NoError(t, b.FromWsRequestBodyCardEvent(
+			oapi.WsRequestBodyCardEvent{
+				Id:       card.Id,
+				TargetId: pids[0],
+				Type:     card.Type,
+			},
+		))
+		mustWriteWsRequest(t, conns[1], oapi.WsRequestTypeCardEvent, b)
+
+		// 各プレイヤーは結果を受信する
+		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+			res := readWsResponse(t, c)
+			resbody, err := res.Body.AsWsResponseBodyBlockCreated()
+			require.NoError(t, err)
+			require.Equal(t, oapi.WsResponseTypeBlockCreated, res.Type)
+			require.Equal(t, oapi.WsResponseBodyBlockCreated{
+				AttackerId: pids[1],
+				TargetId:   pids[0],
+			}, resbody)
+		})
+	})
+
+	t.Run("プレイヤー0が障害物に当たってライフが1減少する", func(t *testing.T) {
+		b := oapi.WsRequest_Body{}
+		require.NoError(t, b.FromWsRequestBodyLifeEvent(
+			oapi.WsRequestBodyLifeEvent{
+				Type: oapi.LifeEventTypeDecrement,
+			},
+		))
+		mustWriteWsRequest(t, conns[0], oapi.WsRequestTypeLifeEvent, b)
+
+		// 各プレイヤーは結果を受信する
+		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+			res := readWsResponse(t, c)
+			resbody, err := res.Body.AsWsResponseBodyLifeChanged()
+			require.NoError(t, err)
+			require.Equal(t, oapi.WsResponseTypeLifeChanged, res.Type)
+			require.Equal(t, oapi.WsResponseBodyLifeChanged{
+				PlayerId: pids[0],
+				New:      2,
+			}, resbody)
+		})
 	})
 }

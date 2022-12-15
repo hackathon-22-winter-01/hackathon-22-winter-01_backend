@@ -8,6 +8,7 @@ import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
 	"github.com/labstack/echo/v4"
 	"github.com/shiguredo/websocket"
 )
@@ -69,7 +70,7 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.U
 		}
 	}()
 
-	res, err := oapi.NewWsResponseConnected(userID)
+	res, err := oapi.NewWsResponseConnected(jst.Now(), userID)
 	if err != nil {
 		return fmt.Errorf("failed to send connected: %w", err)
 	}
