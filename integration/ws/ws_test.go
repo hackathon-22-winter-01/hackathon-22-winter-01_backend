@@ -63,6 +63,7 @@ func TestWs(t *testing.T) {
 		resbody, err := res.Body.AsWsResponseBodyGameStarted()
 		require.NoError(t, err)
 		require.Equal(t, oapi.WsResponseTypeGameStarted, res.Type)
-		require.Equal(t, oapi.WsResponseBodyGameStarted{}, resbody)
+		require.Len(t, resbody.Players, n) // TODO: Playersの中身もassertする
+		require.Len(t, resbody.Cards, 5) // ここではCardsの中身は問わない
 	})
 }

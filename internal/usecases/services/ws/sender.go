@@ -18,8 +18,11 @@ func (h *Hub) sendConnected(playerID uuid.UUID) (*oapi.WsResponse, error) {
 	return res, nil
 }
 
-func (h *Hub) sendGameStarted() (*oapi.WsResponse, error) {
-	b := oapi.WsResponseBodyGameStarted{}
+func (h *Hub) sendGameStarted(cards []oapi.Card, players []oapi.Player) (*oapi.WsResponse, error) {
+	b := oapi.WsResponseBodyGameStarted{
+		Cards:   cards,
+		Players: players,
+	}
 
 	res := oapi.WsResponseFromType(oapi.WsResponseTypeGameStarted)
 	if err := res.Body.FromWsResponseBodyGameStarted(b); err != nil {

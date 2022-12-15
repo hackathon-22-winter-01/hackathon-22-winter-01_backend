@@ -3,6 +3,7 @@ package ws
 import (
 	"errors"
 
+	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 )
 
@@ -14,7 +15,24 @@ func (h *Hub) handleEvent(req *oapi.WsRequest) error {
 			return err
 		}
 
-		res, err := h.sendGameStarted()
+		// TODO: 初期カードを決めるロジックを書く
+		cards := []oapi.Card{
+			{Id: uuid.New(), Type: oapi.CardTypeCreateRail},
+			{Id: uuid.New(), Type: oapi.CardTypeCreateRail},
+			{Id: uuid.New(), Type: oapi.CardTypeCreateBlock},
+			{Id: uuid.New(), Type: oapi.CardTypeCreateBlock},
+			{Id: uuid.New(), Type: oapi.CardTypeCreateBlock},
+		}
+
+		// TODO: 適切なプレイヤーを決めるロジックを書く
+		players := []oapi.Player{
+			{PlayerId: uuid.New(), Life: 3},
+			{PlayerId: uuid.New(), Life: 3},
+			{PlayerId: uuid.New(), Life: 3},
+			{PlayerId: uuid.New(), Life: 3},
+		}
+
+		res, err := h.sendGameStarted(cards, players)
 		if err != nil {
 			return err
 		}
