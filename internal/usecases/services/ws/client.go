@@ -112,7 +112,7 @@ func (c *Client) writePump() error {
 				return err
 			}
 
-			res, err := oapi.NewWsResponseCardReset()
+			res, err := oapi.NewWsResponseCardReset(time.Now())
 			if err != nil {
 				return err
 			}
@@ -177,7 +177,7 @@ func (c *Client) handleGameStartEvent(body oapi.WsRequest_Body) error {
 		players[i] = oapi.PlayerFromDomain(p)
 	}
 
-	res, err := oapi.NewWsResponseGameStarted(cards, players)
+	res, err := oapi.NewWsResponseGameStarted(nowInJST(), cards, players)
 	if err != nil {
 		return err
 	}
@@ -226,13 +226,13 @@ func (c *Client) handleCardEvent(body oapi.WsRequest_Body) error {
 			afterRails,
 		))
 
-		res, err = oapi.NewWsResponseRailCreated(uuid.New(), target.Main.ID, c.userID, b.TargetId)
+		res, err = oapi.NewWsResponseRailCreated(nowInJST(), uuid.New(), target.Main.ID, c.userID, b.TargetId)
 		if err != nil {
 			return err
 		}
 
 	case oapi.CardTypeCreateBlock:
-		res, err = oapi.NewWsResponseBlockCreated(c.userID, b.TargetId)
+		res, err = oapi.NewWsResponseBlockCreated(nowInJST(), c.userID, b.TargetId)
 		if err != nil {
 			return err
 		}
@@ -254,7 +254,7 @@ func (c *Client) handleLifeEvent(body oapi.WsRequest_Body) error {
 
 	switch b.Type {
 	case oapi.LifeEventTypeDecrement:
-		res, err := oapi.NewWsResponseLifeChanged()
+		res, err := oapi.NewWsResponseLifeChanged(nowInJST())
 		if err != nil {
 			return err
 		}
@@ -269,7 +269,7 @@ func (c *Client) handleLifeEvent(body oapi.WsRequest_Body) error {
 }
 
 func (c *Client) handleRailMergeEvent(_ oapi.WsRequest_Body) error {
-	res, err := oapi.NewWsResponseRailMerged()
+	res, err := oapi.NewWsResponseRailMerged(nowInJST())
 	if err != nil {
 		return err
 	}
@@ -277,4 +277,8 @@ func (c *Client) handleRailMergeEvent(_ oapi.WsRequest_Body) error {
 	c.bloadcast(res)
 
 	return nil
+}
+
+func nowInJST() time.Time {
+	return time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60))
 }

@@ -207,9 +207,14 @@ components:
             - $ref: '#/components/schemas/WsResponseBodyRailMerged'
             - $ref: '#/components/schemas/WsResponseBodyBlockCreated'
           description: イベントの情報
+        eventTime:
+          type: string
+          format: date-time
+          description: イベントの発生時刻
       required:
         - type
         - body
+        - eventTime
       description: Websocket接続中にサーバーから受信するオブジェクト
     WsResponseType:
       title: WsResponseType

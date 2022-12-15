@@ -69,7 +69,7 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.U
 		}
 	}()
 
-	res, err := oapi.NewWsResponseConnected(userID)
+	res, err := oapi.NewWsResponseConnected(nowInJST(), userID)
 	if err != nil {
 		return fmt.Errorf("failed to send connected: %w", err)
 	}

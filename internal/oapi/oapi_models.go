@@ -5,6 +5,7 @@ package oapi
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
@@ -139,6 +140,9 @@ type WsRequestType string
 type WsResponse struct {
 	// Body イベントの情報
 	Body WsResponse_Body `json:"body"`
+
+	// EventTime イベントの発生時刻
+	EventTime time.Time `json:"eventTime"`
 
 	// Type イベントの種類
 	Type WsResponseType `json:"type"`
