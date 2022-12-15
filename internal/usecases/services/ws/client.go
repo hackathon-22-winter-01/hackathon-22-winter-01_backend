@@ -49,7 +49,7 @@ func (c *Client) readPump() error {
 	c.conn.SetReadLimit(maxMessageSize)
 
 	if err := c.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
-		c.logger.Error(err)
+		return err
 	}
 
 	c.conn.SetPongHandler(func(string) error {
@@ -60,14 +60,14 @@ func (c *Client) readPump() error {
 		req := new(oapi.WsRequest)
 		if err := c.conn.ReadJSON(req); err != nil {
 			if !websocket.IsCloseError(err) && !websocket.IsUnexpectedCloseError(err) {
-				c.logger.Error(err)
+				return err
 			}
 
 			break
 		}
 
 		if err := c.hub.handleEvent(req); err != nil {
-			c.logger.Error(err)
+			return err
 		}
 	}
 
@@ -85,13 +85,11 @@ func (c *Client) writePump() error {
 		select {
 		case message, ok := <-c.send:
 			if err := c.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
-				c.logger.Error(err)
+				return err
 			}
 
 			if !ok {
-				if err := c.conn.WriteMessage(websocket.CloseMessage, []byte("hello")); err != nil {
-					c.logger.Error(err)
-
+				if err := c.conn.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
 					return err
 				}
 
@@ -99,32 +97,26 @@ func (c *Client) writePump() error {
 			}
 
 			if err := c.conn.WriteJSON(message); err != nil {
-				c.logger.Error(err)
+				return err
 			}
 
 		case <-ticker.C:
 			if err := c.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
-				c.logger.Error(err)
-
 				return err
 			}
 
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				c.logger.Error(err)
-
 				return err
 			}
 
 			res, err := c.hub.sendCardReset()
 			if err != nil {
-				c.logger.Error(err)
+				return err
 			}
 
 			if err := c.conn.WriteJSON(res); err != nil {
-				c.logger.Error(err)
+				return err
 			}
 		}
 	}
-
-	return nil
 }
