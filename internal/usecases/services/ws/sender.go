@@ -18,6 +18,17 @@ func (h *Hub) sendConnected(playerID uuid.UUID) (*oapi.WsResponse, error) {
 	return res, nil
 }
 
+func (h *Hub) sendGameStarted() (*oapi.WsResponse, error) {
+	b := oapi.WsResponseBodyGameStarted{}
+
+	res := oapi.WsResponseFromType(oapi.WsResponseTypeGameStarted)
+	if err := res.Body.FromWsResponseBodyGameStarted(b); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
 func (h *Hub) sendLifeChanged() (*oapi.WsResponse, error) {
 	b := oapi.WsResponseBodyLifeChanged{}
 

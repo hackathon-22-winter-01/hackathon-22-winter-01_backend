@@ -1,8 +1,10 @@
 package ws_test
 
 import (
+	"fmt"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/google/uuid"
@@ -18,6 +20,7 @@ func TestWs(t *testing.T) {
 		n     = 4
 		conns = make([]*websocket.Conn, n)
 		pids  = make([]uuid.UUID, n)
+		wg    = new(sync.WaitGroup)
 	)
 
 	// Streamerを起動
@@ -44,4 +47,22 @@ func TestWs(t *testing.T) {
 		require.Equal(t, oapi.WsResponseTypeConnected, res.Type)
 		require.Equal(t, oapi.WsResponseBodyConnected{PlayerId: pids[i]}, resbody)
 	}
+
+	// オーナーがゲーム開始リクエストを送信
+	b := oapi.WsRequest_Body{}
+	require.NoError(t, b.FromWsRequestBodyGameStartEvent(
+		oapi.WsRequestBodyGameStartEvent{
+			Name: fmt.Sprintf("player%d", 0),
+		},
+	))
+	mustWriteWsRequest(t, conns[0], oapi.WsRequestTypeGameStartEvent, b)
+
+	// 各クライアントはゲーム開始通知を受信
+	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		res := readWsResponse(t, c)
+		resbody, err := res.Body.AsWsResponseBodyGameStarted()
+		require.NoError(t, err)
+		require.Equal(t, oapi.WsResponseTypeGameStarted, res.Type)
+		require.Equal(t, oapi.WsResponseBodyGameStarted{}, resbody)
+	})
 }

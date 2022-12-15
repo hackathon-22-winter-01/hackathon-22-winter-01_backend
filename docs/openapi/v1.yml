@@ -78,6 +78,38 @@ components:
         - id
         - type
       description: カード情報
+    Player:
+      title: Player
+      type: object
+      properties:
+        playerId:
+          $ref: '#/components/schemas/PlayerId'
+        # TODO: 定義する
+        # mainRail:
+        #   $ref: '#/components/schemas/Rail'
+        #   description: メインのレール
+        # rails:
+        #   type: array
+        #   items:
+        #     $ref: '#/components/schemas/Rail'
+        #   description: プレイヤーのレールのリスト
+        # blocks:
+        #   type: array
+        #   items:
+        #     $ref: '#/components/schemas/Block'
+        #   description: プレイヤーのブロックのリスト
+        life:
+          type: integer
+          maximum: 3
+          minimum: 0
+          description: プレイヤーのライフ
+      required:
+        - playerId
+        # - mainRail
+        # - rails
+        # - blocks
+        - life
+      description: プレイヤー情報
     WsRequest:
       title: WsRequest
       type: object
@@ -86,6 +118,7 @@ components:
           $ref: '#/components/schemas/WsRequestType'
         body:
           oneOf:
+            - $ref: '#/components/schemas/WsRequestBodyGameStartEvent'
             - $ref: '#/components/schemas/WsRequestBodyLifeEvent'
             - $ref: '#/components/schemas/WsRequestBodyCardEvent'
             - $ref: '#/components/schemas/WsRequestBodyReilMergeEvent'
@@ -98,10 +131,21 @@ components:
       title: WsRequestType
       type: string
       enum:
+        - gameStartEvent
         - lifeEvent
         - cardEvent
         - railMergeEvent
       description: イベントの種類
+    WsRequestBodyGameStartEvent:
+      title: WsRequestBodyGameStartEvent
+      type: object
+      properties:
+        name:
+          type: string
+          description: プレイヤーの名前
+      required:
+        - name
+      description: ゲーム開始時にサーバーに送信するオブジェクト
     WsRequestBodyLifeEvent:
       title: WsRequestBodyLifeEvent
       type: object
@@ -144,6 +188,7 @@ components:
         body:
           oneOf:
             - $ref: '#/components/schemas/WsResponseBodyConnected'
+            - $ref: '#/components/schemas/WsResponseBodyGameStarted'
             - $ref: '#/components/schemas/WsResponseBodyLifeChanged'
             - $ref: '#/components/schemas/WsResponseBodyCardReset'
             - $ref: '#/components/schemas/WsResponseBodyRailCreated'
@@ -159,6 +204,7 @@ components:
       type: string
       enum:
         - connected
+        - gameStarted
         - lifeChanged
         - cardReset
         - railCreated
@@ -173,6 +219,23 @@ components:
       required:
         - playerId
       description: 接続したプレイヤーのID
+    WsResponseBodyGameStarted:
+      type: object
+      properties:
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/Player'
+          description: 各プレイヤーの情報
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/Card'
+          description: ゲーム開始時のカードのリスト
+      required:
+        - players
+        - cards
+      description: ゲーム開始時の情報
     WsResponseBodyLifeChanged:
       type: object
       properties:

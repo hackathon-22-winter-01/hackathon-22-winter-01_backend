@@ -8,6 +8,21 @@ import (
 
 func (h *Hub) handleEvent(req *oapi.WsRequest) error {
 	switch req.Type {
+	case oapi.WsRequestTypeGameStartEvent:
+		_, err := req.Body.AsWsRequestBodyGameStartEvent()
+		if err != nil {
+			return err
+		}
+
+		res, err := h.sendGameStarted()
+		if err != nil {
+			return err
+		}
+
+		h.bloadcast(res)
+
+		return nil
+
 	case oapi.WsRequestTypeCardEvent:
 		b, err := req.Body.AsWsRequestBodyCardEvent()
 		if err != nil {
