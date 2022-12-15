@@ -8,26 +8,34 @@ import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
 )
 
-func (h *Hub) handleEvent(req *oapi.WsRequest) error {
+func (c *Client) bloadcast(res *oapi.WsResponse) {
+	// TODO: 全クライアントに送信してしまうためルーム内のクライアントだけに絞る
+	c.hub.clients.Range(func(_ uuid.UUID, client *Client) bool {
+		client.send <- res
+		return true
+	})
+}
+
+func (c *Client) handleEvent(req *oapi.WsRequest) error {
 	switch req.Type {
 	case oapi.WsRequestTypeGameStartEvent:
-		return h.handleGameStartEvent(req.Body)
+		return c.handleGameStartEvent(req.Body)
 
 	case oapi.WsRequestTypeCardEvent:
-		return h.handleCardEvent(req.Body)
+		return c.handleCardEvent(req.Body)
 
 	case oapi.WsRequestTypeLifeEvent:
-		return h.handleLifeEvent(req.Body)
+		return c.handleLifeEvent(req.Body)
 
 	case oapi.WsRequestTypeRailMergeEvent:
-		return h.handleRailMergeEvent(req.Body)
+		return c.handleRailMergeEvent(req.Body)
 
 	default:
 		return errors.New("invalid request type")
 	}
 }
 
-func (h *Hub) handleGameStartEvent(body oapi.WsRequest_Body) error {
+func (c *Client) handleGameStartEvent(body oapi.WsRequest_Body) error {
 	_, err := body.AsWsRequestBodyGameStartEvent()
 	if err != nil {
 		return err
@@ -42,7 +50,7 @@ func (h *Hub) handleGameStartEvent(body oapi.WsRequest_Body) error {
 		{Id: uuid.New(), Type: oapi.CardTypeCreateBlock},
 	}
 
-	room, err := h.roomRepo.FindRoom(repository.CommonRoomID) // TODO 適切なIDを指定する
+	room, err := c.hub.roomRepo.FindRoom(repository.CommonRoomID) // TODO 適切なIDを指定する
 	if err != nil {
 		return err
 	}
@@ -57,12 +65,12 @@ func (h *Hub) handleGameStartEvent(body oapi.WsRequest_Body) error {
 		return err
 	}
 
-	h.bloadcast(res)
+	c.bloadcast(res)
 
 	return nil
 }
 
-func (h *Hub) handleCardEvent(body oapi.WsRequest_Body) error {
+func (c *Client) handleCardEvent(body oapi.WsRequest_Body) error {
 	b, err := body.AsWsRequestBodyCardEvent()
 	if err != nil {
 		return err
@@ -87,12 +95,12 @@ func (h *Hub) handleCardEvent(body oapi.WsRequest_Body) error {
 		return errors.New("invalid card type")
 	}
 
-	h.bloadcast(res)
+	c.bloadcast(res)
 
 	return nil
 }
 
-func (h *Hub) handleLifeEvent(body oapi.WsRequest_Body) error {
+func (c *Client) handleLifeEvent(body oapi.WsRequest_Body) error {
 	b, err := body.AsWsRequestBodyLifeEvent()
 	if err != nil {
 		return err
@@ -105,7 +113,7 @@ func (h *Hub) handleLifeEvent(body oapi.WsRequest_Body) error {
 			return err
 		}
 
-		h.bloadcast(res)
+		c.bloadcast(res)
 
 	default:
 		return errors.New("invalid life type")
@@ -114,13 +122,13 @@ func (h *Hub) handleLifeEvent(body oapi.WsRequest_Body) error {
 	return nil
 }
 
-func (h *Hub) handleRailMergeEvent(_ oapi.WsRequest_Body) error {
+func (c *Client) handleRailMergeEvent(_ oapi.WsRequest_Body) error {
 	res, err := oapi.NewWsResponseRailMerged()
 	if err != nil {
 		return err
 	}
 
-	h.bloadcast(res)
+	c.bloadcast(res)
 
 	return nil
 }

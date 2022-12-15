@@ -66,7 +66,7 @@ func (c *Client) readPump() error {
 			break
 		}
 
-		if err := c.hub.handleEvent(req); err != nil {
+		if err := c.handleEvent(req); err != nil {
 			return err
 		}
 	}

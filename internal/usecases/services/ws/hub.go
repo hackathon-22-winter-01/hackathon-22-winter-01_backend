@@ -2,7 +2,6 @@ package ws
 
 import (
 	"github.com/google/uuid"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/sync"
 )
@@ -43,11 +42,4 @@ func (h *Hub) Run() {
 			h.clients.Delete(client.userID)
 		}
 	}
-}
-
-func (h *Hub) bloadcast(res *oapi.WsResponse) {
-	h.clients.Range(func(_ uuid.UUID, client *Client) bool {
-		client.send <- res
-		return true
-	})
 }
