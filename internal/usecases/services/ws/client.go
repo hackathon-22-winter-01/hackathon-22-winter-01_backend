@@ -58,6 +58,7 @@ func (c *Client) readPump() error {
 	})
 
 	wh := wshandler.NewWsHandler(c.userID, c.hub.roomRepo, c)
+
 	for {
 		req := new(oapi.WsRequest)
 		if err := c.conn.ReadJSON(req); err != nil {
