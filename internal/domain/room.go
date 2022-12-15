@@ -21,3 +21,13 @@ func NewRoom(id uuid.UUID) *Room {
 		StartedAt: time.Time{},
 	}
 }
+
+func (r *Room) FindPlayer(playerID uuid.UUID) (*Player, bool) {
+	for _, p := range r.Players {
+		if p.ID == playerID {
+			return p, true
+		}
+	}
+
+	return nil, false
+}

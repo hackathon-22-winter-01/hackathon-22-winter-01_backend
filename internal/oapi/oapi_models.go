@@ -63,12 +63,24 @@ type Player struct {
 	// Life プレイヤーのライフ
 	Life int `json:"life"`
 
+	// MainRail レール情報
+	MainRail Rail `json:"mainRail"`
+
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
+
+	// Rails プレイヤーのレールのリスト
+	Rails []Rail `json:"rails"`
 }
 
 // PlayerId プレイヤーUUID
 type PlayerId = openapi_types.UUID
+
+// Rail レール情報
+type Rail struct {
+	// Id レールUUID
+	Id RailId `json:"id"`
+}
 
 // RailId レールUUID
 type RailId = openapi_types.UUID
@@ -91,6 +103,9 @@ type WsRequest_Body struct {
 type WsRequestBodyCardEvent struct {
 	// Id カードUUID
 	Id CardId `json:"id"`
+
+	// TargetId プレイヤーUUID
+	TargetId PlayerId `json:"targetId"`
 
 	// Type カードの効果の種類
 	Type CardType `json:"type"`

@@ -10,8 +10,8 @@ import (
 type CardEvent struct {
 	ID          uuid.UUID
 	Type        CardEventType
-	Attacker    *Player
-	Target      *Player
+	AttackerID  uuid.UUID
+	TargetID    uuid.UUID
 	BeforeRails []*Rail
 	AfterRails  []*Rail
 }
@@ -27,6 +27,17 @@ const (
 	RailCreated
 	RailMerged
 )
+
+func NewCardEvent(id uuid.UUID, typ CardEventType, attackerID, targetID uuid.UUID, beforeRails, afterRails []*Rail) *CardEvent {
+	return &CardEvent{
+		ID:          id,
+		Type:        typ,
+		AttackerID:  attackerID,
+		TargetID:    targetID,
+		BeforeRails: beforeRails,
+		AfterRails:  afterRails,
+	}
+}
 
 // LifeEvent プレイヤーのライフに関する情報
 type LifeEvent struct {
