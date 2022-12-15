@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
 )
 
 func (h *Hub) handleEvent(req *oapi.WsRequest) error {
@@ -24,12 +25,14 @@ func (h *Hub) handleEvent(req *oapi.WsRequest) error {
 			{Id: uuid.New(), Type: oapi.CardTypeCreateBlock},
 		}
 
-		// TODO: 適切なプレイヤーを決めるロジックを書く
-		players := []oapi.Player{
-			{PlayerId: uuid.New(), Life: 3},
-			{PlayerId: uuid.New(), Life: 3},
-			{PlayerId: uuid.New(), Life: 3},
-			{PlayerId: uuid.New(), Life: 3},
+		room, err := h.roomRepo.FindRoom(repository.CommonRoomId) // TODO 適切なIDを指定する
+		if err != nil {
+			return err
+		}
+
+		players := make([]oapi.Player, len(room.Players))
+		for i, p := range room.Players {
+			players[i] = oapi.PlayerFromDomain(p)
 		}
 
 		res, err := oapi.NewWsResponseGameStarted(cards, players)

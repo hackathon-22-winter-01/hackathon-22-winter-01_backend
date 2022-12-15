@@ -6,7 +6,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
 	"github.com/labstack/echo/v4"
 )
 
@@ -50,6 +52,10 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.U
 	client, err := s.addNewClient(userID, conn)
 	if err != nil {
 		return fmt.Errorf("failed to add new client: %w", err)
+	}
+
+	if err := s.hub.roomRepo.JoinRoom(repository.CommonRoomId, domain.NewPlayer(userID, "test")); err != nil {
+		return fmt.Errorf("failed to join room: %w", err)
 	}
 
 	go func() {

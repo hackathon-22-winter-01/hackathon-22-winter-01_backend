@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository/repoimpl"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
@@ -24,7 +25,8 @@ func TestWs(t *testing.T) {
 	)
 
 	// Streamerを起動
-	h := ws.NewHub()
+	roomRepo := repoimpl.NewRoomRepository()
+	h := ws.NewHub(roomRepo)
 	s := ws.NewStreamer(h, echo.New().Logger) // TODO: loggerのためにechoを使っているのを直す
 
 	// n個のクライアントをWebsocketに接続
@@ -59,11 +61,19 @@ func TestWs(t *testing.T) {
 
 	// 各クライアントはゲーム開始通知を受信
 	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		players := make([]oapi.Player, n)
+		for i, pid := range pids {
+			players[i] = oapi.Player{
+				PlayerId: pid,
+				Life:     3,
+			}
+		}
+
 		res := readWsResponse(t, c)
 		resbody, err := res.Body.AsWsResponseBodyGameStarted()
 		require.NoError(t, err)
 		require.Equal(t, oapi.WsResponseTypeGameStarted, res.Type)
-		require.Len(t, resbody.Players, n) // TODO: Playersの中身もassertする
+		require.Equal(t, players, resbody.Players)
 		require.Len(t, resbody.Cards, 5) // ここではCardsの中身は問わない
 	})
 }
