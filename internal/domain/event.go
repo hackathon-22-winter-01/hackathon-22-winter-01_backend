@@ -10,10 +10,10 @@ import (
 type CardEvent struct {
 	ID          uuid.UUID
 	Type        CardEventType
-	Attacker    Player
-	Target      Player
-	BeforeRails []Rail
-	AfterRails  []Rail
+	Attacker    *Player
+	Target      *Player
+	BeforeRails []*Rail
+	AfterRails  []*Rail
 }
 
 // CardEventType イベントの種類
