@@ -24,6 +24,7 @@ const (
 // Defines values for WsRequestType.
 const (
 	WsRequestTypeCardEvent      WsRequestType = "cardEvent"
+	WsRequestTypeGameStartEvent WsRequestType = "gameStartEvent"
 	WsRequestTypeLifeEvent      WsRequestType = "lifeEvent"
 	WsRequestTypeRailMergeEvent WsRequestType = "railMergeEvent"
 )
@@ -33,6 +34,7 @@ const (
 	WsResponseTypeBlockCreated WsResponseType = "blockCreated"
 	WsResponseTypeCardReset    WsResponseType = "cardReset"
 	WsResponseTypeConnected    WsResponseType = "connected"
+	WsResponseTypeGameStarted  WsResponseType = "gameStarted"
 	WsResponseTypeLifeChanged  WsResponseType = "lifeChanged"
 	WsResponseTypeRailCreated  WsResponseType = "railCreated"
 	WsResponseTypeRailMerged   WsResponseType = "railMerged"
@@ -55,6 +57,15 @@ type CardType string
 
 // LifeEventType ライフに関するイベントの種類
 type LifeEventType string
+
+// Player プレイヤー情報
+type Player struct {
+	// Life プレイヤーのライフ
+	Life int `json:"life"`
+
+	// PlayerId プレイヤーUUID
+	PlayerId PlayerId `json:"playerId"`
+}
 
 // PlayerId プレイヤーUUID
 type PlayerId = openapi_types.UUID
@@ -83,6 +94,12 @@ type WsRequestBodyCardEvent struct {
 
 	// Type カードの効果の種類
 	Type CardType `json:"type"`
+}
+
+// WsRequestBodyGameStartEvent ゲーム開始時にサーバーに送信するオブジェクト
+type WsRequestBodyGameStartEvent struct {
+	// Name プレイヤーの名前
+	Name string `json:"name"`
 }
 
 // WsRequestBodyLifeEvent ライフに関するイベントの情報
@@ -141,6 +158,15 @@ type WsResponseBodyConnected struct {
 	PlayerId PlayerId `json:"playerId"`
 }
 
+// WsResponseBodyGameStarted ゲーム開始時の情報
+type WsResponseBodyGameStarted struct {
+	// Cards ゲーム開始時のカードのリスト
+	Cards []Card `json:"cards"`
+
+	// Players 各プレイヤーの情報
+	Players []Player `json:"players"`
+}
+
 // WsResponseBodyLifeChanged ライフの変動情報
 type WsResponseBodyLifeChanged struct {
 	// New 変動後のライフ
@@ -179,6 +205,32 @@ type WsResponseBodyRailMerged struct {
 
 // WsResponseType イベントの種類
 type WsResponseType string
+
+// AsWsRequestBodyGameStartEvent returns the union data inside the WsRequest_Body as a WsRequestBodyGameStartEvent
+func (t WsRequest_Body) AsWsRequestBodyGameStartEvent() (WsRequestBodyGameStartEvent, error) {
+	var body WsRequestBodyGameStartEvent
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWsRequestBodyGameStartEvent overwrites any union data inside the WsRequest_Body as the provided WsRequestBodyGameStartEvent
+func (t *WsRequest_Body) FromWsRequestBodyGameStartEvent(v WsRequestBodyGameStartEvent) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWsRequestBodyGameStartEvent performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodyGameStartEvent
+func (t *WsRequest_Body) MergeWsRequestBodyGameStartEvent(v WsRequestBodyGameStartEvent) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
 
 // AsWsRequestBodyLifeEvent returns the union data inside the WsRequest_Body as a WsRequestBodyLifeEvent
 func (t WsRequest_Body) AsWsRequestBodyLifeEvent() (WsRequestBodyLifeEvent, error) {
@@ -284,6 +336,32 @@ func (t *WsResponse_Body) FromWsResponseBodyConnected(v WsResponseBodyConnected)
 
 // MergeWsResponseBodyConnected performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyConnected
 func (t *WsResponse_Body) MergeWsResponseBodyConnected(v WsResponseBodyConnected) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsWsResponseBodyGameStarted returns the union data inside the WsResponse_Body as a WsResponseBodyGameStarted
+func (t WsResponse_Body) AsWsResponseBodyGameStarted() (WsResponseBodyGameStarted, error) {
+	var body WsResponseBodyGameStarted
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWsResponseBodyGameStarted overwrites any union data inside the WsResponse_Body as the provided WsResponseBodyGameStarted
+func (t *WsResponse_Body) FromWsResponseBodyGameStarted(v WsResponseBodyGameStarted) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWsResponseBodyGameStarted performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyGameStarted
+func (t *WsResponse_Body) MergeWsResponseBodyGameStarted(v WsResponseBodyGameStarted) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err

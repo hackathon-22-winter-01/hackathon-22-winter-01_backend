@@ -5,6 +5,7 @@ import (
 
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/handler"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository/repoimpl"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws"
 
 	"github.com/labstack/echo/v4"
@@ -20,7 +21,8 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	hub := ws.NewHub()
+	roomRepo := repoimpl.NewRoomRepository()
+	hub := ws.NewHub(roomRepo)
 	streamer := ws.NewStreamer(hub, e.Logger)
 	h := handler.New(streamer)
 	oapi.RegisterHandlersWithBaseURL(e, h, baseURL)

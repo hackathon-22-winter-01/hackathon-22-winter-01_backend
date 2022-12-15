@@ -41,24 +41,24 @@ func NewClient(hub *Hub, userID uuid.UUID, conn *websocket.Conn, logger echo.Log
 	}
 }
 
-func (client *Client) readPump() error {
+func (c *Client) readPump() error {
 	defer func() {
-		client.hub.Unregister(client)
-		client.conn.Close()
+		c.hub.Unregister(c)
+		c.conn.Close()
 	}()
-	client.conn.SetReadLimit(maxMessageSize)
+	c.conn.SetReadLimit(maxMessageSize)
 
-	if err := client.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
+	if err := c.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
 		return err
 	}
 
-	client.conn.SetPongHandler(func(string) error {
-		return client.conn.SetReadDeadline(time.Now().Add(pongWait))
+	c.conn.SetPongHandler(func(string) error {
+		return c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	})
 
 	for {
 		req := new(oapi.WsRequest)
-		if err := client.conn.ReadJSON(req); err != nil {
+		if err := c.conn.ReadJSON(req); err != nil {
 			if !websocket.IsCloseError(err) && !websocket.IsUnexpectedCloseError(err) {
 				return err
 			}
@@ -66,7 +66,7 @@ func (client *Client) readPump() error {
 			break
 		}
 
-		if err := client.hub.handleEvent(req); err != nil {
+		if err := c.hub.handleEvent(req); err != nil {
 			return err
 		}
 	}
@@ -74,47 +74,47 @@ func (client *Client) readPump() error {
 	return nil
 }
 
-func (client *Client) writePump() error {
+func (c *Client) writePump() error {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
-		client.conn.Close()
+		c.conn.Close()
 	}()
 
 	for {
 		select {
-		case message, ok := <-client.send:
-			if err := client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+		case message, ok := <-c.send:
+			if err := c.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
 				return err
 			}
 
 			if !ok {
-				if err := client.conn.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
+				if err := c.conn.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
 					return err
 				}
 
 				return nil
 			}
 
-			if err := client.conn.WriteJSON(message); err != nil {
+			if err := c.conn.WriteJSON(message); err != nil {
 				return err
 			}
 
 		case <-ticker.C:
-			if err := client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+			if err := c.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
 				return err
 			}
 
-			if err := client.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return err
 			}
 
-			res, err := client.hub.sendCardReset()
+			res, err := oapi.NewWsResponseCardReset()
 			if err != nil {
 				return err
 			}
 
-			if err := client.conn.WriteJSON(res); err != nil {
+			if err := c.conn.WriteJSON(res); err != nil {
 				return err
 			}
 		}
