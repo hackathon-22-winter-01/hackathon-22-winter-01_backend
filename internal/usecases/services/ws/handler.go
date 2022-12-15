@@ -32,7 +32,7 @@ func (h *Hub) handleEvent(req *oapi.WsRequest) error {
 			{PlayerId: uuid.New(), Life: 3},
 		}
 
-		res, err := h.sendGameStarted(cards, players)
+		res, err := oapi.NewWsResponseGameStarted(cards, players)
 		if err != nil {
 			return err
 		}
@@ -49,7 +49,7 @@ func (h *Hub) handleEvent(req *oapi.WsRequest) error {
 
 		switch b.Type {
 		case oapi.CardTypeCreateRail:
-			res, err := h.sendRailCreated()
+			res, err := oapi.NewWsResponseRailCreated()
 			if err != nil {
 				return err
 			}
@@ -57,7 +57,7 @@ func (h *Hub) handleEvent(req *oapi.WsRequest) error {
 			h.bloadcast(res)
 
 		case oapi.CardTypeCreateBlock:
-			res, err := h.sendBlockCreated()
+			res, err := oapi.NewWsResponseBlockCreated()
 			if err != nil {
 				return err
 			}
@@ -78,7 +78,7 @@ func (h *Hub) handleEvent(req *oapi.WsRequest) error {
 
 		switch b.Type {
 		case oapi.LifeEventTypeDecrement:
-			res, err := h.sendLifeChanged()
+			res, err := oapi.NewWsResponseLifeChanged()
 			if err != nil {
 				return err
 			}
@@ -92,7 +92,7 @@ func (h *Hub) handleEvent(req *oapi.WsRequest) error {
 		return nil
 
 	case oapi.WsRequestTypeRailMergeEvent:
-		res, err := h.sendRailMerged()
+		res, err := oapi.NewWsResponseRailMerged()
 		if err != nil {
 			return err
 		}

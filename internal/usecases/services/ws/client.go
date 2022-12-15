@@ -109,7 +109,7 @@ func (c *Client) writePump() error {
 				return err
 			}
 
-			res, err := c.hub.sendCardReset()
+			res, err := oapi.NewWsResponseCardReset()
 			if err != nil {
 				return err
 			}

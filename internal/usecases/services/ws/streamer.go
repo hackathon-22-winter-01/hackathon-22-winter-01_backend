@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/labstack/echo/v4"
 )
 
@@ -62,7 +63,7 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.U
 		}
 	}()
 
-	res, err := s.hub.sendConnected(userID)
+	res, err := oapi.NewWsResponseConnected(userID)
 	if err != nil {
 		return fmt.Errorf("failed to send connected: %w", err)
 	}
