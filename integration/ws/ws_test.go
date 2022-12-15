@@ -19,8 +19,8 @@ import (
 
 func TestWs(t *testing.T) {
 	var (
-		conns = make([]*websocket.Conn, n)
-		pids  = make([]uuid.UUID, n)
+		conns = make([]*websocket.Conn, consts.PlayerLimit)
+		pids  = make([]uuid.UUID, consts.PlayerLimit)
 		wg    = new(sync.WaitGroup)
 	)
 
