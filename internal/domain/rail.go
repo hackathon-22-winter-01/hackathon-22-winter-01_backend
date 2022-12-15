@@ -6,3 +6,10 @@ import "github.com/google/uuid"
 type Rail struct {
 	ID uuid.UUID
 }
+
+// NewRail 新しい路線を作成する
+func NewRail() *Rail {
+	return &Rail{
+		ID: uuid.New(),
+	}
+}
