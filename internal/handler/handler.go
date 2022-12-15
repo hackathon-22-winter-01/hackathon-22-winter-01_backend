@@ -74,3 +74,12 @@ func (h *Handler) CreateRoom(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, room)
 }
+
+func (h *Handler) GetRoom(c echo.Context, roomId oapi.RoomId) error {
+	room, err := h.r.FindRoom(roomId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+
+	return c.JSON(http.StatusOK, room)
+}
