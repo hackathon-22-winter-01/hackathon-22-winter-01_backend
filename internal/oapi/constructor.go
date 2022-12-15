@@ -1,19 +1,25 @@
 package oapi
 
-import "github.com/google/uuid"
+import (
+	"time"
 
-func WsResponseFromType(typ WsResponseType) *WsResponse {
+	"github.com/google/uuid"
+)
+
+func WsResponseFromType(typ WsResponseType, eventTime time.Time) *WsResponse {
 	return &WsResponse{
-		Type: typ,
+		Type:      typ,
+		EventTime: eventTime,
 	}
 }
 
-func NewWsResponseConnected(playerID uuid.UUID) (*WsResponse, error) {
+func NewWsResponseConnected(eventTime time.Time, playerID uuid.UUID) (*WsResponse, error) {
 	b := WsResponseBodyConnected{
 		PlayerId: playerID,
 	}
 
-	res := WsResponseFromType(WsResponseTypeConnected)
+	res := WsResponseFromType(WsResponseTypeConnected, eventTime)
+
 	if err := res.Body.FromWsResponseBodyConnected(b); err != nil {
 		return nil, err
 	}
@@ -21,13 +27,14 @@ func NewWsResponseConnected(playerID uuid.UUID) (*WsResponse, error) {
 	return res, nil
 }
 
-func NewWsResponseGameStarted(cards []Card, players []Player) (*WsResponse, error) {
+func NewWsResponseGameStarted(eventTime time.Time, cards []Card, players []Player) (*WsResponse, error) {
 	b := WsResponseBodyGameStarted{
 		Cards:   cards,
 		Players: players,
 	}
 
-	res := WsResponseFromType(WsResponseTypeGameStarted)
+	res := WsResponseFromType(WsResponseTypeGameStarted, eventTime)
+
 	if err := res.Body.FromWsResponseBodyGameStarted(b); err != nil {
 		return nil, err
 	}
@@ -35,10 +42,11 @@ func NewWsResponseGameStarted(cards []Card, players []Player) (*WsResponse, erro
 	return res, nil
 }
 
-func NewWsResponseLifeChanged() (*WsResponse, error) {
+func NewWsResponseLifeChanged(eventTime time.Time) (*WsResponse, error) {
 	b := WsResponseBodyLifeChanged{}
 
-	res := WsResponseFromType(WsResponseTypeLifeChanged)
+	res := WsResponseFromType(WsResponseTypeLifeChanged, eventTime)
+
 	if err := res.Body.FromWsResponseBodyLifeChanged(b); err != nil {
 		return nil, err
 	}
@@ -46,10 +54,11 @@ func NewWsResponseLifeChanged() (*WsResponse, error) {
 	return res, nil
 }
 
-func NewWsResponseCardReset() (*WsResponse, error) {
+func NewWsResponseCardReset(eventTime time.Time) (*WsResponse, error) {
 	b := WsResponseBodyCardReset{}
 
-	res := WsResponseFromType(WsResponseTypeCardReset)
+	res := WsResponseFromType(WsResponseTypeCardReset, eventTime)
+
 	if err := res.Body.FromWsResponseBodyCardReset(b); err != nil {
 		return nil, err
 	}
@@ -57,7 +66,7 @@ func NewWsResponseCardReset() (*WsResponse, error) {
 	return res, nil
 }
 
-func NewWsResponseRailCreated(railID, parentRailID, attackerID, targetID uuid.UUID) (*WsResponse, error) {
+func NewWsResponseRailCreated(eventTime time.Time, railID, parentRailID, attackerID, targetID uuid.UUID) (*WsResponse, error) {
 	b := WsResponseBodyRailCreated{
 		Id:         railID,
 		ParentId:   parentRailID,
@@ -65,7 +74,8 @@ func NewWsResponseRailCreated(railID, parentRailID, attackerID, targetID uuid.UU
 		TargetId:   targetID,
 	}
 
-	res := WsResponseFromType(WsResponseTypeRailCreated)
+	res := WsResponseFromType(WsResponseTypeRailCreated, eventTime)
+
 	if err := res.Body.FromWsResponseBodyRailCreated(b); err != nil {
 		return nil, err
 	}
@@ -73,10 +83,11 @@ func NewWsResponseRailCreated(railID, parentRailID, attackerID, targetID uuid.UU
 	return res, nil
 }
 
-func NewWsResponseRailMerged() (*WsResponse, error) {
+func NewWsResponseRailMerged(eventTime time.Time) (*WsResponse, error) {
 	b := WsResponseBodyRailMerged{}
 
-	res := WsResponseFromType(WsResponseTypeRailMerged)
+	res := WsResponseFromType(WsResponseTypeRailMerged, eventTime)
+
 	if err := res.Body.FromWsResponseBodyRailMerged(b); err != nil {
 		return nil, err
 	}
@@ -84,13 +95,14 @@ func NewWsResponseRailMerged() (*WsResponse, error) {
 	return res, nil
 }
 
-func NewWsResponseBlockCreated(attackerID uuid.UUID, targetID uuid.UUID) (*WsResponse, error) {
+func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, targetID uuid.UUID) (*WsResponse, error) {
 	b := WsResponseBodyBlockCreated{
 		AttackerId: attackerID,
 		TargetId:   targetID,
 	}
 
-	res := WsResponseFromType(WsResponseTypeBlockCreated)
+	res := WsResponseFromType(WsResponseTypeBlockCreated, eventTime)
+
 	if err := res.Body.FromWsResponseBodyBlockCreated(b); err != nil {
 		return nil, err
 	}
