@@ -48,7 +48,6 @@ func (r *roomRepository) JoinRoom(roomID uuid.UUID, player *domain.Player) error
 
 // よくわかっていない
 func (r *roomRepository) CreateRoom(player *domain.Player) (*domain.Room, error) {
-
 	roomID := uuid.New()
 
 	room := domain.NewRoom(roomID)
