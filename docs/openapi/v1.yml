@@ -25,6 +25,26 @@ paths:
             schema:
               $ref: "#/components/schemas/CreateRoomRequest"
         description: 部屋の情報
+  /rooms/join:
+    post:
+      summary: joinRoom
+      tags:
+        - rooms
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+      operationId: joinRoom
+      description: 部屋に参加する
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JoinRoomRequest"
+        description: 部屋の情報
   /ping:
     get:
       summary: GET /ping
@@ -168,6 +188,20 @@ components:
       required:
         - playerName
       description: 部屋を作成する際に送信するリクエスト
+    JoinRoomRequest:
+      title: JoinRoomRequest
+      type: object
+      properties:
+        roomId:
+          $ref: "#/components/schemas/RoomId"
+          description: 部屋のID
+        playerName:
+          type: string
+          description: プレイヤーの名前
+      required:
+        - roomId
+        - playerName
+      description: 部屋に参加する際に送信するリクエスト
     WsRequest:
       title: WsRequest
       type: object

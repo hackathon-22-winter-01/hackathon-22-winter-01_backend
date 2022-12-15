@@ -37,9 +37,25 @@ func (h *Handler) ConnectToWs(c echo.Context) error {
 
 func (h *Handler) JoinRoom(c echo.Context) error {
 
-	// req := new(oapi.Jo)
+	req := new(oapi.JoinRoomRequest)
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest)
+	}
 
-	return nil
+	userID := uuid.New()
+	player := domain.NewPlayer(userID, req.PlayerName)
+
+	err := h.r.JoinRoom(req.RoomId, player)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+
+	room, err := h.r.FindRoom(req.RoomId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+
+	return c.JSON(http.StatusOK, room)
 }
 
 func (h *Handler) CreateRoom(c echo.Context) error {

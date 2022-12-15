@@ -12,6 +12,9 @@ type ServerInterface interface {
 	// GET /ping
 	// (GET /ping)
 	Ping(ctx echo.Context) error
+	// joinRoom
+	// (POST /rooms/join)
+	JoinRoom(ctx echo.Context) error
 	// createRoom
 	// (POST /rooms/new)
 	CreateRoom(ctx echo.Context) error
@@ -31,6 +34,15 @@ func (w *ServerInterfaceWrapper) Ping(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.Ping(ctx)
+	return err
+}
+
+// JoinRoom converts echo context to params.
+func (w *ServerInterfaceWrapper) JoinRoom(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.JoinRoom(ctx)
 	return err
 }
 
@@ -81,6 +93,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.GET(baseURL+"/ping", wrapper.Ping)
+	router.POST(baseURL+"/rooms/join", wrapper.JoinRoom)
 	router.POST(baseURL+"/rooms/new", wrapper.CreateRoom)
 	router.GET(baseURL+"/ws", wrapper.ConnectToWs)
 

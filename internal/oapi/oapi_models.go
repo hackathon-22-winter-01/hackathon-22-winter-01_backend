@@ -62,6 +62,15 @@ type CreateRoomRequest struct {
 	PlayerName string `json:"playerName"`
 }
 
+// JoinRoomRequest 部屋に参加する際に送信するリクエスト
+type JoinRoomRequest struct {
+	// PlayerName プレイヤーの名前
+	PlayerName string `json:"playerName"`
+
+	// RoomId ルームUUID
+	RoomId RoomId `json:"roomId"`
+}
+
 // LifeEventType ライフに関するイベントの種類
 type LifeEventType string
 
@@ -245,6 +254,9 @@ type WsResponseBodyRailMerged struct {
 
 // WsResponseType イベントの種類
 type WsResponseType string
+
+// JoinRoomJSONRequestBody defines body for JoinRoom for application/json ContentType.
+type JoinRoomJSONRequestBody = JoinRoomRequest
 
 // CreateRoomJSONRequestBody defines body for CreateRoom for application/json ContentType.
 type CreateRoomJSONRequestBody = CreateRoomRequest
