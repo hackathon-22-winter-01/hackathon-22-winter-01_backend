@@ -12,7 +12,6 @@ import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository/repoimpl"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
-	"github.com/labstack/echo/v4"
 	"github.com/shiguredo/websocket"
 	"github.com/stretchr/testify/require"
 )
@@ -30,7 +29,7 @@ func TestWs(t *testing.T) {
 	// Streamerを起動
 	roomRepo := repoimpl.NewRoomRepository()
 	h := ws.NewHub(roomRepo)
-	s := ws.NewStreamer(h, echo.New().Logger) // TODO: loggerのためにechoを使っているのを直す
+	s := ws.NewStreamer(h)
 
 	// n個のクライアントをWebsocketに接続
 	for i := 0; i < consts.PlayerLimit; i++ {
