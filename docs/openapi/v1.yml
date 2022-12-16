@@ -270,7 +270,6 @@ components:
             - $ref: '#/components/schemas/WsRequestBodyGameStartEvent'
             - $ref: '#/components/schemas/WsRequestBodyLifeEvent'
             - $ref: '#/components/schemas/WsRequestBodyCardEvent'
-            - $ref: '#/components/schemas/WsRequestBodyRailMergeEvent'
           description: イベントの情報
       required:
         - type
@@ -283,7 +282,6 @@ components:
         - gameStartEvent
         - lifeEvent
         - cardEvent
-        - railMergeEvent
       description: イベントの種類
     WsRequestBodyGameStartEvent:
       title: WsRequestBodyGameStartEvent
@@ -317,18 +315,6 @@ components:
         - targetId
         - type
       description: カードに関するイベントの情報
-    WsRequestBodyRailMergeEvent:
-      title: WsRequestBodyRailMergeEvent
-      type: object
-      properties:
-        childId:
-          $ref: '#/components/schemas/RailId'
-        parentId:
-          $ref: '#/components/schemas/RailId'
-      required:
-        - childId
-        - parentId
-      description: レールのマージに関するイベントの情報
     WsResponse:
       title: WsResponse
       type: object
