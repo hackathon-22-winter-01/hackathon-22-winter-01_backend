@@ -13,8 +13,14 @@ import (
 
 // Defines values for CardType.
 const (
-	CardTypeCreateBlock CardType = "createBlock"
-	CardTypeCreateRail  CardType = "createRail"
+	CardTypeGalaxyBrain        CardType = "galaxyBrain"
+	CardTypeLgtm               CardType = "lgtm"
+	CardTypeOpenSourcerer      CardType = "openSourcerer"
+	CardTypePairExtraordinaire CardType = "pairExtraordinaire"
+	CardTypePullShark          CardType = "pullShark"
+	CardTypeRefactoring        CardType = "refactoring"
+	CardTypeStarstruck         CardType = "starstruck"
+	CardTypeYolo               CardType = "yolo"
 )
 
 // Defines values for LifeEventType.

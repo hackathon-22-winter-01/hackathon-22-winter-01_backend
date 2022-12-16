@@ -24,9 +24,9 @@ func (r *cardRepository) DrawCards(roomID uuid.UUID, playerID uuid.UUID, num int
 
 			switch i % 2 {
 			case 0:
-				typ = domain.CardTypeCreateRail
+				typ = domain.CardTypePullShark
 			case 1:
-				typ = domain.CardTypeCreateBlock
+				typ = domain.CardTypePairExtraordinaire
 			}
 
 			allCards = append(allCards, domain.NewCard(uuid.New(), typ))

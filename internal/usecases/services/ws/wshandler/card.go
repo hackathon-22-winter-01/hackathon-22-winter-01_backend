@@ -27,7 +27,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 	)
 
 	switch b.Type {
-	case oapi.CardTypeCreateRail:
+	case oapi.CardTypePullShark:
 		if l := len(target.Events); l > 0 {
 			lastEvent := target.Events[l-1]
 			beforeRails = lastEvent.AfterRails
@@ -39,8 +39,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 			return err
 		}
 
-	// TODO: Pair ExtraordinaireとLGTMで値を変える
-	case oapi.CardTypeCreateBlock:
+	case oapi.CardTypePairExtraordinaire:
 		if l := len(target.Events); l > 0 {
 			lastEvent := target.Events[l-1]
 			beforeRails = lastEvent.AfterRails
