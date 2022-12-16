@@ -116,15 +116,6 @@ func (c *Client) writePump() error {
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				log.L().Error("failed to write ping message", zap.Error(err))
 			}
-
-			res, err := oapi.NewWsResponseCardReset(time.Now())
-			if err != nil {
-				log.L().Error("failed to create card reset response", zap.Error(err))
-			}
-
-			if err := c.conn.WriteJSON(res); err != nil {
-				log.L().Error("failed to write json", zap.Error(err))
-			}
 		}
 	}
 }
