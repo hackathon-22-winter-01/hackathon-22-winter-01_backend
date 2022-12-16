@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
 )
 
@@ -41,32 +40,19 @@ func (h *wsHandler) handleLifeEvent(body oapi.WsRequest_Body) error {
 		b.Diff,
 	))
 
-	switch b.Type {
-	case oapi.LifeEventTypeDamaged:
-		life := consts.MaxLife
+	life := domain.CalculateLife(target.LifeEvents)
 
-		for _, e := range target.LifeEvents {
-			if e.Type == domain.LifeEventTypeDamaged {
-				life-- // TODO: diffを考慮する
-			}
-		}
+	// TODO: 実装
+	// if life <= 0 {
+	// }
 
-		// TODO: ライフが0になったらゲームオーバー
+	res, err := oapi.NewWsResponseLifeChanged(now, h.playerID, life)
+	if err != nil {
+		return err
+	}
 
-		res, err := oapi.NewWsResponseLifeChanged(now, h.playerID, life)
-		if err != nil {
-			return err
-		}
-
-		if err := h.sender.Broadcast(h.room.ID, res); err != nil {
-			return err
-		}
-
-	case oapi.LifeEventTypeHealed:
-		// TODO: impl
-
-	default:
-		return errors.New("invalid life type")
+	if err := h.sender.Broadcast(h.room.ID, res); err != nil {
+		return err
 	}
 
 	return nil
