@@ -198,8 +198,8 @@ components:
         #     $ref: '#/components/schemas/Block'
         #   description: プレイヤーのブロックのリスト
         life:
-          type: integer
-          maximum: 3
+          type: number
+          maximum: 100
           minimum: 0
           description: プレイヤーのライフ
       required:
@@ -393,8 +393,8 @@ components:
         playerId:
           $ref: '#/components/schemas/PlayerId'
         new:
-          type: integer
-          maximum: 3
+          type: number
+          maximum: 100
           minimum: 0
           description: 変動後のライフ
       required:

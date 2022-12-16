@@ -87,7 +87,7 @@ type Player struct {
 	Id PlayerId `json:"id"`
 
 	// Life プレイヤーのライフ
-	Life int `json:"life"`
+	Life float32 `json:"life"`
 
 	// MainRail レール情報
 	MainRail Rail `json:"mainRail"`
@@ -241,7 +241,7 @@ type WsResponseBodyGameStarted struct {
 // WsResponseBodyLifeChanged ライフの変動情報
 type WsResponseBodyLifeChanged struct {
 	// New 変動後のライフ
-	New int `json:"new"`
+	New float32 `json:"new"`
 
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
