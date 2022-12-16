@@ -64,6 +64,8 @@ func (c *Client) readPump() error {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				return err
 			}
+
+			break
 		}
 
 		if len(req.Type) == 0 {
@@ -74,6 +76,8 @@ func (c *Client) readPump() error {
 			log.L().Error("failed to handle event", zap.Error(err), zap.String("eventType", string(req.Type)))
 		}
 	}
+
+	return nil
 }
 
 func (c *Client) writePump() error {
