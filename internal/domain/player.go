@@ -4,12 +4,13 @@ import "github.com/google/uuid"
 
 // Player 対戦部屋内の各プレイヤーの情報
 type Player struct {
-	ID         uuid.UUID
-	Name       string
-	Main       *Rail
-	Cards      []*Card
-	RailEvents []*RailEvent
-	LifeEvents []*LifeEvent
+	ID          uuid.UUID
+	Name        string
+	Main        *Rail
+	Cards       []*Card
+	BlockEvents []*BlockEvent
+	RailEvents  []*RailEvent
+	LifeEvents  []*LifeEvent
 }
 
 // NewPlayer 新しいプレイヤーを作成する

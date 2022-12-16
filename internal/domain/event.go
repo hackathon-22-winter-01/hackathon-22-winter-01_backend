@@ -21,6 +21,7 @@ type BlockEvent struct {
 	AttackerID   uuid.UUID
 	TargetID     uuid.UUID
 	TargetRailID uuid.UUID
+	// TODO: attack, block
 }
 
 func NewBlockEvent(id uuid.UUID, cardType CardType, attackerID, targetID, targetRailID uuid.UUID) *BlockEvent {

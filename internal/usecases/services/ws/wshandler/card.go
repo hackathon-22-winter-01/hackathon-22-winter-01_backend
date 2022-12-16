@@ -3,11 +3,11 @@ package wshandler
 import (
 	"errors"
 	"math/rand"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
 )
 
 func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
@@ -21,124 +21,200 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		return errors.New("player not found")
 	}
 
-	var (
-		afterRails = []*domain.Rail{target.Main}
-		res        *oapi.WsResponse
-	)
-
-	if l := len(target.RailEvents); l > 0 {
-		lastEvent := target.RailEvents[l-1]
-		afterRails = lastEvent.AfterRails
+	fmap := map[oapi.CardType]func(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error){
+		oapi.CardTypeYolo:               h.handleYolo,
+		oapi.CardTypeGalaxyBrain:        h.handleGalaxyBrain,
+		oapi.CardTypeOpenSourcerer:      h.handleOpenSourcerer,
+		oapi.CardTypeRefactoring:        h.handleRefactoring,
+		oapi.CardTypePairExtraordinaire: h.handlePairExtraordinaire,
+		oapi.CardTypeLgtm:               h.handleLgtm,
+		oapi.CardTypePullShark:          h.handlePullShark,
+		oapi.CardTypeStarstruck:         h.handleStarstruck,
 	}
 
-	switch b.Type {
-	case oapi.CardTypeYolo:
-		var childID uuid.UUID
+	f, ok := fmap[b.Type]
+	if !ok {
+		return errors.New("存在しないカードです")
+	}
 
-		rails := []*domain.Rail{}
-		copy(rails, afterRails)
-
-		rand.Shuffle(len(rails), func(i, j int) { rails[i], rails[j] = rails[j], rails[i] })
-
-		for _, rail := range rails {
-			if rail.ID != target.Main.ID && !rail.HasBlock {
-				childID = rail.ID
-				break
-			}
-		}
-
-		if childID == uuid.Nil {
-			res = oapi.WsResponseFromType(oapi.WsResponseTypeNoop, jst.Now())
-
-			break
-		}
-
-		for _, rail := range rails {
-			if rail.ID != childID {
-				afterRails = append(afterRails, rail)
-			}
-		}
-
-		res, err = oapi.NewWsResponseRailMerged(jst.Now(), childID, target.Main.ID, b.TargetId)
-		if err != nil {
-			return err
-		}
-
-	case oapi.CardTypeGalaxyBrain:
-		res = oapi.WsResponseFromType(oapi.WsResponseTypeNoop, jst.Now())
-
-	case oapi.CardTypeOpenSourcerer:
-		p, ok := h.room.FindPlayer(h.playerID)
-		if !ok {
-			return errors.New("player not found")
-		}
-
-		now := jst.Now()
-		p.LifeEvents = append(p.LifeEvents, domain.NewLifeEvent(
-			uuid.New(),
-			domain.CardTypeOpenSourcerer,
-			domain.LifeEventTypeHealed,
-			30,
-			now,
-		))
-
-		res, err = oapi.NewWsResponseLifeChanged(now, h.playerID, domain.CalculateLife(p.LifeEvents))
-		if err != nil {
-			return err
-		}
-
-	case oapi.CardTypeRefactoring:
-		if h.playerID != b.TargetId {
-			return errors.New("targetID is different from playerID")
-		}
-
-		res, err = oapi.NewWsResponseBlockCreated(jst.Now(), h.playerID, b.TargetId, 1, 5)
-		if err != nil {
-			return err
-		}
-
-	case oapi.CardTypePairExtraordinaire:
-		res, err = oapi.NewWsResponseBlockCreated(jst.Now(), h.playerID, b.TargetId, 2, 30)
-		if err != nil {
-			return err
-		}
-
-	case oapi.CardTypeLgtm:
-		res, err = oapi.NewWsResponseBlockCreated(jst.Now(), h.playerID, b.TargetId, 3, 20)
-		if err != nil {
-			return err
-		}
-
-	case oapi.CardTypePullShark:
-		afterRails = append(afterRails, domain.NewRail())
-
-		res, err = oapi.NewWsResponseRailCreated(jst.Now(), uuid.New(), target.Main.ID, h.playerID, b.TargetId)
-		if err != nil {
-			return err
-		}
-
-	case oapi.CardTypeStarstruck:
-		res, err = oapi.NewWsResponseBlockCreated(jst.Now(), h.playerID, b.TargetId, 5, 50)
-		if err != nil {
-			return err
-		}
-
-	default:
-		return errors.New("invalid card type")
+	res, err := f(b, time.Now(), target)
+	if err != nil {
+		return err
 	}
 
 	if err := h.sender.Broadcast(h.room.ID, res); err != nil {
 		return err
 	}
 
-	target.RailEvents = append(target.RailEvents, domain.NewRailEvent(
+	return nil
+}
+
+func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	rails := []*domain.Rail{targetPlayer.Main}
+	if l := len(targetPlayer.RailEvents); l > 0 {
+		rails = targetPlayer.RailEvents[l-1].AfterRails
+	}
+
+	shuffledRails := []*domain.Rail{}
+	copy(shuffledRails, rails)
+
+	rand.Shuffle(len(shuffledRails), func(i, j int) {
+		shuffledRails[i], shuffledRails[j] = shuffledRails[j], shuffledRails[i]
+	})
+
+	var childID uuid.UUID
+
+	for _, rail := range shuffledRails {
+		if rail.ID != targetPlayer.Main.ID && !rail.HasBlock {
+			childID = rail.ID
+			break
+		}
+	}
+
+	if childID == uuid.Nil {
+		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
+	}
+
+	afterRails := make([]*domain.Rail, 0, len(rails)-1)
+
+	for _, rail := range rails {
+		if rail.ID != childID {
+			afterRails = append(afterRails, rail)
+		}
+	}
+
+	targetPlayer.RailEvents = append(targetPlayer.RailEvents, domain.NewRailEvent(
 		uuid.New(),
-		domain.CardTypeYolo,     // TODO: とは限らない
-		domain.RailEventCreated, // TODO: とは限らないのでBlockEvent, LifeEvent, RailEventに分ける
-		h.playerID,
-		target.ID,
+		domain.CardTypeYolo,
+		domain.RailEventCreated,
+		targetPlayer.Main.ID,
+		childID,
 		afterRails,
 	))
 
-	return nil
+	res, err := oapi.NewWsResponseRailMerged(now, childID, targetPlayer.Main.ID, h.playerID)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (h *wsHandler) handleGalaxyBrain(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	// TODO: 何かしらのイベントを追加したい
+	res := oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now)
+
+	return res, nil
+}
+
+func (h *wsHandler) handleOpenSourcerer(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	targetPlayer.LifeEvents = append(targetPlayer.LifeEvents, domain.NewLifeEvent(
+		uuid.New(),
+		domain.CardTypeOpenSourcerer,
+		domain.LifeEventTypeHealed,
+		30,
+		now,
+	))
+
+	res, err := oapi.NewWsResponseLifeChanged(now, h.playerID, domain.CalculateLife(targetPlayer.LifeEvents))
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	if h.playerID != targetPlayer.ID {
+		return nil, errors.New("targetID is different from playerID")
+	}
+
+	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
+		uuid.New(),
+		domain.CardTypeRefactoring,
+		h.playerID,
+		targetPlayer.ID,
+		reqbody.TargetId,
+	))
+
+	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, 1, 5)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
+		uuid.New(),
+		domain.CardTypePairExtraordinaire,
+		h.playerID,
+		targetPlayer.ID,
+		reqbody.TargetId,
+	))
+
+	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, 2, 30)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
+		uuid.New(),
+		domain.CardTypeLgtm,
+		h.playerID,
+		targetPlayer.ID,
+		reqbody.TargetId,
+	))
+
+	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, 3, 20)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	afterRails := []*domain.Rail{targetPlayer.Main}
+	if l := len(targetPlayer.RailEvents); l > 0 {
+		afterRails = append(targetPlayer.RailEvents[l-1].AfterRails, domain.NewRail())
+	}
+
+	targetPlayer.RailEvents = append(targetPlayer.RailEvents, domain.NewRailEvent(
+		uuid.New(),
+		domain.CardTypePullShark,
+		domain.RailEventCreated,
+		h.playerID,
+		targetPlayer.ID,
+		afterRails,
+	))
+
+	res, err := oapi.NewWsResponseRailCreated(now, uuid.New(), targetPlayer.Main.ID, h.playerID, targetPlayer.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
+		uuid.New(),
+		domain.CardTypeLgtm,
+		h.playerID,
+		targetPlayer.ID,
+		reqbody.TargetId,
+	))
+
+	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, 5, 50)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
