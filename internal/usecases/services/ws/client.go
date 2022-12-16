@@ -42,10 +42,7 @@ func NewClient(hub *Hub, userID uuid.UUID, conn *websocket.Conn) *Client {
 }
 
 func (c *Client) readPump() error {
-	defer func() {
-		c.hub.Unregister(c)
-		c.conn.Close()
-	}()
+	defer c.hub.Unregister(c)
 	c.conn.SetReadLimit(maxMessageSize)
 
 	if err := c.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
@@ -66,13 +63,23 @@ func (c *Client) readPump() error {
 	for {
 		req := new(oapi.WsRequest)
 		if err := c.conn.ReadJSON(req); err != nil {
-			return err
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				return err
+			}
+
+			break
+		}
+
+		if len(req.Type) == 0 {
+			continue
 		}
 
 		if err := wh.HandleEvent(req); err != nil {
-			log.L().Error("failed to handle event", zap.Error(err))
+			log.L().Error("failed to handle event", zap.Error(err), zap.String("eventType", string(req.Type)))
 		}
 	}
+
+	return nil
 }
 
 func (c *Client) writePump() error {
