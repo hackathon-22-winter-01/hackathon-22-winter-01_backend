@@ -2,7 +2,6 @@ package repoimpl
 
 import (
 	"errors"
-	"log"
 
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
@@ -31,10 +30,9 @@ func (r *roomRepository) FindRoom(roomID uuid.UUID) (*domain.Room, error) {
 }
 
 func (r *roomRepository) JoinRoom(roomID uuid.UUID, player *domain.Player) error {
-	// TODO: ここでroomMapにroomIDが存在しない場合はエラーを返す
-	room, ok := r.roomMap.LoadOrStore(roomID, domain.NewRoom(roomID))
+	room, ok := r.roomMap.Load(roomID)
 	if !ok {
-		log.Println("部屋が存在しないので作成しました。本来はエラーを返すべきです。")
+		return errors.New("部屋が存在しません")
 	}
 
 	if len(room.Players) >= consts.PlayerLimit {
