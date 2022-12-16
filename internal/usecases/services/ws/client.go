@@ -6,7 +6,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws/wshandler"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/log"
 	"github.com/shiguredo/websocket"
+	"go.uber.org/zap"
 )
 
 const (
@@ -59,19 +61,13 @@ func (c *Client) readPump() error {
 	for {
 		req := new(oapi.WsRequest)
 		if err := c.conn.ReadJSON(req); err != nil {
-			if !websocket.IsCloseError(err) && !websocket.IsUnexpectedCloseError(err) {
-				return err
-			}
-
-			break
+			return err
 		}
 
 		if err := wh.HandleEvent(req); err != nil {
-			return err
+			log.L().Error("failed to handle event", zap.Error(err))
 		}
 	}
-
-	return nil
 }
 
 func (c *Client) writePump() error {
@@ -85,37 +81,37 @@ func (c *Client) writePump() error {
 		select {
 		case message, ok := <-c.send:
 			if err := c.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
-				return err
+				log.L().Error("failed to set write deadline", zap.Error(err))
 			}
 
 			if !ok {
 				if err := c.conn.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
-					return err
+					log.L().Error("failed to write close message", zap.Error(err))
 				}
 
 				return nil
 			}
 
 			if err := c.conn.WriteJSON(message); err != nil {
-				return err
+				log.L().Error("failed to write json", zap.Error(err))
 			}
 
 		case <-ticker.C:
 			if err := c.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
-				return err
+				log.L().Error("failed to set write deadline", zap.Error(err))
 			}
 
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				return err
+				log.L().Error("failed to write ping message", zap.Error(err))
 			}
 
 			res, err := oapi.NewWsResponseCardReset(time.Now())
 			if err != nil {
-				return err
+				log.L().Error("failed to create card reset response", zap.Error(err))
 			}
 
 			if err := c.conn.WriteJSON(res); err != nil {
-				return err
+				log.L().Error("failed to write json", zap.Error(err))
 			}
 		}
 	}
