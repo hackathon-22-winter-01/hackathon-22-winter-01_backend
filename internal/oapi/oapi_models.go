@@ -76,14 +76,14 @@ type LifeEventType string
 
 // Player プレイヤー情報
 type Player struct {
+	// Id プレイヤーUUID
+	Id PlayerId `json:"id"`
+
 	// Life プレイヤーのライフ
 	Life int `json:"life"`
 
 	// MainRail レール情報
 	MainRail Rail `json:"mainRail"`
-
-	// PlayerId プレイヤーUUID
-	PlayerId PlayerId `json:"playerId"`
 
 	// Rails プレイヤーのレールのリスト
 	Rails []Rail `json:"rails"`
@@ -103,14 +103,14 @@ type RailId = openapi_types.UUID
 
 // Room defines model for Room.
 type Room struct {
-	// Players プレイヤーのリスト
-	Players *[]Player `json:"players,omitempty"`
+	// Id ルームUUID
+	Id RoomId `json:"id"`
 
-	// RoomId ルームUUID
-	RoomId *RoomId `json:"roomId,omitempty"`
+	// Players プレイヤーのリスト
+	Players []Player `json:"players"`
 
 	// StartedAt ゲーム開始時刻
-	StartedAt *string `json:"startedAt,omitempty"`
+	StartedAt string `json:"startedAt"`
 }
 
 // RoomId ルームUUID

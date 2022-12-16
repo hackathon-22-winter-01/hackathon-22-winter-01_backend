@@ -30,7 +30,7 @@ func PlayerFromDomain(dp *domain.Player) Player {
 	}
 
 	return Player{
-		PlayerId: dp.ID,
+		Id:       dp.ID,
 		Life:     life,
 		MainRail: Rail{Id: dp.Main.ID},
 		Rails:    rails,

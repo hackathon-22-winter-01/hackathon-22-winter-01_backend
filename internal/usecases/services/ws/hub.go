@@ -38,12 +38,12 @@ func (h *Hub) Run() {
 	for {
 		select {
 		case client := <-h.registerCh:
-			log.L().Info("new client has registered", zap.Stringer("userID", client.userID))
-			h.clients.LoadOrStore(client.userID, client)
+			log.L().Info("new client has registered", zap.Stringer("playerID", client.playerID))
+			h.clients.LoadOrStore(client.playerID, client)
 		case client := <-h.unregisterCh:
-			log.L().Info("a client has unregistered", zap.Stringer("userID", client.userID))
+			log.L().Info("a client has unregistered", zap.Stringer("playerID", client.playerID))
 			close(client.send)
-			h.clients.Delete(client.userID)
+			h.clients.Delete(client.playerID)
 		}
 	}
 }

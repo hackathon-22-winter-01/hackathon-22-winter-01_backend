@@ -148,7 +148,7 @@ components:
       title: Room
       type: object
       properties:
-        roomId:
+        id:
           $ref: '#/components/schemas/RoomId'
         players:
           type: array
@@ -158,11 +158,15 @@ components:
         startedAt:
           type: string
           description: ゲーム開始時刻
+      required:
+        - id
+        - players
+        - startedAt
     Player:
       title: Player
       type: object
       properties:
-        playerId:
+        id:
           $ref: '#/components/schemas/PlayerId'
         mainRail:
           $ref: '#/components/schemas/Rail'
@@ -184,7 +188,7 @@ components:
           minimum: 0
           description: プレイヤーのライフ
       required:
-        - playerId
+        - id
         - mainRail
         - rails
         # - blocks

@@ -85,7 +85,7 @@ func TestWs(t *testing.T) {
 		require.Len(t, resbody.Cards, 5) // ここではCardsの中身は問わない
 		require.Len(t, resbody.Players, consts.PlayerLimit)
 		for j, p := range resbody.Players {
-			require.Equal(t, pids[j], p.PlayerId)
+			require.Equal(t, pids[j], p.Id)
 			require.Equal(t, consts.MaxLife, p.Life)
 
 			// レールを記録しておく

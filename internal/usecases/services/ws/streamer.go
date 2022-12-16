@@ -41,13 +41,13 @@ func (s *streamer) Run() {
 	go s.hub.Run()
 }
 
-func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.UUID) error {
+func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, playerID uuid.UUID) error {
 	conn, err := s.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return fmt.Errorf("failed to upgrade the HTTP server connection to the WebSocket protocol: %w", err)
 	}
 
-	client, err := s.addNewClient(userID, conn)
+	client, err := s.addNewClient(playerID, conn)
 	if err != nil {
 		return fmt.Errorf("failed to add new client: %w", err)
 	}
@@ -63,7 +63,7 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.U
 		}
 	}()
 
-	res, err := oapi.NewWsResponseConnected(jst.Now(), userID)
+	res, err := oapi.NewWsResponseConnected(jst.Now(), playerID)
 	if err != nil {
 		return fmt.Errorf("failed to send connected: %w", err)
 	}
@@ -73,10 +73,10 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.U
 	return nil
 }
 
-func (s *streamer) addNewClient(userID uuid.UUID, conn *websocket.Conn) (*Client, error) {
-	client := NewClient(s.hub, userID, conn)
+func (s *streamer) addNewClient(playerID uuid.UUID, conn *websocket.Conn) (*Client, error) {
+	client := NewClient(s.hub, playerID, conn)
 	s.hub.Register(client)
-	s.hub.clients.LoadOrStore(userID, client)
+	s.hub.clients.LoadOrStore(playerID, client)
 
 	return client, nil
 }
