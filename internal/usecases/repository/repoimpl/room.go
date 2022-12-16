@@ -49,7 +49,7 @@ func (r *roomRepository) CreateRoom(player *domain.Player) (*domain.Room, error)
 
 	room := domain.NewRoom(roomID)
 
-	room.Players[0] = player
+	room.Players = []*domain.Player{player}
 
 	_, ok := r.roomMap.LoadOrStore(roomID, room)
 
