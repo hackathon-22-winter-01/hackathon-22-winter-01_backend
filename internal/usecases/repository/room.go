@@ -5,6 +5,7 @@ import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 )
 
+// TODO: 消す
 var CommonRoomID = uuid.New()
 
 type RoomRepository interface {
