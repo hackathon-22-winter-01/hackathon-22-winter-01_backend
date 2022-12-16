@@ -67,6 +67,13 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		}
 
 	case oapi.CardTypeGalaxyBrain:
+		if l := len(target.Events); l > 0 {
+			lastEvent := target.Events[l-1]
+			beforeRails = lastEvent.AfterRails
+			afterRails = lastEvent.AfterRails
+		}
+
+		res = oapi.WsResponseFromType(oapi.WsResponseTypeNoop, jst.Now())
 		return nil
 
 	case oapi.CardTypeOpenSourcerer:
