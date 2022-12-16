@@ -27,9 +27,8 @@ func NewWsResponseConnected(eventTime time.Time, playerID uuid.UUID) (*WsRespons
 	return res, nil
 }
 
-func NewWsResponseGameStarted(eventTime time.Time, cards []Card, players []Player) (*WsResponse, error) {
+func NewWsResponseGameStarted(eventTime time.Time, players []Player) (*WsResponse, error) {
 	b := WsResponseBodyGameStarted{
-		Cards:   cards,
 		Players: players,
 	}
 
