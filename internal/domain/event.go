@@ -15,6 +15,27 @@ type commonEvent struct {
 	CreatedAt time.Time
 }
 
+// BlockEvent 妨害イベントの情報
+type BlockEvent struct {
+	commonEvent
+	AttackerID   uuid.UUID
+	TargetID     uuid.UUID
+	TargetRailID uuid.UUID
+}
+
+func NewBlockEvent(id uuid.UUID, attackerID, targetID, targetRailID uuid.UUID) *BlockEvent {
+	return &BlockEvent{
+		commonEvent: commonEvent{
+			ID: id,
+			// TODO: CardType
+			CreatedAt: jst.Now(),
+		},
+		AttackerID:   attackerID,
+		TargetID:     targetID,
+		TargetRailID: targetRailID,
+	}
+}
+
 // LifeEvent プレイヤーのライフに関する情報
 type LifeEvent struct {
 	commonEvent
