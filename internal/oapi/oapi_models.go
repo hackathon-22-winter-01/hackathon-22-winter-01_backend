@@ -225,9 +225,6 @@ type WsResponseBodyConnected struct {
 
 // WsResponseBodyGameStarted ゲーム開始時の情報
 type WsResponseBodyGameStarted struct {
-	// Cards ゲーム開始時のカードのリスト
-	Cards []Card `json:"cards"`
-
 	// Players 各プレイヤーの情報
 	Players []Player `json:"players"`
 }

@@ -13,16 +13,14 @@ type Hub struct {
 	registerCh   chan *Client
 	unregisterCh chan *Client
 	roomRepo     repository.RoomRepository
-	cardRepo     repository.CardRepository
 }
 
-func NewHub(roomRepo repository.RoomRepository, cardRepo repository.CardRepository) *Hub {
+func NewHub(roomRepo repository.RoomRepository) *Hub {
 	return &Hub{
 		clients:      sync.Map[uuid.UUID, *Client]{},
 		registerCh:   make(chan *Client),
 		unregisterCh: make(chan *Client),
 		roomRepo:     roomRepo,
-		cardRepo:     cardRepo,
 	}
 }
 
