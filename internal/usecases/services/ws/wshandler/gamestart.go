@@ -35,6 +35,8 @@ func (h *wsHandler) handleGameStartEvent(body oapi.WsRequest_Body) error {
 		return res, nil
 	}
 
+	h.room.StartedAt = jst.Now()
+
 	if err := h.sender.BroadcastDynamic(h.room.ID, resFunc); err != nil {
 		return err
 	}
