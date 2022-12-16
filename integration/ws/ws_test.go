@@ -156,6 +156,8 @@ func TestWs(t *testing.T) {
 			require.Equal(t, oapi.WsResponseBodyBlockCreated{
 				AttackerId: pids[1],
 				TargetId:   pids[0],
+				Delay:      2,
+				Attack:     30,
 			}, resbody)
 		})
 	})
