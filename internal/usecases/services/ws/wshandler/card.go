@@ -76,7 +76,29 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		res = oapi.WsResponseFromType(oapi.WsResponseTypeNoop, jst.Now())
 
 	case oapi.CardTypeOpenSourcerer:
-		return nil
+		if l := len(target.Events); l > 0 {
+			lastEvent := target.Events[l-1]
+			beforeRails = lastEvent.AfterRails
+			afterRails = lastEvent.AfterRails
+		}
+
+		p, ok := h.room.FindPlayer(h.playerID)
+		if !ok {
+			return errors.New("player not found")
+		}
+
+		now := jst.Now()
+		p.LifeEvents = append(p.LifeEvents, domain.NewLifeEvent(
+			uuid.New(),
+			domain.LifeEventTypeHealed,
+			30,
+			now,
+		))
+
+		res, err = oapi.NewWsResponseLifeChanged(now, h.playerID, domain.CalculateLife(p.LifeEvents))
+		if err != nil {
+			return err
+		}
 
 	case oapi.CardTypeRefactoring:
 		if l := len(target.Events); l > 0 {
