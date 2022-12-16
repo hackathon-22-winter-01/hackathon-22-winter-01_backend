@@ -27,17 +27,17 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 	)
 
 	switch b.Type {
-	case oapi.CardTypePullShark:
-		if l := len(target.Events); l > 0 {
-			lastEvent := target.Events[l-1]
-			beforeRails = lastEvent.AfterRails
-			afterRails = append(beforeRails, domain.NewRail())
-		}
+	case oapi.CardTypeYolo:
+		return nil
 
-		res, err = oapi.NewWsResponseRailCreated(jst.Now(), uuid.New(), target.Main.ID, h.playerID, b.TargetId)
-		if err != nil {
-			return err
-		}
+	case oapi.CardTypeGalaxyBrain:
+		return nil
+
+	case oapi.CardTypeOpenSourcerer:
+		return nil
+
+	case oapi.CardTypeRefactoring:
+		return nil
 
 	case oapi.CardTypePairExtraordinaire:
 		if l := len(target.Events); l > 0 {
@@ -50,6 +50,24 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		if err != nil {
 			return err
 		}
+
+	case oapi.CardTypeLgtm:
+		return nil
+
+	case oapi.CardTypePullShark:
+		if l := len(target.Events); l > 0 {
+			lastEvent := target.Events[l-1]
+			beforeRails = lastEvent.AfterRails
+			afterRails = append(beforeRails, domain.NewRail())
+		}
+
+		res, err = oapi.NewWsResponseRailCreated(jst.Now(), uuid.New(), target.Main.ID, h.playerID, b.TargetId)
+		if err != nil {
+			return err
+		}
+
+	case oapi.CardTypeStarstruck:
+		return nil
 
 	default:
 		return errors.New("invalid card type")
