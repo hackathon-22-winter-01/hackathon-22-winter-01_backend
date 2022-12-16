@@ -57,6 +57,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 			beforeRails = lastEvent.AfterRails
 			afterRails = lastEvent.AfterRails
 		}
+
 		res, err = oapi.NewWsResponseBlockCreated(jst.Now(), h.playerID, b.TargetId, 3, 20)
 		if err != nil {
 			return err
