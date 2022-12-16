@@ -35,6 +35,7 @@ func (h *wsHandler) handleLifeEvent(body oapi.WsRequest_Body) error {
 	now := jst.Now()
 	target.LifeEvents = append(target.LifeEvents, domain.NewLifeEvent(
 		uuid.New(),
+		domain.CardTypeNone,
 		typ,
 		b.Diff,
 		now,

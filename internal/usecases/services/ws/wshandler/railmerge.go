@@ -9,6 +9,7 @@ import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
 )
 
+// TODO: 呼ばれないので消す
 func (h *wsHandler) handleRailMergeEvent(body oapi.WsRequest_Body) error {
 	b, err := body.AsWsRequestBodyRailMergeEvent()
 	if err != nil {
@@ -48,6 +49,7 @@ func (h *wsHandler) handleRailMergeEvent(body oapi.WsRequest_Body) error {
 
 	target.RailEvents = append(target.RailEvents, domain.NewRailEvent(
 		uuid.New(),
+		domain.CardTypeNone,
 		domain.RailEventMerged,
 		uuid.Nil,
 		h.playerID,

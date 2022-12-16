@@ -78,6 +78,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		now := jst.Now()
 		p.LifeEvents = append(p.LifeEvents, domain.NewLifeEvent(
 			uuid.New(),
+			domain.CardTypeOpenSourcerer,
 			domain.LifeEventTypeHealed,
 			30,
 			now,
@@ -134,6 +135,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 
 	target.RailEvents = append(target.RailEvents, domain.NewRailEvent(
 		uuid.New(),
+		domain.CardTypeYolo,     // TODO: とは限らない
 		domain.RailEventCreated, // TODO: とは限らないのでBlockEvent, LifeEvent, RailEventに分ける
 		h.playerID,
 		target.ID,

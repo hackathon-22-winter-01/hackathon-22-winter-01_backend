@@ -23,11 +23,11 @@ type BlockEvent struct {
 	TargetRailID uuid.UUID
 }
 
-func NewBlockEvent(id uuid.UUID, attackerID, targetID, targetRailID uuid.UUID) *BlockEvent {
+func NewBlockEvent(id uuid.UUID, cardType CardType, attackerID, targetID, targetRailID uuid.UUID) *BlockEvent {
 	return &BlockEvent{
 		commonEvent: commonEvent{
-			ID: id,
-			// TODO: CardType
+			ID:        id,
+			CardType:  cardType,
 			CreatedAt: jst.Now(),
 		},
 		AttackerID:   attackerID,
@@ -52,11 +52,11 @@ const (
 	LifeEventTypeHealed
 )
 
-func NewLifeEvent(id uuid.UUID, typ LifeEventType, diff float32, createdAt time.Time) *LifeEvent {
+func NewLifeEvent(id uuid.UUID, cardType CardType, typ LifeEventType, diff float32, createdAt time.Time) *LifeEvent {
 	return &LifeEvent{
 		commonEvent: commonEvent{
-			ID: id,
-			// TODO: CardType
+			ID:        id,
+			CardType:  cardType,
 			CreatedAt: jst.Now(),
 		},
 		Type: typ,
@@ -101,11 +101,11 @@ const (
 	RailEventMerged
 )
 
-func NewRailEvent(id uuid.UUID, typ RailEventType, attackerID, targetID uuid.UUID, beforeRails, afterRails []*Rail) *RailEvent {
+func NewRailEvent(id uuid.UUID, cardType CardType, typ RailEventType, attackerID, targetID uuid.UUID, beforeRails, afterRails []*Rail) *RailEvent {
 	return &RailEvent{
 		commonEvent: commonEvent{
-			ID: id,
-			// TODO: CardType
+			ID:        id,
+			CardType:  cardType,
 			CreatedAt: jst.Now(),
 		},
 		Type:        typ,
