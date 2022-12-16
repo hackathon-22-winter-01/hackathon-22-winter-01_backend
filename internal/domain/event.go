@@ -5,7 +5,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
 )
 
 // commonEvent 共通のイベント情報
@@ -25,12 +24,12 @@ type BlockEvent struct {
 	Attack       int
 }
 
-func NewBlockEvent(id uuid.UUID, cardType CardType, attackerID, targetID, targetRailID uuid.UUID, delay int, attack int) *BlockEvent {
+func NewBlockEvent(id uuid.UUID, cardType CardType, createdAt time.Time, attackerID, targetID, targetRailID uuid.UUID, delay int, attack int) *BlockEvent {
 	return &BlockEvent{
 		commonEvent: commonEvent{
 			ID:        id,
 			CardType:  cardType,
-			CreatedAt: jst.Now(),
+			CreatedAt: createdAt,
 		},
 		AttackerID:   attackerID,
 		TargetID:     targetID,
@@ -56,12 +55,12 @@ const (
 	LifeEventTypeHealed
 )
 
-func NewLifeEvent(id uuid.UUID, cardType CardType, typ LifeEventType, diff float32, createdAt time.Time) *LifeEvent {
+func NewLifeEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ LifeEventType, diff float32) *LifeEvent {
 	return &LifeEvent{
 		commonEvent: commonEvent{
 			ID:        id,
 			CardType:  cardType,
-			CreatedAt: jst.Now(),
+			CreatedAt: createdAt,
 		},
 		Type: typ,
 		Diff: diff,
@@ -104,12 +103,12 @@ const (
 	RailEventMerged
 )
 
-func NewRailEvent(id uuid.UUID, cardType CardType, typ RailEventType, attackerID, targetID uuid.UUID, afterRails []*Rail) *RailEvent {
+func NewRailEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ RailEventType, attackerID, targetID uuid.UUID, afterRails []*Rail) *RailEvent {
 	return &RailEvent{
 		commonEvent: commonEvent{
 			ID:        id,
 			CardType:  cardType,
-			CreatedAt: jst.Now(),
+			CreatedAt: createdAt,
 		},
 		Type:       typ,
 		AttackerID: attackerID,

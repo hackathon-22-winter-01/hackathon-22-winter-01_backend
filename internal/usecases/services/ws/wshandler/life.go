@@ -36,9 +36,9 @@ func (h *wsHandler) handleLifeEvent(body oapi.WsRequest_Body) error {
 	target.LifeEvents = append(target.LifeEvents, domain.NewLifeEvent(
 		uuid.New(),
 		domain.CardTypeNone,
+		now,
 		typ,
 		b.Diff,
-		now,
 	))
 
 	switch b.Type {

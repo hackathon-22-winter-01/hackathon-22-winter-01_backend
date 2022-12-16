@@ -86,6 +86,7 @@ func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 	targetPlayer.RailEvents = append(targetPlayer.RailEvents, domain.NewRailEvent(
 		uuid.New(),
 		domain.CardTypeYolo,
+		now,
 		domain.RailEventCreated,
 		targetPlayer.Main.ID,
 		childID,
@@ -111,9 +112,9 @@ func (h *wsHandler) handleOpenSourcerer(reqbody oapi.WsRequestBodyCardEvent, now
 	targetPlayer.LifeEvents = append(targetPlayer.LifeEvents, domain.NewLifeEvent(
 		uuid.New(),
 		domain.CardTypeOpenSourcerer,
+		now,
 		domain.LifeEventTypeHealed,
 		30,
-		now,
 	))
 
 	res, err := oapi.NewWsResponseLifeChanged(now, h.playerID, domain.CalculateLife(targetPlayer.LifeEvents))
@@ -132,6 +133,7 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
 		uuid.New(),
 		domain.CardTypeRefactoring,
+		now,
 		h.playerID,
 		targetPlayer.ID,
 		reqbody.TargetId,
@@ -151,6 +153,7 @@ func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent
 	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
 		uuid.New(),
 		domain.CardTypePairExtraordinaire,
+		now,
 		h.playerID,
 		targetPlayer.ID,
 		reqbody.TargetId,
@@ -170,6 +173,7 @@ func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
 		uuid.New(),
 		domain.CardTypeLgtm,
+		now,
 		h.playerID,
 		targetPlayer.ID,
 		reqbody.TargetId,
@@ -194,6 +198,7 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 	targetPlayer.RailEvents = append(targetPlayer.RailEvents, domain.NewRailEvent(
 		uuid.New(),
 		domain.CardTypePullShark,
+		now,
 		domain.RailEventCreated,
 		h.playerID,
 		targetPlayer.ID,
@@ -212,6 +217,7 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
 		uuid.New(),
 		domain.CardTypeLgtm,
+		now,
 		h.playerID,
 		targetPlayer.ID,
 		reqbody.TargetId,
