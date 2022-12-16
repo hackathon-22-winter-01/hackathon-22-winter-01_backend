@@ -26,18 +26,18 @@ const (
 )
 
 type Client struct {
-	hub    *Hub
-	userID uuid.UUID
-	conn   *websocket.Conn
-	send   chan *oapi.WsResponse
+	hub      *Hub
+	playerID uuid.UUID
+	conn     *websocket.Conn
+	send     chan *oapi.WsResponse
 }
 
-func NewClient(hub *Hub, userID uuid.UUID, conn *websocket.Conn) *Client {
+func NewClient(hub *Hub, playerID uuid.UUID, conn *websocket.Conn) *Client {
 	return &Client{
-		hub:    hub,
-		userID: userID,
-		conn:   conn,
-		send:   make(chan *oapi.WsResponse, 256),
+		hub:      hub,
+		playerID: playerID,
+		conn:     conn,
+		send:     make(chan *oapi.WsResponse, 256),
 	}
 }
 
@@ -53,12 +53,12 @@ func (c *Client) readPump() error {
 		return c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	})
 
-	room, err := c.hub.roomRepo.FindRoomFromPlayerID(c.userID)
+	room, err := c.hub.roomRepo.FindRoomFromPlayerID(c.playerID)
 	if err != nil {
 		return err
 	}
 
-	wh := wshandler.NewWsHandler(c.userID, room, c.hub.cardRepo, c)
+	wh := wshandler.NewWsHandler(c.playerID, room, c.hub.cardRepo, c)
 
 	for {
 		req := new(oapi.WsRequest)
@@ -144,7 +144,7 @@ func (c *Client) BroadcastDynamic(roomID uuid.UUID, resFunc func() (*oapi.WsResp
 	var rerr error
 
 	c.hub.clients.Range(func(_ uuid.UUID, client *Client) bool {
-		if _, ok := room.FindPlayer(client.userID); !ok {
+		if _, ok := room.FindPlayer(client.playerID); !ok {
 			return true
 		}
 

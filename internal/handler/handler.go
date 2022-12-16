@@ -41,8 +41,8 @@ func (h *Handler) JoinRoom(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	userID := uuid.New()
-	player := domain.NewPlayer(userID, req.PlayerName)
+	playerID := uuid.New()
+	player := domain.NewPlayer(playerID, req.PlayerName)
 
 	err := h.r.JoinRoom(req.RoomId, player)
 	if err != nil {
@@ -64,8 +64,8 @@ func (h *Handler) CreateRoom(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	userID := uuid.New()
-	player := domain.NewPlayer(userID, req.PlayerName)
+	playerID := uuid.New()
+	player := domain.NewPlayer(playerID, req.PlayerName)
 
 	room, err := h.r.CreateRoom(player)
 	if err != nil {
