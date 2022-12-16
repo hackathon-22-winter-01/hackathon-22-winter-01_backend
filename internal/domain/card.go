@@ -12,8 +12,14 @@ type Card struct {
 type CardType uint8
 
 const (
-	CardTypePullShark CardType = iota
+	CardTypeYolo CardType = iota
+	CardTypeGalaxyBrain
+	CardTypeOpenSourcerer
+	CardTypeRefactoring
 	CardTypePairExtraordinaire
+	CardTypeLgtm
+	CardTypePullShark
+	CardTypeStarstruck
 )
 
 func NewCard(id uuid.UUID, typ CardType) *Card {
