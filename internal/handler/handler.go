@@ -24,10 +24,8 @@ func (h *Handler) Ping(c echo.Context) error {
 	return c.String(200, "pong")
 }
 
-func (h *Handler) ConnectToWs(c echo.Context) error {
-	uid := uuid.New()
-
-	err := h.stream.ServeWS(c.Response().Writer, c.Request(), uid)
+func (h *Handler) ConnectToWs(c echo.Context, params oapi.ConnectToWsParams) error {
+	err := h.stream.ServeWS(c.Response().Writer, c.Request(), params.PlayerId)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}

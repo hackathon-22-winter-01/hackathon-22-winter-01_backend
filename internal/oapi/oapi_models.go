@@ -264,6 +264,12 @@ type WsResponseBodyRailMerged struct {
 // WsResponseType イベントの種類
 type WsResponseType string
 
+// ConnectToWsParams defines parameters for ConnectToWs.
+type ConnectToWsParams struct {
+	// PlayerId ユーザーUUID
+	PlayerId PlayerId `form:"playerId" json:"playerId"`
+}
+
 // JoinRoomJSONRequestBody defines body for JoinRoom for application/json ContentType.
 type JoinRoomJSONRequestBody = JoinRoomRequest
 

@@ -85,6 +85,13 @@ paths:
       summary: GET /ws
       tags:
         - ws
+      parameters:
+        - name: playerId
+          schema:
+            $ref: '#/components/schemas/PlayerId'
+          in: query
+          required: true
+          description: ユーザーUUID
       responses:
         '200':
           description: OK
