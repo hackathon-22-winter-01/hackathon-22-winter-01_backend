@@ -13,7 +13,7 @@ type WsHandler interface {
 }
 
 type WsResponseSender interface {
-	Broadcast(roomID uuid.UUID, res *oapi.WsResponse)
+	Broadcast(roomID uuid.UUID, res *oapi.WsResponse) error
 }
 
 type wsHandler struct {
