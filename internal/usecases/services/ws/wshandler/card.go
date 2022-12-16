@@ -67,7 +67,16 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		}
 
 	case oapi.CardTypeStarstruck:
-		return nil
+		if l := len(target.Events); l > 0 {
+			lastEvent := target.Events[l-1]
+			beforeRails = lastEvent.AfterRails
+			afterRails = lastEvent.AfterRails
+		}
+
+		res, err = oapi.NewWsResponseBlockCreated(jst.Now(), h.playerID, b.TargetId, 5, 50)
+		if err != nil {
+			return err
+		}
 
 	default:
 		return errors.New("invalid card type")
