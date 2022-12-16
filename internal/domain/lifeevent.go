@@ -10,6 +10,7 @@ import (
 type LifeEvent struct {
 	ID        uuid.UUID
 	Type      LifeEventType
+	Diff      float32
 	CreatedAt time.Time
 }
 
@@ -17,13 +18,15 @@ type LifeEvent struct {
 type LifeEventType uint8
 
 const (
-	LifeEventDecrement LifeEventType = iota
+	LifeEventTypeDamaged LifeEventType = iota
+	LifeEventTypeHealed
 )
 
-func NewLifeEvent(id uuid.UUID, typ LifeEventType, createdAt time.Time) *LifeEvent {
+func NewLifeEvent(id uuid.UUID, typ LifeEventType, diff float32, createdAt time.Time) *LifeEvent {
 	return &LifeEvent{
 		ID:        id,
 		Type:      typ,
+		Diff:      diff,
 		CreatedAt: createdAt,
 	}
 }

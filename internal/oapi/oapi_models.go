@@ -25,7 +25,8 @@ const (
 
 // Defines values for LifeEventType.
 const (
-	LifeEventTypeDecrement LifeEventType = "decrement"
+	LifeEventTypeDamaged LifeEventType = "damaged"
+	LifeEventTypeHealed  LifeEventType = "healed"
 )
 
 // Defines values for WsRequestType.
@@ -169,6 +170,9 @@ type WsRequestBodyGameStartEvent struct {
 
 // WsRequestBodyLifeEvent ライフに関するイベントの情報
 type WsRequestBodyLifeEvent struct {
+	// Diff ライフの変化量
+	Diff float32 `json:"diff"`
+
 	// Type ライフに関するイベントの種類
 	Type LifeEventType `json:"type"`
 }

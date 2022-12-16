@@ -143,7 +143,8 @@ components:
       title: LifeEventType
       type: string
       enum:
-        - decrement
+        - damaged
+        - healed
       description: ライフに関するイベントの種類
     Card:
       title: Card
@@ -300,8 +301,12 @@ components:
       properties:
         type:
           $ref: '#/components/schemas/LifeEventType'
+        diff:
+          type: number
+          description: ライフの変化量
       required:
         - type
+        - diff
       description: ライフに関するイベントの情報
     WsRequestBodyCardEvent:
       title: WsRequestBodyCardEvent
