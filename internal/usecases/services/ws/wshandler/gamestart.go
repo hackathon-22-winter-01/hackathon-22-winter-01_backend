@@ -8,7 +8,7 @@ import (
 )
 
 func (h *wsHandler) handleGameStartEvent(body oapi.WsRequest_Body) error {
-	b, err := body.AsWsRequestBodyGameStartEvent()
+	_, err := body.AsWsRequestBodyGameStartEvent()
 	if err != nil {
 		return err
 	}
@@ -17,7 +17,7 @@ func (h *wsHandler) handleGameStartEvent(body oapi.WsRequest_Body) error {
 		return errors.New("プレイヤーが2人未満です")
 	}
 
-	if b.PlayerId != h.room.Players[0].ID {
+	if h.playerID != h.room.Players[0].ID {
 		return errors.New("ゲームを開始する権限はありません")
 	}
 
