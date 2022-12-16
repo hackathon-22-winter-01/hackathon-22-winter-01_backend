@@ -69,5 +69,4 @@ func RoomFromDomain(dr *domain.Room) Room {
 		Players:   PLayers,
 		StartedAt: dr.StartedAt,
 	}
-
 }
