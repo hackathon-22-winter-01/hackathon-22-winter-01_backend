@@ -135,6 +135,8 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 		h.playerID,
 		targetPlayer.ID,
 		reqbody.TargetId,
+		1,
+		5,
 	))
 
 	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, 1, 5)
@@ -152,6 +154,8 @@ func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent
 		h.playerID,
 		targetPlayer.ID,
 		reqbody.TargetId,
+		2,
+		30,
 	))
 
 	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, 2, 30)
@@ -169,6 +173,8 @@ func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 		h.playerID,
 		targetPlayer.ID,
 		reqbody.TargetId,
+		3,
+		20,
 	))
 
 	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, 3, 20)
@@ -209,6 +215,8 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 		h.playerID,
 		targetPlayer.ID,
 		reqbody.TargetId,
+		5,
+		50,
 	))
 
 	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, 5, 50)

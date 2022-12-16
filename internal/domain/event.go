@@ -21,10 +21,11 @@ type BlockEvent struct {
 	AttackerID   uuid.UUID
 	TargetID     uuid.UUID
 	TargetRailID uuid.UUID
-	// TODO: attack, block
+	Delay        int
+	Attack       int
 }
 
-func NewBlockEvent(id uuid.UUID, cardType CardType, attackerID, targetID, targetRailID uuid.UUID) *BlockEvent {
+func NewBlockEvent(id uuid.UUID, cardType CardType, attackerID, targetID, targetRailID uuid.UUID, delay int, attack int) *BlockEvent {
 	return &BlockEvent{
 		commonEvent: commonEvent{
 			ID:        id,
@@ -34,6 +35,8 @@ func NewBlockEvent(id uuid.UUID, cardType CardType, attackerID, targetID, target
 		AttackerID:   attackerID,
 		TargetID:     targetID,
 		TargetRailID: targetRailID,
+		Delay:        delay,
+		Attack:       attack,
 	}
 }
 
