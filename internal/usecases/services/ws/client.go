@@ -122,7 +122,7 @@ func (c *Client) writePump() error {
 	}
 }
 
-func (c *Client) Bloadcast(roomID uuid.UUID, res *oapi.WsResponse) {
+func (c *Client) Broadcast(roomID uuid.UUID, res *oapi.WsResponse) {
 	// TODO: 全クライアントに送信してしまうためルーム内のクライアントだけに絞る
 	c.hub.clients.Range(func(_ uuid.UUID, client *Client) bool {
 		client.send <- res

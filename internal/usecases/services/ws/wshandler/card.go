@@ -55,7 +55,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		return errors.New("invalid card type")
 	}
 
-	h.sender.Bloadcast(h.room.ID, res)
+	h.sender.Broadcast(h.room.ID, res)
 
 	target.Events = append(target.Events, domain.NewRailEvent(
 		uuid.New(),

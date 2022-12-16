@@ -32,7 +32,7 @@ func (h *wsHandler) handleGameStartEvent(body oapi.WsRequest_Body) error {
 		return err
 	}
 
-	h.sender.Bloadcast(h.room.ID, res)
+	h.sender.Broadcast(h.room.ID, res)
 
 	return nil
 }

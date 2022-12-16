@@ -20,7 +20,7 @@ func (h *wsHandler) handleRailMergeEvent(body oapi.WsRequest_Body) error {
 		return err
 	}
 
-	h.sender.Bloadcast(h.room.ID, res)
+	h.sender.Broadcast(h.room.ID, res)
 
 	target, ok := h.room.FindPlayer(h.playerID)
 	if !ok {
