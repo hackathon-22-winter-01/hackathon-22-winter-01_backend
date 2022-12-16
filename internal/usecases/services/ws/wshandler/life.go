@@ -47,7 +47,7 @@ func (h *wsHandler) handleLifeEvent(body oapi.WsRequest_Body) error {
 
 		for _, e := range target.LifeEvents {
 			if e.Type == domain.LifeEventTypeDamaged {
-				life--
+				life-- // TODO: diffを考慮する
 			}
 		}
 
