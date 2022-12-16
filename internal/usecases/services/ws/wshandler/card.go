@@ -74,7 +74,6 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		}
 
 		res = oapi.WsResponseFromType(oapi.WsResponseTypeNoop, jst.Now())
-		return nil
 
 	case oapi.CardTypeOpenSourcerer:
 		return nil
