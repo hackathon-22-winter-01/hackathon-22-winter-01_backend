@@ -359,14 +359,8 @@ components:
           items:
             $ref: '#/components/schemas/Player'
           description: 各プレイヤーの情報
-        cards:
-          type: array
-          items:
-            $ref: '#/components/schemas/Card'
-          description: ゲーム開始時のカードのリスト
       required:
         - players
-        - cards
       description: ゲーム開始時の情報
     WsResponseBodyLifeChanged:
       type: object

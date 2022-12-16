@@ -21,7 +21,6 @@ func TestWs(t *testing.T) {
 	var (
 		conns     = make([]*websocket.Conn, consts.PlayerLimit)
 		pids      = make([]uuid.UUID, consts.PlayerLimit)
-		cards     = make([][]oapi.Card, consts.PlayerLimit)
 		mainRails = make([]oapi.Rail, consts.PlayerLimit)
 		rails     = make([][]oapi.Rail, consts.PlayerLimit)
 		wg        = new(sync.WaitGroup)
@@ -44,8 +43,7 @@ func TestWs(t *testing.T) {
 	}
 
 	// Streamerを起動
-	cardRepo := repoimpl.NewCardRepository()
-	h := ws.NewHub(roomRepo, cardRepo)
+	h := ws.NewHub(roomRepo)
 	s := ws.NewStreamer(h)
 
 	// n個のクライアントをWebsocketに接続
@@ -82,7 +80,6 @@ func TestWs(t *testing.T) {
 		resbody, err := res.Body.AsWsResponseBodyGameStarted()
 		require.NoError(t, err)
 		require.Equal(t, oapi.WsResponseTypeGameStarted, res.Type)
-		require.Len(t, resbody.Cards, 5) // ここではCardsの中身は問わない
 		require.Len(t, resbody.Players, consts.PlayerLimit)
 		for j, p := range resbody.Players {
 			require.Equal(t, pids[j], p.Id)
@@ -94,9 +91,6 @@ func TestWs(t *testing.T) {
 				rails[j] = p.Rails
 			}
 		}
-
-		// カードを記録しておく
-		cards[i] = resbody.Cards
 	})
 
 	t.Run("プレイヤー1がプレイヤー0に対してカードを出してレールを生成する", func(t *testing.T) {
@@ -105,13 +99,12 @@ func TestWs(t *testing.T) {
 		// write tcp 127.0.0.1:38046->127.0.0.1:35689: use of closed network connection
 
 		// プレイヤー1がプレイヤー0に対してカードを出す
-		card := cards[1][0]
 		b := oapi.WsRequest_Body{}
 		require.NoError(t, b.FromWsRequestBodyCardEvent(
 			oapi.WsRequestBodyCardEvent{
-				Id:       card.Id,
+				Id:       uuid.New(),
 				TargetId: pids[0],
-				Type:     card.Type,
+				Type:     oapi.CardTypePullShark,
 			},
 		))
 		mustWriteWsRequest(t, conns[1], oapi.WsRequestTypeCardEvent, b)
@@ -136,13 +129,12 @@ func TestWs(t *testing.T) {
 
 	t.Run("プレイヤー1がプレイヤー0に対してカードを出して障害物を生成する", func(t *testing.T) {
 		// プレイヤー1がプレイヤー0に対してカードを出す
-		card := cards[1][1]
 		b := oapi.WsRequest_Body{}
 		require.NoError(t, b.FromWsRequestBodyCardEvent(
 			oapi.WsRequestBodyCardEvent{
-				Id:       card.Id,
+				Id:       uuid.New(),
 				TargetId: pids[0],
-				Type:     card.Type,
+				Type:     oapi.CardTypePairExtraordinaire,
 			},
 		))
 		mustWriteWsRequest(t, conns[1], oapi.WsRequestTypeCardEvent, b)

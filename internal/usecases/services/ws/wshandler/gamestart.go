@@ -17,17 +17,7 @@ func (h *wsHandler) handleGameStartEvent(body oapi.WsRequest_Body) error {
 	}
 
 	resFunc := func() (*oapi.WsResponse, error) {
-		domainCards, err := h.cardRepo.DrawCards(h.room.ID, h.playerID, 5)
-		if err != nil {
-			return nil, err
-		}
-
-		cards := make([]oapi.Card, len(domainCards))
-		for i, c := range domainCards {
-			cards[i] = oapi.CardFromDomain(c)
-		}
-
-		res, err := oapi.NewWsResponseGameStarted(jst.Now(), cards, players)
+		res, err := oapi.NewWsResponseGameStarted(jst.Now(), players)
 		if err != nil {
 			return nil, err
 		}
