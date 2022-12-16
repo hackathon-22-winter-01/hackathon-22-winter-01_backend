@@ -43,6 +43,7 @@ const (
 	WsResponseTypeConnected    WsResponseType = "connected"
 	WsResponseTypeGameStarted  WsResponseType = "gameStarted"
 	WsResponseTypeLifeChanged  WsResponseType = "lifeChanged"
+	WsResponseTypeNoop         WsResponseType = "noop"
 	WsResponseTypeRailCreated  WsResponseType = "railCreated"
 	WsResponseTypeRailMerged   WsResponseType = "railMerged"
 )
@@ -100,6 +101,9 @@ type PlayerId = openapi_types.UUID
 
 // Rail レール情報
 type Rail struct {
+	// HasBlock 妨害されているかどうか
+	HasBlock bool `json:"hasBlock"`
+
 	// Id レールUUID
 	Id RailId `json:"id"`
 }
