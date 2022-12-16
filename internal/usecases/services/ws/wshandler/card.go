@@ -53,6 +53,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 
 			if !rail.HasBlock {
 				childID = rail.ID
+				break
 			}
 		}
 
