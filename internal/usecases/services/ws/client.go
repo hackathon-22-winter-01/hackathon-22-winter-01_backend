@@ -61,11 +61,17 @@ func (c *Client) readPump() error {
 	for {
 		req := new(oapi.WsRequest)
 		if err := c.conn.ReadJSON(req); err != nil {
-			return err
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				return err
+			}
+		}
+
+		if len(req.Type) == 0 {
+			continue
 		}
 
 		if err := wh.HandleEvent(req); err != nil {
-			log.L().Error("failed to handle event", zap.Error(err))
+			log.L().Error("failed to handle event", zap.Error(err), zap.String("eventType", string(req.Type)))
 		}
 	}
 }
