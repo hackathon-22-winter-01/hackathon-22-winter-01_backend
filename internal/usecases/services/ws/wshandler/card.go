@@ -2,6 +2,7 @@ package wshandler
 
 import (
 	"errors"
+	"math/rand"
 
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
@@ -31,33 +32,46 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		if l := len(target.Events); l > 0 {
 			lastEvent := target.Events[l-1]
 			beforeRails = lastEvent.AfterRails
-			afterRails = lastEvent.AfterRails
 		}
 
 		var (
-			parentID uuid.UUID
+			parentID = target.Main.ID
 			childID  uuid.UUID
 		)
 
-		// 一番最後のブロックの親を探す
-		for i := len(beforeRails) - 1; i > 0; i-- {
-			if !beforeRails[i].HasBlock {
-				childID = beforeRails[i].ID
-				parentID = beforeRails[i-1].ID
+		// シャッフルする
+		rails := []*domain.Rail{}
+		copy(rails, beforeRails)
 
-				break
+		rand.Shuffle(len(rails), func(i, j int) { rails[i], rails[j] = rails[j], rails[i] })
+
+		// 一番最後のブロックの親を探す
+		for _, rail := range rails {
+			if rail.ID == parentID {
+				continue
+			}
+
+			if !rail.HasBlock {
+				childID = rail.ID
 			}
 		}
 
-		// 親が見つかったら、親の子を消す
 		if childID != uuid.Nil && parentID != uuid.Nil {
-			afterRails = beforeRails[:len(beforeRails)-1]
-			res, err = oapi.NewWsResponseRailMerged(jst.Now(), childID, parentID, b.TargetId)
+			// 親が見つかったら、親の子を消す
+			for _, rail := range rails {
+				if rail.ID != target.Main.ID {
+					afterRails = append(afterRails, rail)
+				}
+			}
+
 			// マージしたことを通知
+			res, err = oapi.NewWsResponseRailMerged(jst.Now(), childID, parentID, b.TargetId)
 			if err != nil {
 				return err
 			}
 		} else {
+			// 親が見つからなかったら、何もしない
+			afterRails = beforeRails
 			res = oapi.WsResponseFromType(oapi.WsResponseTypeNoop, jst.Now())
 		}
 
