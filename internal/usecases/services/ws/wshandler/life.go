@@ -22,6 +22,7 @@ func (h *wsHandler) handleLifeEvent(body oapi.WsRequest_Body) error {
 	}
 
 	var typ domain.LifeEventType
+
 	switch b.Type {
 	case oapi.LifeEventTypeDamaged:
 		typ = domain.LifeEventTypeDamaged
