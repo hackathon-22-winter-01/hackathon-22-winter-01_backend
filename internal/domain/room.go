@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
 )
 
 // Room 対戦部屋の情報
@@ -18,7 +19,7 @@ func NewRoom(id uuid.UUID) *Room {
 	return &Room{
 		ID:        id,
 		Players:   make([]*Player, 0),
-		StartedAt: time.Time{},
+		StartedAt: jst.Now(),
 	}
 }
 

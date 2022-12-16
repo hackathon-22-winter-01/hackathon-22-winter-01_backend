@@ -54,7 +54,7 @@ func (h *Handler) JoinRoom(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, room)
+	return c.JSON(http.StatusOK, oapi.RoomFromDomain(room))
 }
 
 func (h *Handler) CreateRoom(c echo.Context) error {
@@ -72,7 +72,7 @@ func (h *Handler) CreateRoom(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, room)
+	return c.JSON(http.StatusOK, oapi.RoomFromDomain(room))
 }
 
 func (h *Handler) GetRoom(c echo.Context, roomID oapi.RoomId) error {
@@ -81,5 +81,5 @@ func (h *Handler) GetRoom(c echo.Context, roomID oapi.RoomId) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, room)
+	return c.JSON(http.StatusOK, oapi.RoomFromDomain(room))
 }
