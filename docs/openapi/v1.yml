@@ -448,6 +448,7 @@ components:
           description: 障害物と衝突したときに与えるダメージ
       required:
         - attackerId
+        - targetId
         - delay
         - attack
       description: 新規障害物の作成情報

@@ -201,7 +201,7 @@ type WsResponseBodyBlockCreated struct {
 	Delay int `json:"delay"`
 
 	// TargetId プレイヤーUUID
-	TargetId *PlayerId `json:"targetId,omitempty"`
+	TargetId PlayerId `json:"targetId"`
 }
 
 // WsResponseBodyCardReset 各プレイヤーのカードのリセット情報
