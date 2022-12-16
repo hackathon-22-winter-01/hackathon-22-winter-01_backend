@@ -69,7 +69,7 @@ func TestWs(t *testing.T) {
 	b := oapi.WsRequest_Body{}
 	require.NoError(t, b.FromWsRequestBodyGameStartEvent(
 		oapi.WsRequestBodyGameStartEvent{
-			Name: fmt.Sprintf("player%d", 0),
+			PlayerId: pids[0],
 		},
 	))
 	mustWriteWsRequest(t, conns[0], oapi.WsRequestTypeGameStartEvent, b)

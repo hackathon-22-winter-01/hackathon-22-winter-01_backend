@@ -1,14 +1,24 @@
 package wshandler
 
 import (
+	"errors"
+
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
 )
 
 func (h *wsHandler) handleGameStartEvent(body oapi.WsRequest_Body) error {
-	_, err := body.AsWsRequestBodyGameStartEvent()
+	b, err := body.AsWsRequestBodyGameStartEvent()
 	if err != nil {
 		return err
+	}
+
+	if len(h.room.Players) < 2 {
+		return errors.New("プレイヤーが2人未満です")
+	}
+
+	if b.PlayerId != h.room.Players[0].ID {
+		return errors.New("ゲームを開始する権限はありません")
 	}
 
 	players := make([]oapi.Player, len(h.room.Players))

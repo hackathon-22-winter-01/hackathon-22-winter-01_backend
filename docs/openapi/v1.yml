@@ -289,11 +289,10 @@ components:
       title: WsRequestBodyGameStartEvent
       type: object
       properties:
-        name:
-          type: string
-          description: プレイヤーの名前
+        playerId:
+          $ref: '#/components/schemas/PlayerId'
       required:
-        - name
+        - playerId
       description: ゲーム開始時にサーバーに送信するオブジェクト
     WsRequestBodyLifeEvent:
       title: WsRequestBodyLifeEvent
