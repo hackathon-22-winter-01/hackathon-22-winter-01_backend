@@ -35,5 +35,6 @@ func (r *cardRepository) DrawCards(roomID uuid.UUID, playerID uuid.UUID, num int
 		return allCards, nil
 	}
 
+	// TODO: ロジックを実装する
 	panic("not implemented")
 }
