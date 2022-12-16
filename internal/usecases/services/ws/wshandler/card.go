@@ -27,9 +27,8 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		res         *oapi.WsResponse
 	)
 
-	eventLen := len(target.Events)
-	if eventLen > 0 {
-		lastEvent := target.Events[eventLen-1]
+	if l := len(target.RailEvents); l > 0 {
+		lastEvent := target.RailEvents[l-1]
 		beforeRails = lastEvent.AfterRails
 		afterRails = lastEvent.AfterRails
 	}
@@ -133,7 +132,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		return err
 	}
 
-	target.Events = append(target.Events, domain.NewRailEvent(
+	target.RailEvents = append(target.RailEvents, domain.NewRailEvent(
 		uuid.New(),
 		domain.RailEventCreated, // TODO: とは限らないのでBlockEvent, LifeEvent, RailEventに分ける
 		h.playerID,

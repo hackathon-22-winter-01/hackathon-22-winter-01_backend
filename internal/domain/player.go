@@ -8,7 +8,7 @@ type Player struct {
 	Name       string
 	Main       *Rail
 	Cards      []*Card
-	Events     []*RailEvent
+	RailEvents []*RailEvent
 	LifeEvents []*LifeEvent
 }
 
@@ -19,7 +19,7 @@ func NewPlayer(id uuid.UUID, name string) *Player {
 		Name:       name,
 		Main:       NewRail(),
 		Cards:      make([]*Card, 0),
-		Events:     make([]*RailEvent, 0),
+		RailEvents: make([]*RailEvent, 0),
 		LifeEvents: make([]*LifeEvent, 0),
 	}
 }

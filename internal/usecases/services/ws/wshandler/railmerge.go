@@ -29,12 +29,12 @@ func (h *wsHandler) handleRailMergeEvent(body oapi.WsRequest_Body) error {
 		return errors.New("player not found")
 	}
 
-	l := len(target.Events)
+	l := len(target.RailEvents)
 	if l == 0 {
 		return errors.New("メインのレールを削除することはできません")
 	}
 
-	beforeRails := target.Events[l-1].AfterRails
+	beforeRails := target.RailEvents[l-1].AfterRails
 	if len(beforeRails) == 0 {
 		return errors.New("メインのレールを削除することはできません")
 	}
@@ -46,7 +46,7 @@ func (h *wsHandler) handleRailMergeEvent(body oapi.WsRequest_Body) error {
 		}
 	}
 
-	target.Events = append(target.Events, domain.NewRailEvent(
+	target.RailEvents = append(target.RailEvents, domain.NewRailEvent(
 		uuid.New(),
 		domain.RailEventMerged,
 		uuid.Nil,
