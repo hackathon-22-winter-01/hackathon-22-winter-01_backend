@@ -110,7 +110,7 @@ type Room struct {
 	Players []Player `json:"players"`
 
 	// StartedAt ゲーム開始時刻
-	StartedAt string `json:"startedAt"`
+	StartedAt time.Time `json:"startedAt"`
 }
 
 // RoomId ルームUUID
