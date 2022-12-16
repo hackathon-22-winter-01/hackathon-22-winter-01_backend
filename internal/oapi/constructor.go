@@ -86,8 +86,12 @@ func NewWsResponseRailCreated(eventTime time.Time, railID, parentRailID, attacke
 	return res, nil
 }
 
-func NewWsResponseRailMerged(eventTime time.Time) (*WsResponse, error) {
-	b := WsResponseBodyRailMerged{}
+func NewWsResponseRailMerged(eventTime time.Time, childID, parentID, playerID uuid.UUID) (*WsResponse, error) {
+	b := WsResponseBodyRailMerged{
+		ChildId:  childID,
+		ParentId: parentID,
+		PlayerId: playerID,
+	}
 
 	res := WsResponseFromType(WsResponseTypeRailMerged, eventTime)
 

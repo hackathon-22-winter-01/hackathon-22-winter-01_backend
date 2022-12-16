@@ -234,7 +234,7 @@ components:
             - $ref: '#/components/schemas/WsRequestBodyGameStartEvent'
             - $ref: '#/components/schemas/WsRequestBodyLifeEvent'
             - $ref: '#/components/schemas/WsRequestBodyCardEvent'
-            - $ref: '#/components/schemas/WsRequestBodyReilMergeEvent'
+            - $ref: '#/components/schemas/WsRequestBodyRailMergeEvent'
           description: イベントの情報
       required:
         - type
@@ -283,8 +283,8 @@ components:
         - targetId
         - type
       description: カードに関するイベントの情報
-    WsRequestBodyReilMergeEvent:
-      title: WsRequestBodyReilMergeEvent
+    WsRequestBodyRailMergeEvent:
+      title: WsRequestBodyRailMergeEvent
       type: object
       properties:
         childId:

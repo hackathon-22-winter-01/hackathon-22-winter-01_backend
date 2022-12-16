@@ -154,8 +154,8 @@ type WsRequestBodyLifeEvent struct {
 	Type LifeEventType `json:"type"`
 }
 
-// WsRequestBodyReilMergeEvent レールのマージに関するイベントの情報
-type WsRequestBodyReilMergeEvent struct {
+// WsRequestBodyRailMergeEvent レールのマージに関するイベントの情報
+type WsRequestBodyRailMergeEvent struct {
 	// ChildId レールUUID
 	ChildId RailId `json:"childId"`
 
@@ -339,22 +339,22 @@ func (t *WsRequest_Body) MergeWsRequestBodyCardEvent(v WsRequestBodyCardEvent) e
 	return err
 }
 
-// AsWsRequestBodyReilMergeEvent returns the union data inside the WsRequest_Body as a WsRequestBodyReilMergeEvent
-func (t WsRequest_Body) AsWsRequestBodyReilMergeEvent() (WsRequestBodyReilMergeEvent, error) {
-	var body WsRequestBodyReilMergeEvent
+// AsWsRequestBodyRailMergeEvent returns the union data inside the WsRequest_Body as a WsRequestBodyRailMergeEvent
+func (t WsRequest_Body) AsWsRequestBodyRailMergeEvent() (WsRequestBodyRailMergeEvent, error) {
+	var body WsRequestBodyRailMergeEvent
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromWsRequestBodyReilMergeEvent overwrites any union data inside the WsRequest_Body as the provided WsRequestBodyReilMergeEvent
-func (t *WsRequest_Body) FromWsRequestBodyReilMergeEvent(v WsRequestBodyReilMergeEvent) error {
+// FromWsRequestBodyRailMergeEvent overwrites any union data inside the WsRequest_Body as the provided WsRequestBodyRailMergeEvent
+func (t *WsRequest_Body) FromWsRequestBodyRailMergeEvent(v WsRequestBodyRailMergeEvent) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeWsRequestBodyReilMergeEvent performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodyReilMergeEvent
-func (t *WsRequest_Body) MergeWsRequestBodyReilMergeEvent(v WsRequestBodyReilMergeEvent) error {
+// MergeWsRequestBodyRailMergeEvent performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodyRailMergeEvent
+func (t *WsRequest_Body) MergeWsRequestBodyRailMergeEvent(v WsRequestBodyRailMergeEvent) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
