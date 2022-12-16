@@ -25,6 +25,6 @@ lint:
 go-gen:
 	go generate ./...
 
-TESTFLAGS ?= -cover -shuffle=on -race
+TESTFLAGS ?= -cover -shuffle=on -race -timeout=30s
 test:
 	go test -v ./... $(TESTFLAGS)

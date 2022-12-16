@@ -2,7 +2,6 @@ package repoimpl
 
 import (
 	"errors"
-	"log"
 
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
@@ -30,11 +29,30 @@ func (r *roomRepository) FindRoom(roomID uuid.UUID) (*domain.Room, error) {
 	return room, nil
 }
 
+func (r *roomRepository) FindRoomFromPlayerID(playerID uuid.UUID) (*domain.Room, error) {
+	var room *domain.Room
+
+	r.roomMap.Range(func(_ uuid.UUID, value *domain.Room) bool {
+		for _, player := range value.Players {
+			if player.ID == playerID {
+				room = value
+				return false
+			}
+		}
+		return true
+	})
+
+	if room == nil {
+		return nil, errors.New("指定したプレイヤーが属する部屋は存在しません")
+	}
+
+	return room, nil
+}
+
 func (r *roomRepository) JoinRoom(roomID uuid.UUID, player *domain.Player) error {
-	// TODO: ここでroomMapにroomIDが存在しない場合はエラーを返す
-	room, ok := r.roomMap.LoadOrStore(roomID, domain.NewRoom(roomID))
+	room, ok := r.roomMap.Load(roomID)
 	if !ok {
-		log.Println("部屋が存在しないので作成しました。本来はエラーを返すべきです。")
+		return errors.New("部屋が存在しません")
 	}
 
 	if len(room.Players) >= consts.PlayerLimit {
@@ -42,6 +60,33 @@ func (r *roomRepository) JoinRoom(roomID uuid.UUID, player *domain.Player) error
 	}
 
 	room.Players = append(room.Players, player)
+
+	return nil
+}
+
+func (r *roomRepository) CreateRoom(player *domain.Player) (*domain.Room, error) {
+	roomID := uuid.New()
+
+	room := domain.NewRoom(roomID)
+
+	room.Players = []*domain.Player{player}
+
+	_, ok := r.roomMap.LoadOrStore(roomID, room)
+
+	if ok {
+		return nil, errors.New("部屋が既に存在します")
+	}
+
+	return room, nil
+}
+
+func (r *roomRepository) DeleteRoom(roomID uuid.UUID) error {
+	_, ok := r.roomMap.Load(roomID)
+	if !ok {
+		return errors.New("部屋が存在しません")
+	}
+
+	r.roomMap.Delete(roomID)
 
 	return nil
 }

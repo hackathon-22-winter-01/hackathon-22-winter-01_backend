@@ -27,7 +27,7 @@ func main() {
 	roomRepo := repoimpl.NewRoomRepository()
 	hub := ws.NewHub(roomRepo)
 	streamer := ws.NewStreamer(hub)
-	h := handler.New(streamer)
+	h := handler.New(roomRepo, streamer)
 	oapi.RegisterHandlersWithBaseURL(e, h, baseURL)
 
 	if err := e.Start(fmt.Sprintf(":%d", *config.Port)); err != nil {

@@ -3,7 +3,6 @@ package wshandler
 import (
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
 )
 
@@ -23,13 +22,8 @@ func (h *wsHandler) handleGameStartEvent(body oapi.WsRequest_Body) error {
 		{Id: uuid.New(), Type: oapi.CardTypeCreateRail},
 	}
 
-	room, err := h.roomRepo.FindRoom(repository.CommonRoomID) // TODO 適切なIDを指定する
-	if err != nil {
-		return err
-	}
-
-	players := make([]oapi.Player, len(room.Players))
-	for i, p := range room.Players {
+	players := make([]oapi.Player, len(h.room.Players))
+	for i, p := range h.room.Players {
 		players[i] = oapi.PlayerFromDomain(p)
 	}
 
@@ -38,7 +32,7 @@ func (h *wsHandler) handleGameStartEvent(body oapi.WsRequest_Body) error {
 		return err
 	}
 
-	h.sender.Bloadcast(room.ID, res)
+	h.sender.Broadcast(h.room.ID, res)
 
 	return nil
 }

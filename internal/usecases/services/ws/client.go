@@ -53,7 +53,12 @@ func (c *Client) readPump() error {
 		return c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	})
 
-	wh := wshandler.NewWsHandler(c.userID, c.hub.roomRepo, c)
+	room, err := c.hub.roomRepo.FindRoomFromPlayerID(c.userID)
+	if err != nil {
+		return err
+	}
+
+	wh := wshandler.NewWsHandler(c.userID, room, c)
 
 	for {
 		req := new(oapi.WsRequest)
@@ -124,7 +129,7 @@ func (c *Client) writePump() error {
 	}
 }
 
-func (c *Client) Bloadcast(roomID uuid.UUID, res *oapi.WsResponse) {
+func (c *Client) Broadcast(roomID uuid.UUID, res *oapi.WsResponse) {
 	// TODO: 全クライアントに送信してしまうためルーム内のクライアントだけに絞る
 	c.hub.clients.Range(func(_ uuid.UUID, client *Client) bool {
 		client.send <- res

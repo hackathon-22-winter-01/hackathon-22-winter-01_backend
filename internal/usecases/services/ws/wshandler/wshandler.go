@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
 )
 
 type WsHandler interface {
@@ -13,19 +13,19 @@ type WsHandler interface {
 }
 
 type WsResponseSender interface {
-	Bloadcast(roomID uuid.UUID, res *oapi.WsResponse)
+	Broadcast(roomID uuid.UUID, res *oapi.WsResponse)
 }
 
 type wsHandler struct {
 	playerID uuid.UUID
-	roomRepo repository.RoomRepository
+	room     *domain.Room
 	sender   WsResponseSender
 }
 
-func NewWsHandler(playerID uuid.UUID, roomRepo repository.RoomRepository, sender WsResponseSender) WsHandler {
+func NewWsHandler(playerID uuid.UUID, room *domain.Room, sender WsResponseSender) WsHandler {
 	return &wsHandler{
 		playerID: playerID,
-		roomRepo: roomRepo,
+		room:     room,
 		sender:   sender,
 	}
 }
