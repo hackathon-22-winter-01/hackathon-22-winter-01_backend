@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
 )
 
 type WsHandler interface {
@@ -18,14 +19,16 @@ type WsResponseSender interface {
 
 type wsHandler struct {
 	playerID uuid.UUID
-	room     *domain.Room
+	room     *domain.Room // roomRepositoryの方がいいかも
+	cardRepo repository.CardRepository
 	sender   WsResponseSender
 }
 
-func NewWsHandler(playerID uuid.UUID, room *domain.Room, sender WsResponseSender) WsHandler {
+func NewWsHandler(playerID uuid.UUID, room *domain.Room, cardRepo repository.CardRepository, sender WsResponseSender) WsHandler {
 	return &wsHandler{
 		playerID: playerID,
 		room:     room,
+		cardRepo: cardRepo,
 		sender:   sender,
 	}
 }
