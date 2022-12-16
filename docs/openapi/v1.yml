@@ -36,7 +36,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Room'
+                $ref: '#/components/schemas/RoomResponse'
       operationId: joinRoom
       description: 部屋に参加する
       requestBody:
@@ -56,7 +56,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Room'
+                $ref: '#/components/schemas/RoomResponse'
       operationId: getRoom
       description: 部屋の情報を取得する
       parameters:
@@ -176,6 +176,7 @@ components:
         - id
         - players
         - startedAt
+      description: 部屋情報
     Player:
       title: Player
       type: object
@@ -241,6 +242,18 @@ components:
         - roomId
         - playerName
       description: 部屋に参加する際に送信するリクエスト
+    RoomResponse:
+      title: RoomResponse
+      type: object
+      properties:
+        playerId:
+          $ref: '#/components/schemas/PlayerId'
+        room:
+          $ref: '#/components/schemas/Room'
+      required:
+        - room
+        - playerId
+      description: 部屋の情報
     WsRequest:
       title: WsRequest
       type: object

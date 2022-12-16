@@ -107,7 +107,7 @@ type Rail struct {
 // RailId レールUUID
 type RailId = openapi_types.UUID
 
-// Room defines model for Room.
+// Room 部屋情報
 type Room struct {
 	// Id ルームUUID
 	Id RoomId `json:"id"`
@@ -121,6 +121,15 @@ type Room struct {
 
 // RoomId ルームUUID
 type RoomId = openapi_types.UUID
+
+// RoomResponse 部屋の情報
+type RoomResponse struct {
+	// PlayerId プレイヤーUUID
+	PlayerId PlayerId `json:"playerId"`
+
+	// Room 部屋情報
+	Room Room `json:"room"`
+}
 
 // WsRequest Websocket接続中にサーバーに送信するオブジェクト
 type WsRequest struct {
