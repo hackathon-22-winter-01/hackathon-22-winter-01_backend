@@ -27,7 +27,7 @@ type ServerInterface interface {
 	GetRoom(ctx echo.Context, roomId RoomId) error
 	// GET /ws
 	// (GET /ws)
-	ConnectToWs(ctx echo.Context) error
+	ConnectToWs(ctx echo.Context, params ConnectToWsParams) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -82,8 +82,17 @@ func (w *ServerInterfaceWrapper) GetRoom(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) ConnectToWs(ctx echo.Context) error {
 	var err error
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ConnectToWsParams
+	// ------------- Required query parameter "playerId" -------------
+
+	err = runtime.BindQueryParameter("form", true, true, "playerId", ctx.QueryParams(), &params.PlayerId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter playerId: %s", err))
+	}
+
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.ConnectToWs(ctx)
+	err = w.Handler.ConnectToWs(ctx, params)
 	return err
 }
 
