@@ -35,43 +35,33 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		}
 
 		var (
-			parentID = target.Main.ID
-			childID  uuid.UUID
+			childID uuid.UUID
 		)
 
-		// シャッフルする
 		rails := []*domain.Rail{}
 		copy(rails, beforeRails)
 
 		rand.Shuffle(len(rails), func(i, j int) { rails[i], rails[j] = rails[j], rails[i] })
 
-		// 一番最後のブロックの親を探す
 		for _, rail := range rails {
-			if rail.ID == parentID {
-				continue
-			}
-
-			if !rail.HasBlock {
+			if rail.ID != target.Main.ID && !rail.HasBlock {
 				childID = rail.ID
 				break
 			}
 		}
 
-		if childID != uuid.Nil && parentID != uuid.Nil {
-			// 親が見つかったら、親の子を消す
+		if childID != uuid.Nil {
 			for _, rail := range rails {
 				if rail.ID != childID {
 					afterRails = append(afterRails, rail)
 				}
 			}
 
-			// マージしたことを通知
-			res, err = oapi.NewWsResponseRailMerged(jst.Now(), childID, parentID, b.TargetId)
+			res, err = oapi.NewWsResponseRailMerged(jst.Now(), childID, target.Main.ID, b.TargetId)
 			if err != nil {
 				return err
 			}
 		} else {
-			// 親が見つからなかったら、何もしない
 			afterRails = beforeRails
 			res = oapi.WsResponseFromType(oapi.WsResponseTypeNoop, jst.Now())
 		}
