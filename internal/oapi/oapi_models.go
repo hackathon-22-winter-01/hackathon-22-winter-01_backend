@@ -76,14 +76,14 @@ type LifeEventType string
 
 // Player プレイヤー情報
 type Player struct {
+	// Id プレイヤーUUID
+	Id PlayerId `json:"id"`
+
 	// Life プレイヤーのライフ
 	Life int `json:"life"`
 
 	// MainRail レール情報
 	MainRail Rail `json:"mainRail"`
-
-	// PlayerId プレイヤーUUID
-	PlayerId PlayerId `json:"playerId"`
 
 	// Rails プレイヤーのレールのリスト
 	Rails []Rail `json:"rails"`

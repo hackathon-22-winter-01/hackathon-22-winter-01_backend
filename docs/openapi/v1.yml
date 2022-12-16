@@ -162,7 +162,7 @@ components:
       title: Player
       type: object
       properties:
-        playerId:
+        id:
           $ref: '#/components/schemas/PlayerId'
         mainRail:
           $ref: '#/components/schemas/Rail'
@@ -184,7 +184,7 @@ components:
           minimum: 0
           description: プレイヤーのライフ
       required:
-        - playerId
+        - id
         - mainRail
         - rails
         # - blocks
