@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
 )
 
 // LifeEvent プレイヤーのライフに関する情報
@@ -29,4 +30,19 @@ func NewLifeEvent(id uuid.UUID, typ LifeEventType, diff float32, createdAt time.
 		Diff:      diff,
 		CreatedAt: createdAt,
 	}
+}
+
+func CalculateLife(events []*LifeEvent) float32 {
+	life := consts.MaxLife
+
+	for _, e := range events {
+		switch e.Type {
+		case LifeEventTypeDamaged:
+			life -= e.Diff
+		case LifeEventTypeHealed:
+			life += e.Diff
+		}
+	}
+
+	return life
 }
