@@ -39,7 +39,6 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 			return err
 		}
 
-	// TODO: Pair ExtraordinaireとLGTMで値を変える
 	case oapi.CardTypePairExtraordinaire:
 		if l := len(target.Events); l > 0 {
 			lastEvent := target.Events[l-1]
