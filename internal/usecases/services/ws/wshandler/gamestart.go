@@ -35,7 +35,6 @@ func (h *wsHandler) handleGameStartEvent(body oapi.WsRequest_Body) error {
 		return res, nil
 	}
 
-	// TODO: 全員に同じカードが渡ってしまう
 	if err := h.sender.BroadcastDynamic(h.room.ID, resFunc); err != nil {
 		return err
 	}
