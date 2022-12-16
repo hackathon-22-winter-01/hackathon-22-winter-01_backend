@@ -43,6 +43,10 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 			afterRails = lastEvent.AfterRails
 		}
 
+		if h.playerID != b.TargetId {
+			return errors.New("targetID is different from playerID")
+		}
+
 		res, err = oapi.NewWsResponseBlockCreated(jst.Now(), h.playerID, b.TargetId, 1, 5)
 		if err != nil {
 			return err
