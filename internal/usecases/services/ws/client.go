@@ -130,19 +130,37 @@ func (c *Client) writePump() error {
 }
 
 func (c *Client) Broadcast(roomID uuid.UUID, res *oapi.WsResponse) error {
+	return c.BroadcastDynamic(roomID, func() (*oapi.WsResponse, error) {
+		return res, nil
+	})
+}
+
+func (c *Client) BroadcastDynamic(roomID uuid.UUID, resFunc func() (*oapi.WsResponse, error)) error {
 	room, err := c.hub.roomRepo.FindRoom(roomID)
 	if err != nil {
 		return err
 	}
+
+	var rerr error
 
 	c.hub.clients.Range(func(_ uuid.UUID, client *Client) bool {
 		if _, ok := room.FindPlayer(client.userID); !ok {
 			return true
 		}
 
+		res, err := resFunc()
+		if err != nil {
+			rerr = err
+			return false
+		}
+
 		client.send <- res
 		return true
 	})
+
+	if rerr != nil {
+		return rerr
+	}
 
 	return nil
 }
