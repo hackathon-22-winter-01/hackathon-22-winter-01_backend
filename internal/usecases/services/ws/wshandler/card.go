@@ -37,7 +37,16 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		return nil
 
 	case oapi.CardTypeRefactoring:
-		return nil
+		if l := len(target.Events); l > 0 {
+			lastEvent := target.Events[l-1]
+			beforeRails = lastEvent.AfterRails
+			afterRails = lastEvent.AfterRails
+		}
+
+		res, err = oapi.NewWsResponseBlockCreated(jst.Now(), h.playerID, b.TargetId, 1, 5)
+		if err != nil {
+			return err
+		}
 
 	case oapi.CardTypePairExtraordinaire:
 		if l := len(target.Events); l > 0 {
