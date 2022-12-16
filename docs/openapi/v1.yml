@@ -143,7 +143,8 @@ components:
       title: LifeEventType
       type: string
       enum:
-        - decrement
+        - damaged
+        - healed
       description: ライフに関するイベントの種類
     Card:
       title: Card
@@ -198,8 +199,8 @@ components:
         #     $ref: '#/components/schemas/Block'
         #   description: プレイヤーのブロックのリスト
         life:
-          type: integer
-          maximum: 3
+          type: number
+          maximum: 100
           minimum: 0
           description: プレイヤーのライフ
       required:
@@ -300,8 +301,12 @@ components:
       properties:
         type:
           $ref: '#/components/schemas/LifeEventType'
+        diff:
+          type: number
+          description: ライフの変化量
       required:
         - type
+        - diff
       description: ライフに関するイベントの情報
     WsRequestBodyCardEvent:
       title: WsRequestBodyCardEvent
@@ -393,8 +398,8 @@ components:
         playerId:
           $ref: '#/components/schemas/PlayerId'
         new:
-          type: integer
-          maximum: 3
+          type: number
+          maximum: 100
           minimum: 0
           description: 変動後のライフ
       required:

@@ -21,19 +21,31 @@ func (h *wsHandler) handleLifeEvent(body oapi.WsRequest_Body) error {
 		return errors.New("player not found")
 	}
 
+	var typ domain.LifeEventType
+
+	switch b.Type {
+	case oapi.LifeEventTypeDamaged:
+		typ = domain.LifeEventTypeDamaged
+	case oapi.LifeEventTypeHealed:
+		typ = domain.LifeEventTypeHealed
+	default:
+		return errors.New("invalid life type")
+	}
+
 	now := jst.Now()
 	target.LifeEvents = append(target.LifeEvents, domain.NewLifeEvent(
 		uuid.New(),
-		domain.LifeEventDecrement,
+		typ,
+		b.Diff,
 		now,
 	))
 
 	switch b.Type {
-	case oapi.LifeEventTypeDecrement:
+	case oapi.LifeEventTypeDamaged:
 		life := consts.MaxLife
 
 		for _, e := range target.LifeEvents {
-			if e.Type == domain.LifeEventDecrement {
+			if e.Type == domain.LifeEventTypeDamaged {
 				life--
 			}
 		}
@@ -48,6 +60,9 @@ func (h *wsHandler) handleLifeEvent(body oapi.WsRequest_Body) error {
 		if err := h.sender.Broadcast(h.room.ID, res); err != nil {
 			return err
 		}
+
+	case oapi.LifeEventTypeHealed:
+		// TODO: impl
 
 	default:
 		return errors.New("invalid life type")

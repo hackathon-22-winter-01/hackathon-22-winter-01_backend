@@ -25,7 +25,8 @@ const (
 
 // Defines values for LifeEventType.
 const (
-	LifeEventTypeDecrement LifeEventType = "decrement"
+	LifeEventTypeDamaged LifeEventType = "damaged"
+	LifeEventTypeHealed  LifeEventType = "healed"
 )
 
 // Defines values for WsRequestType.
@@ -87,7 +88,7 @@ type Player struct {
 	Id PlayerId `json:"id"`
 
 	// Life プレイヤーのライフ
-	Life int `json:"life"`
+	Life float32 `json:"life"`
 
 	// MainRail レール情報
 	MainRail Rail `json:"mainRail"`
@@ -169,6 +170,9 @@ type WsRequestBodyGameStartEvent struct {
 
 // WsRequestBodyLifeEvent ライフに関するイベントの情報
 type WsRequestBodyLifeEvent struct {
+	// Diff ライフの変化量
+	Diff float32 `json:"diff"`
+
 	// Type ライフに関するイベントの種類
 	Type LifeEventType `json:"type"`
 }
@@ -241,7 +245,7 @@ type WsResponseBodyGameStarted struct {
 // WsResponseBodyLifeChanged ライフの変動情報
 type WsResponseBodyLifeChanged struct {
 	// New 変動後のライフ
-	New int `json:"new"`
+	New float32 `json:"new"`
 
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`

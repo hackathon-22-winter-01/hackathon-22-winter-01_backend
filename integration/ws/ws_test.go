@@ -159,7 +159,8 @@ func TestWs(t *testing.T) {
 		b := oapi.WsRequest_Body{}
 		require.NoError(t, b.FromWsRequestBodyLifeEvent(
 			oapi.WsRequestBodyLifeEvent{
-				Type: oapi.LifeEventTypeDecrement,
+				Type: oapi.LifeEventTypeDamaged,
+				Diff: 1,
 			},
 		))
 		mustWriteWsRequest(t, conns[0], oapi.WsRequestTypeLifeEvent, b)
@@ -172,7 +173,7 @@ func TestWs(t *testing.T) {
 			require.Equal(t, oapi.WsResponseTypeLifeChanged, res.Type)
 			require.Equal(t, oapi.WsResponseBodyLifeChanged{
 				PlayerId: pids[0],
-				New:      2,
+				New:      99,
 			}, resbody)
 		})
 	})

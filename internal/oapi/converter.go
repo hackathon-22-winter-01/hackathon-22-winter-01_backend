@@ -16,8 +16,13 @@ func PlayerFromDomain(dp *domain.Player) Player {
 	)
 
 	for _, le := range dp.LifeEvents {
-		if le.Type == domain.LifeEventDecrement {
-			life--
+		switch le.Type {
+		case domain.LifeEventTypeDamaged:
+			life -= le.Diff
+		case domain.LifeEventTypeHealed:
+			life += le.Diff
+		default:
+			log.L().Warn("invalid life event type", zap.Uint8("type", uint8(le.Type)))
 		}
 	}
 
