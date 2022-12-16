@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository/repoimpl"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws"
@@ -27,15 +28,28 @@ func TestWs(t *testing.T) {
 		wg        = new(sync.WaitGroup)
 	)
 
-	// Streamerを起動
+	// プレイヤーIDのセットアップ
+	for i := 0; i < consts.PlayerLimit; i++ {
+		pids[i] = uuid.New()
+	}
+
+	// 部屋を作成
 	roomRepo := repoimpl.NewRoomRepository()
+	room, err := roomRepo.CreateRoom(domain.NewPlayer(pids[0], "player0"))
+	require.NoError(t, err)
+
+	// プレイヤー1~3を部屋に参加
+	for i := 1; i < consts.PlayerLimit; i++ {
+		err := roomRepo.JoinRoom(room.ID, domain.NewPlayer(pids[i], fmt.Sprintf("player%d", i)))
+		require.NoError(t, err)
+	}
+
+	// Streamerを起動
 	h := ws.NewHub(roomRepo)
 	s := ws.NewStreamer(h, echo.New().Logger) // TODO: loggerのためにechoを使っているのを直す
 
 	// n個のクライアントをWebsocketに接続
 	for i := 0; i < consts.PlayerLimit; i++ {
-		pids[i] = uuid.New()
-
 		// Websocketクライアントを接続
 		server := httptest.NewServer(&httpHandler{t, s, pids[i]})
 		server.URL = "ws" + strings.TrimPrefix(server.URL, "http")
