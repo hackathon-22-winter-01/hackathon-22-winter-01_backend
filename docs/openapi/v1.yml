@@ -207,8 +207,12 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/RailId'
+        hasBlock:
+          type: boolean
+          description: 妨害されているかどうか
       required:
         - id
+        - hasBlock
       description: レール情報
     CreateRoomRequest:
       title: CreateRoomRequest

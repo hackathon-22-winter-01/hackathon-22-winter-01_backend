@@ -100,6 +100,9 @@ type PlayerId = openapi_types.UUID
 
 // Rail レール情報
 type Rail struct {
+	// HasBlock 妨害されているかどうか
+	HasBlock bool `json:"hasBlock"`
+
 	// Id レールUUID
 	Id RailId `json:"id"`
 }
