@@ -123,8 +123,14 @@ components:
       title: CardType
       type: string
       enum:
-        - createRail
-        - createBlock
+        - yolo
+        - galaxyBrain
+        - openSourcerer
+        - refactoring
+        - pairExtraordinaire
+        - lgtm
+        - pullShark
+        - starstruck
       description: カードの効果の種類
     LifeEventType:
       title: LifeEventType

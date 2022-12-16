@@ -41,12 +41,12 @@ func CardFromDomain(dc *domain.Card) Card {
 	var typ CardType
 
 	switch dc.Type {
-	case domain.CardTypeCreateRail:
-		typ = CardTypeCreateRail
-	case domain.CardTypeCreateBlock:
-		typ = CardTypeCreateBlock
+	case domain.CardTypePullShark:
+		typ = CardTypePullShark
+	case domain.CardTypePairExtraordinaire:
+		typ = CardTypePairExtraordinaire
 	default:
-		typ = CardTypeCreateRail
+		typ = CardTypePullShark
 
 		log.L().Error("unknown card type", zap.String("type", string(dc.Type)))
 	}
