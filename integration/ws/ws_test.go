@@ -44,7 +44,8 @@ func TestWs(t *testing.T) {
 	}
 
 	// Streamerを起動
-	h := ws.NewHub(roomRepo)
+	cardRepo := repoimpl.NewCardRepository()
+	h := ws.NewHub(roomRepo, cardRepo)
 	s := ws.NewStreamer(h)
 
 	// n個のクライアントをWebsocketに接続

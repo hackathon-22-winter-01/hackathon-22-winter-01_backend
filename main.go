@@ -25,7 +25,8 @@ func main() {
 	e.Use(middleware.Recover())
 
 	roomRepo := repoimpl.NewRoomRepository()
-	hub := ws.NewHub(roomRepo)
+	cardRepo := repoimpl.NewCardRepository()
+	hub := ws.NewHub(roomRepo, cardRepo)
 	streamer := ws.NewStreamer(hub)
 	h := handler.New(roomRepo, streamer)
 	oapi.RegisterHandlersWithBaseURL(e, h, baseURL)

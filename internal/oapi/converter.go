@@ -3,6 +3,8 @@ package oapi
 import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/log"
+	"go.uber.org/zap"
 )
 
 func PlayerFromDomain(dp *domain.Player) Player {
@@ -32,5 +34,25 @@ func PlayerFromDomain(dp *domain.Player) Player {
 		Life:     life,
 		MainRail: Rail{Id: dp.Main.ID},
 		Rails:    rails,
+	}
+}
+
+func CardFromDomain(dc *domain.Card) Card {
+	var typ CardType
+
+	switch dc.Type {
+	case domain.CardTypeCreateRail:
+		typ = CardTypeCreateRail
+	case domain.CardTypeCreateBlock:
+		typ = CardTypeCreateBlock
+	default:
+		typ = CardTypeCreateRail
+
+		log.L().Error("unknown card type", zap.String("type", string(dc.Type)))
+	}
+
+	return Card{
+		Id:   dc.ID,
+		Type: typ,
 	}
 }
