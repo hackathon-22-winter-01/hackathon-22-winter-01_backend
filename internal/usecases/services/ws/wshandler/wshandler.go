@@ -15,6 +15,7 @@ type WsHandler interface {
 
 type WsResponseSender interface {
 	Broadcast(roomID uuid.UUID, res *oapi.WsResponse) error
+	BroadcastDynamic(roomID uuid.UUID, resFunc func() (*oapi.WsResponse, error)) error
 }
 
 type wsHandler struct {
