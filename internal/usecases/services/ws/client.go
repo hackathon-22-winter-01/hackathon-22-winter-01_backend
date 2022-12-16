@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws/wshandler"
-	"github.com/labstack/echo/v4"
 	"github.com/shiguredo/websocket"
 )
 
@@ -29,16 +28,14 @@ type Client struct {
 	userID uuid.UUID
 	conn   *websocket.Conn
 	send   chan *oapi.WsResponse
-	logger echo.Logger
 }
 
-func NewClient(hub *Hub, userID uuid.UUID, conn *websocket.Conn, logger echo.Logger) *Client {
+func NewClient(hub *Hub, userID uuid.UUID, conn *websocket.Conn) *Client {
 	return &Client{
 		hub:    hub,
 		userID: userID,
 		conn:   conn,
 		send:   make(chan *oapi.WsResponse, 256),
-		logger: logger,
 	}
 }
 

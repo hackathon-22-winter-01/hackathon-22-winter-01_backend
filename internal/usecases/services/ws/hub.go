@@ -3,7 +3,9 @@ package ws
 import (
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/log"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/sync"
+	"go.uber.org/zap"
 )
 
 type Hub struct {
@@ -34,10 +36,10 @@ func (h *Hub) Run() {
 	for {
 		select {
 		case client := <-h.registerCh:
-			client.logger.Infof("register client: %s", client.userID.String())
+			log.L().Info("new client has registered", zap.Stringer("userID", client.userID))
 			h.clients.LoadOrStore(client.userID, client)
 		case client := <-h.unregisterCh:
-			client.logger.Infof("unregister client: %s", client.userID.String())
+			log.L().Info("a client has unregistered", zap.Stringer("userID", client.userID))
 			close(client.send)
 			h.clients.Delete(client.userID)
 		}
