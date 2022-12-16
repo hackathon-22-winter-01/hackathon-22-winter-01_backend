@@ -2,6 +2,7 @@ package wshandler
 
 import (
 	"errors"
+	"math/rand"
 
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
@@ -28,7 +29,42 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 
 	switch b.Type {
 	case oapi.CardTypeYolo:
-		return nil
+		if l := len(target.Events); l > 0 {
+			lastEvent := target.Events[l-1]
+			beforeRails = lastEvent.AfterRails
+		}
+
+		var (
+			childID uuid.UUID
+		)
+
+		rails := []*domain.Rail{}
+		copy(rails, beforeRails)
+
+		rand.Shuffle(len(rails), func(i, j int) { rails[i], rails[j] = rails[j], rails[i] })
+
+		for _, rail := range rails {
+			if rail.ID != target.Main.ID && !rail.HasBlock {
+				childID = rail.ID
+				break
+			}
+		}
+
+		if childID != uuid.Nil {
+			for _, rail := range rails {
+				if rail.ID != childID {
+					afterRails = append(afterRails, rail)
+				}
+			}
+
+			res, err = oapi.NewWsResponseRailMerged(jst.Now(), childID, target.Main.ID, b.TargetId)
+			if err != nil {
+				return err
+			}
+		} else {
+			afterRails = beforeRails
+			res = oapi.WsResponseFromType(oapi.WsResponseTypeNoop, jst.Now())
+		}
 
 	case oapi.CardTypeGalaxyBrain:
 		return nil
