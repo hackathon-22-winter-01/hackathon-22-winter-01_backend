@@ -45,7 +45,7 @@ func (r *roomRepository) JoinRoom(roomID uuid.UUID, player *domain.Player) error
 }
 
 func (r *roomRepository) CreateRoom(player *domain.Player) (*domain.Room, error) {
-	roomID := uuid.New()
+	roomID := repository.CommonRoomID // TODO: あとでランダムにする
 
 	room := domain.NewRoom(roomID)
 
