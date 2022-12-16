@@ -60,7 +60,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		if childID != uuid.Nil && parentID != uuid.Nil {
 			// 親が見つかったら、親の子を消す
 			for _, rail := range rails {
-				if rail.ID != target.Main.ID {
+				if rail.ID != childID {
 					afterRails = append(afterRails, rail)
 				}
 			}
