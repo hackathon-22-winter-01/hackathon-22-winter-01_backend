@@ -41,9 +41,10 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 
 		// 一番最後のブロックの親を探す
 		for i := len(beforeRails) - 1; i > 0; i-- {
-			if beforeRails[i].HasBlock {
+			if !beforeRails[i].HasBlock {
 				childID = beforeRails[i].ID
 				parentID = beforeRails[i-1].ID
+
 				break
 			}
 		}
@@ -51,15 +52,13 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		// 親が見つかったら、親の子を消す
 		if childID != uuid.Nil && parentID != uuid.Nil {
 			afterRails = beforeRails[:len(beforeRails)-1]
+			res, err = oapi.NewWsResponseRailMerged(jst.Now(), childID, parentID, b.TargetId)
+			// マージしたことを通知
+			if err != nil {
+				return err
+			}
 		} else {
-			// 見つからなかったら、何もしない
-			return nil
-		}
-
-		// マージしたことを通知
-		res, err = oapi.NewWsResponseRailMerged(jst.Now(), childID, parentID, b.TargetId)
-		if err != nil {
-			return err
+			res = oapi.WsResponseFromType(oapi.WsResponseTypeNoop, jst.Now())
 		}
 
 	case oapi.CardTypeGalaxyBrain:

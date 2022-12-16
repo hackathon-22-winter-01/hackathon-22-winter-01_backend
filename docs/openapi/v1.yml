@@ -346,6 +346,7 @@ components:
         - railCreated
         - railMerged
         - blockCreated
+        - noop
       description: イベントの種類
     WsResponseBodyConnected:
       type: object

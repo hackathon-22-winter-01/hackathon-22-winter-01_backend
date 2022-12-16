@@ -43,6 +43,7 @@ const (
 	WsResponseTypeConnected    WsResponseType = "connected"
 	WsResponseTypeGameStarted  WsResponseType = "gameStarted"
 	WsResponseTypeLifeChanged  WsResponseType = "lifeChanged"
+	WsResponseTypeNoop         WsResponseType = "noop"
 	WsResponseTypeRailCreated  WsResponseType = "railCreated"
 	WsResponseTypeRailMerged   WsResponseType = "railMerged"
 )
