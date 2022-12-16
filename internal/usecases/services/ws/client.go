@@ -57,7 +57,12 @@ func (c *Client) readPump() error {
 		return c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	})
 
-	wh := wshandler.NewWsHandler(c.userID, c.hub.roomRepo, c)
+	room, err := c.hub.roomRepo.FindRoomFromPlayerID(c.userID)
+	if err != nil {
+		return err
+	}
+
+	wh := wshandler.NewWsHandler(c.userID, room, c)
 
 	for {
 		req := new(oapi.WsRequest)

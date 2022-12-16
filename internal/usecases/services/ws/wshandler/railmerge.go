@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
 )
 
@@ -21,14 +20,9 @@ func (h *wsHandler) handleRailMergeEvent(body oapi.WsRequest_Body) error {
 		return err
 	}
 
-	h.sender.Bloadcast(repository.CommonRoomID, res)
+	h.sender.Bloadcast(h.room.ID, res)
 
-	room, err := h.roomRepo.FindRoom(repository.CommonRoomID)
-	if err != nil {
-		return err
-	}
-
-	target, ok := room.FindPlayer(h.playerID)
+	target, ok := h.room.FindPlayer(h.playerID)
 	if !ok {
 		return errors.New("player not found")
 	}

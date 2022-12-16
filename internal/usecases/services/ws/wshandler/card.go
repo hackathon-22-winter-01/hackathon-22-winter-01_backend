@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
 )
 
@@ -16,12 +15,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		return err
 	}
 
-	room, err := h.roomRepo.FindRoom(repository.CommonRoomID)
-	if err != nil {
-		return err
-	}
-
-	target, ok := room.FindPlayer(b.TargetId)
+	target, ok := h.room.FindPlayer(b.TargetId)
 	if !ok {
 		return errors.New("player not found")
 	}
@@ -61,7 +55,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		return errors.New("invalid card type")
 	}
 
-	h.sender.Bloadcast(room.ID, res)
+	h.sender.Bloadcast(h.room.ID, res)
 
 	target.Events = append(target.Events, domain.NewRailEvent(
 		uuid.New(),

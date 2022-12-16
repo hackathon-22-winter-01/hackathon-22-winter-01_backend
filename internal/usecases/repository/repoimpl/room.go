@@ -29,6 +29,26 @@ func (r *roomRepository) FindRoom(roomID uuid.UUID) (*domain.Room, error) {
 	return room, nil
 }
 
+func (r *roomRepository) FindRoomFromPlayerID(playerID uuid.UUID) (*domain.Room, error) {
+	var room *domain.Room
+
+	r.roomMap.Range(func(_ uuid.UUID, value *domain.Room) bool {
+		for _, player := range value.Players {
+			if player.ID == playerID {
+				room = value
+				return false
+			}
+		}
+		return true
+	})
+
+	if room == nil {
+		return nil, errors.New("指定したプレイヤーが属する部屋は存在しません")
+	}
+
+	return room, nil
+}
+
 func (r *roomRepository) JoinRoom(roomID uuid.UUID, player *domain.Player) error {
 	room, ok := r.roomMap.Load(roomID)
 	if !ok {
@@ -45,7 +65,7 @@ func (r *roomRepository) JoinRoom(roomID uuid.UUID, player *domain.Player) error
 }
 
 func (r *roomRepository) CreateRoom(player *domain.Player) (*domain.Room, error) {
-	roomID := repository.CommonRoomID // TODO: あとでランダムにする
+	roomID := uuid.New()
 
 	room := domain.NewRoom(roomID)
 
