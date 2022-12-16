@@ -45,7 +45,9 @@ func (h *wsHandler) handleLifeEvent(body oapi.WsRequest_Body) error {
 			return err
 		}
 
-		h.sender.Broadcast(h.room.ID, res)
+		if err := h.sender.Broadcast(h.room.ID, res); err != nil {
+			return err
+		}
 
 	default:
 		return errors.New("invalid life type")

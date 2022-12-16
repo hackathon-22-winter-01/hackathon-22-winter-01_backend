@@ -129,10 +129,20 @@ func (c *Client) writePump() error {
 	}
 }
 
-func (c *Client) Broadcast(roomID uuid.UUID, res *oapi.WsResponse) {
-	// TODO: 全クライアントに送信してしまうためルーム内のクライアントだけに絞る
+func (c *Client) Broadcast(roomID uuid.UUID, res *oapi.WsResponse) error {
+	room, err := c.hub.roomRepo.FindRoom(roomID)
+	if err != nil {
+		return err
+	}
+
 	c.hub.clients.Range(func(_ uuid.UUID, client *Client) bool {
+		if _, ok := room.FindPlayer(client.userID); !ok {
+			return true
+		}
+
 		client.send <- res
 		return true
 	})
+
+	return nil
 }
