@@ -185,8 +185,14 @@ type WsResponse_Body struct {
 
 // WsResponseBodyBlockCreated 新規障害物の作成情報
 type WsResponseBodyBlockCreated struct {
+	// Attack 障害物と衝突したときに与えるダメージ
+	Attack int `json:"attack"`
+
 	// AttackerId プレイヤーUUID
 	AttackerId PlayerId `json:"attackerId"`
+
+	// Delay 障害物を解消するために必要な秒数
+	Delay int `json:"delay"`
 
 	// TargetId プレイヤーUUID
 	TargetId PlayerId `json:"targetId"`

@@ -39,6 +39,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 			return err
 		}
 
+	// TODO: Pair ExtraordinaireとLGTMで値を変える
 	case oapi.CardTypeCreateBlock:
 		if l := len(target.Events); l > 0 {
 			lastEvent := target.Events[l-1]
@@ -46,7 +47,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 			afterRails = lastEvent.AfterRails
 		}
 
-		res, err = oapi.NewWsResponseBlockCreated(jst.Now(), h.playerID, b.TargetId)
+		res, err = oapi.NewWsResponseBlockCreated(jst.Now(), h.playerID, b.TargetId, 2, 30)
 		if err != nil {
 			return err
 		}

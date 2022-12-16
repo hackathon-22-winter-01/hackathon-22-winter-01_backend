@@ -430,9 +430,21 @@ components:
           $ref: '#/components/schemas/PlayerId'
         targetId:
           $ref: '#/components/schemas/PlayerId'
+        delay:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 障害物を解消するために必要な秒数
+        attack:
+          type: integer
+          minimum: 10
+          maximum: 50
+          description: 障害物と衝突したときに与えるダメージ
       required:
         - attackerId
         - targetId
+        - delay
+        - attack
       description: 新規障害物の作成情報
 tags:
   - name: ping
