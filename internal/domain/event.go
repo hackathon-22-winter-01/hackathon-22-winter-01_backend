@@ -82,11 +82,10 @@ func CalculateLife(events []*LifeEvent) float32 {
 // RailEvent プレイヤーのレール関するイベントの情報
 type RailEvent struct {
 	commonEvent
-	Type        RailEventType
-	AttackerID  uuid.UUID
-	TargetID    uuid.UUID
-	BeforeRails []*Rail
-	AfterRails  []*Rail
+	Type       RailEventType
+	AttackerID uuid.UUID
+	TargetID   uuid.UUID
+	AfterRails []*Rail
 }
 
 // RailEventType イベントの種類
@@ -101,17 +100,16 @@ const (
 	RailEventMerged
 )
 
-func NewRailEvent(id uuid.UUID, cardType CardType, typ RailEventType, attackerID, targetID uuid.UUID, beforeRails, afterRails []*Rail) *RailEvent {
+func NewRailEvent(id uuid.UUID, cardType CardType, typ RailEventType, attackerID, targetID uuid.UUID, afterRails []*Rail) *RailEvent {
 	return &RailEvent{
 		commonEvent: commonEvent{
 			ID:        id,
 			CardType:  cardType,
 			CreatedAt: jst.Now(),
 		},
-		Type:        typ,
-		AttackerID:  attackerID,
-		TargetID:    targetID,
-		BeforeRails: beforeRails,
-		AfterRails:  afterRails,
+		Type:       typ,
+		AttackerID: attackerID,
+		TargetID:   targetID,
+		AfterRails: afterRails,
 	}
 }

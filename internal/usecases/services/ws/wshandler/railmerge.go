@@ -53,7 +53,6 @@ func (h *wsHandler) handleRailMergeEvent(body oapi.WsRequest_Body) error {
 		domain.RailEventMerged,
 		uuid.Nil,
 		h.playerID,
-		beforeRails,
 		afterRails,
 	))
 

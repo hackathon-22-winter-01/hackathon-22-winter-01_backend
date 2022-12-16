@@ -22,14 +22,12 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 	}
 
 	var (
-		beforeRails = []*domain.Rail{target.Main}
-		afterRails  = []*domain.Rail{target.Main}
-		res         *oapi.WsResponse
+		afterRails = []*domain.Rail{target.Main}
+		res        *oapi.WsResponse
 	)
 
 	if l := len(target.RailEvents); l > 0 {
 		lastEvent := target.RailEvents[l-1]
-		beforeRails = lastEvent.AfterRails
 		afterRails = lastEvent.AfterRails
 	}
 
@@ -38,7 +36,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		var childID uuid.UUID
 
 		rails := []*domain.Rail{}
-		copy(rails, beforeRails)
+		copy(rails, afterRails)
 
 		rand.Shuffle(len(rails), func(i, j int) { rails[i], rails[j] = rails[j], rails[i] })
 
@@ -112,7 +110,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		}
 
 	case oapi.CardTypePullShark:
-		afterRails = append(beforeRails, domain.NewRail())
+		afterRails = append(afterRails, domain.NewRail())
 
 		res, err = oapi.NewWsResponseRailCreated(jst.Now(), uuid.New(), target.Main.ID, h.playerID, b.TargetId)
 		if err != nil {
@@ -139,7 +137,6 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		domain.RailEventCreated, // TODO: とは限らないのでBlockEvent, LifeEvent, RailEventに分ける
 		h.playerID,
 		target.ID,
-		beforeRails,
 		afterRails,
 	))
 
