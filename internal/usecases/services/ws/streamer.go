@@ -7,8 +7,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
-	"github.com/labstack/echo/v4"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/log"
 	"github.com/shiguredo/websocket"
+	"go.uber.org/zap"
 )
 
 type Streamer interface {
@@ -19,10 +20,9 @@ type Streamer interface {
 type streamer struct {
 	hub      *Hub
 	upgrader websocket.Upgrader
-	logger   echo.Logger
 }
 
-func NewStreamer(hub *Hub, logger echo.Logger) Streamer {
+func NewStreamer(hub *Hub) Streamer {
 	stream := &streamer{
 		hub: hub,
 		upgrader: websocket.Upgrader{
@@ -31,7 +31,6 @@ func NewStreamer(hub *Hub, logger echo.Logger) Streamer {
 				return true
 			},
 		},
-		logger: logger,
 	}
 	stream.Run()
 
@@ -55,12 +54,12 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.U
 
 	go func() {
 		if err := client.writePump(); err != nil {
-			s.logger.Error(err)
+			log.L().Error("failed to write pump", zap.Error(err))
 		}
 	}()
 	go func() {
 		if err := client.readPump(); err != nil {
-			s.logger.Error(err)
+			log.L().Error("failed to read pump", zap.Error(err))
 		}
 	}()
 
@@ -75,7 +74,7 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, userID uuid.U
 }
 
 func (s *streamer) addNewClient(userID uuid.UUID, conn *websocket.Conn) (*Client, error) {
-	client := NewClient(s.hub, userID, conn, s.logger)
+	client := NewClient(s.hub, userID, conn)
 	s.hub.Register(client)
 	s.hub.clients.LoadOrStore(userID, client)
 

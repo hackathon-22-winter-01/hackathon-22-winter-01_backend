@@ -7,6 +7,8 @@ import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository/repoimpl"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/log"
+	"go.uber.org/zap"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -23,11 +25,11 @@ func main() {
 
 	roomRepo := repoimpl.NewRoomRepository()
 	hub := ws.NewHub(roomRepo)
-	streamer := ws.NewStreamer(hub, e.Logger)
+	streamer := ws.NewStreamer(hub)
 	h := handler.New(roomRepo, streamer)
 	oapi.RegisterHandlersWithBaseURL(e, h, baseURL)
 
-	e.Logger.Fatal(e.Start(port))
+	log.L().Fatal("exit", zap.Error(e.Start(port)))
 }
 
 func getEnv(key string, def string) string {
