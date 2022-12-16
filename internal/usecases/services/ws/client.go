@@ -42,10 +42,7 @@ func NewClient(hub *Hub, userID uuid.UUID, conn *websocket.Conn) *Client {
 }
 
 func (c *Client) readPump() error {
-	defer func() {
-		c.hub.Unregister(c)
-		c.conn.Close()
-	}()
+	defer c.hub.Unregister(c)
 	c.conn.SetReadLimit(maxMessageSize)
 
 	if err := c.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
