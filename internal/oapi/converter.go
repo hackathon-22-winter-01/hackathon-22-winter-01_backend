@@ -9,10 +9,10 @@ import (
 func PlayerFromDomain(dp *domain.Player) Player {
 	rails := []Rail{{Id: dp.Main.ID, HasBlock: false}}
 
-	if eventLen := len(dp.Events); eventLen > 0 {
-		rails = make([]Rail, len(dp.Events[eventLen-1].AfterRails))
+	if l := len(dp.BranchEvents); l > 0 {
+		rails = make([]Rail, len(dp.BranchEvents[l-1].AfterRails))
 
-		for i, r := range dp.Events[eventLen-1].AfterRails {
+		for i, r := range dp.BranchEvents[l-1].AfterRails {
 			rails[i] = Rail{Id: r.ID}
 		}
 	}

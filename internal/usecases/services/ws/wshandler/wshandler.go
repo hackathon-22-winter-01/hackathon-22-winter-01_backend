@@ -42,9 +42,6 @@ func (h *wsHandler) HandleEvent(req *oapi.WsRequest) error {
 	case oapi.WsRequestTypeLifeEvent:
 		return h.handleLifeEvent(req.Body)
 
-	case oapi.WsRequestTypeRailMergeEvent:
-		return h.handleRailMergeEvent(req.Body)
-
 	default:
 		return errors.New("invalid request type")
 	}

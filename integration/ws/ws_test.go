@@ -175,29 +175,4 @@ func TestWs(t *testing.T) {
 			}, resbody)
 		})
 	})
-
-	t.Run("プレイヤー0がレールをmainにマージする", func(t *testing.T) {
-		// プレイヤー0がレールマージのリクエストを出す
-		b := oapi.WsRequest_Body{}
-		require.NoError(t, b.FromWsRequestBodyRailMergeEvent(
-			oapi.WsRequestBodyRailMergeEvent{
-				ChildId:  rails[0][1].Id, // rails[0] = [main, プレイヤー1のカードで生成されたレール]
-				ParentId: mainRails[0].Id,
-			},
-		))
-		mustWriteWsRequest(t, conns[0], oapi.WsRequestTypeRailMergeEvent, b)
-
-		// 各プレイヤーは結果を受信する
-		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
-			res := readWsResponse(t, c)
-			resbody, err := res.Body.AsWsResponseBodyRailMerged()
-			require.NoError(t, err)
-			require.Equal(t, oapi.WsResponseTypeRailMerged, res.Type)
-			require.Equal(t, oapi.WsResponseBodyRailMerged{
-				ChildId:  rails[0][1].Id,
-				ParentId: mainRails[0].Id,
-				PlayerId: pids[0],
-			}, resbody)
-		})
-	})
 }

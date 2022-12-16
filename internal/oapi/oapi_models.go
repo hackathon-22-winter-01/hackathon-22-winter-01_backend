@@ -34,7 +34,6 @@ const (
 	WsRequestTypeCardEvent      WsRequestType = "cardEvent"
 	WsRequestTypeGameStartEvent WsRequestType = "gameStartEvent"
 	WsRequestTypeLifeEvent      WsRequestType = "lifeEvent"
-	WsRequestTypeRailMergeEvent WsRequestType = "railMergeEvent"
 )
 
 // Defines values for WsResponseType.
@@ -172,15 +171,6 @@ type WsRequestBodyLifeEvent struct {
 
 	// Type ライフに関するイベントの種類
 	Type LifeEventType `json:"type"`
-}
-
-// WsRequestBodyRailMergeEvent レールのマージに関するイベントの情報
-type WsRequestBodyRailMergeEvent struct {
-	// ChildId レールUUID
-	ChildId RailId `json:"childId"`
-
-	// ParentId レールUUID
-	ParentId RailId `json:"parentId"`
 }
 
 // WsRequestType イベントの種類
@@ -358,32 +348,6 @@ func (t *WsRequest_Body) FromWsRequestBodyCardEvent(v WsRequestBodyCardEvent) er
 
 // MergeWsRequestBodyCardEvent performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodyCardEvent
 func (t *WsRequest_Body) MergeWsRequestBodyCardEvent(v WsRequestBodyCardEvent) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JsonMerge(b, t.union)
-	t.union = merged
-	return err
-}
-
-// AsWsRequestBodyRailMergeEvent returns the union data inside the WsRequest_Body as a WsRequestBodyRailMergeEvent
-func (t WsRequest_Body) AsWsRequestBodyRailMergeEvent() (WsRequestBodyRailMergeEvent, error) {
-	var body WsRequestBodyRailMergeEvent
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromWsRequestBodyRailMergeEvent overwrites any union data inside the WsRequest_Body as the provided WsRequestBodyRailMergeEvent
-func (t *WsRequest_Body) FromWsRequestBodyRailMergeEvent(v WsRequestBodyRailMergeEvent) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeWsRequestBodyRailMergeEvent performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodyRailMergeEvent
-func (t *WsRequest_Body) MergeWsRequestBodyRailMergeEvent(v WsRequestBodyRailMergeEvent) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err

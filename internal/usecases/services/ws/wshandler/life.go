@@ -35,9 +35,10 @@ func (h *wsHandler) handleLifeEvent(body oapi.WsRequest_Body) error {
 	now := jst.Now()
 	target.LifeEvents = append(target.LifeEvents, domain.NewLifeEvent(
 		uuid.New(),
+		domain.CardTypeNone,
+		now,
 		typ,
 		b.Diff,
-		now,
 	))
 
 	switch b.Type {
@@ -46,7 +47,7 @@ func (h *wsHandler) handleLifeEvent(body oapi.WsRequest_Body) error {
 
 		for _, e := range target.LifeEvents {
 			if e.Type == domain.LifeEventTypeDamaged {
-				life--
+				life-- // TODO: diffを考慮する
 			}
 		}
 

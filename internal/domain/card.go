@@ -65,6 +65,10 @@ const (
 	// - 妨害値 : 5
 	// - 攻撃力 : 50
 	CardTypeStarstruck
+
+	// None
+	// - カードを使用しないイベント用
+	CardTypeNone
 )
 
 func NewCard(id uuid.UUID, typ CardType) *Card {
