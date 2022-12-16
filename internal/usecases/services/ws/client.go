@@ -58,7 +58,7 @@ func (c *Client) readPump() error {
 		return err
 	}
 
-	wh := wshandler.NewWsHandler(c.playerID, room, c.hub.cardRepo, c)
+	wh := wshandler.NewWsHandler(c.playerID, room, c)
 
 	for {
 		req := new(oapi.WsRequest)
