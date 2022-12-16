@@ -163,10 +163,7 @@ type WsRequestBodyCardEvent struct {
 }
 
 // WsRequestBodyGameStartEvent ゲーム開始時にサーバーに送信するオブジェクト
-type WsRequestBodyGameStartEvent struct {
-	// Name プレイヤーの名前
-	Name string `json:"name"`
-}
+type WsRequestBodyGameStartEvent = map[string]interface{}
 
 // WsRequestBodyLifeEvent ライフに関するイベントの情報
 type WsRequestBodyLifeEvent struct {

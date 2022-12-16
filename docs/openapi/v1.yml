@@ -288,12 +288,6 @@ components:
     WsRequestBodyGameStartEvent:
       title: WsRequestBodyGameStartEvent
       type: object
-      properties:
-        name:
-          type: string
-          description: プレイヤーの名前
-      required:
-        - name
       description: ゲーム開始時にサーバーに送信するオブジェクト
     WsRequestBodyLifeEvent:
       title: WsRequestBodyLifeEvent
