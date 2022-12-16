@@ -135,7 +135,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 
 	target.Events = append(target.Events, domain.NewRailEvent(
 		uuid.New(),
-		domain.RailEventCreated,
+		domain.RailEventCreated, // TODO: とは限らないのでBlockEvent, LifeEvent, RailEventに分ける
 		h.playerID,
 		target.ID,
 		beforeRails,
