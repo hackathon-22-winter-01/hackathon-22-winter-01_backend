@@ -27,16 +27,16 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		res         *oapi.WsResponse
 	)
 
+	eventLen := len(target.Events)
+	if eventLen > 0 {
+		lastEvent := target.Events[eventLen-1]
+		beforeRails = lastEvent.AfterRails
+		afterRails = lastEvent.AfterRails
+	}
+
 	switch b.Type {
 	case oapi.CardTypeYolo:
-		if l := len(target.Events); l > 0 {
-			lastEvent := target.Events[l-1]
-			beforeRails = lastEvent.AfterRails
-		}
-
-		var (
-			childID uuid.UUID
-		)
+		var childID uuid.UUID
 
 		rails := []*domain.Rail{}
 		copy(rails, beforeRails)
@@ -50,41 +50,46 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 			}
 		}
 
-		if childID != uuid.Nil {
-			for _, rail := range rails {
-				if rail.ID != childID {
-					afterRails = append(afterRails, rail)
-				}
-			}
-
-			res, err = oapi.NewWsResponseRailMerged(jst.Now(), childID, target.Main.ID, b.TargetId)
-			if err != nil {
-				return err
-			}
-		} else {
-			afterRails = beforeRails
+		if childID == uuid.Nil {
 			res = oapi.WsResponseFromType(oapi.WsResponseTypeNoop, jst.Now())
+
+			break
+		}
+
+		for _, rail := range rails {
+			if rail.ID != childID {
+				afterRails = append(afterRails, rail)
+			}
+		}
+
+		res, err = oapi.NewWsResponseRailMerged(jst.Now(), childID, target.Main.ID, b.TargetId)
+		if err != nil {
+			return err
 		}
 
 	case oapi.CardTypeGalaxyBrain:
-		if l := len(target.Events); l > 0 {
-			lastEvent := target.Events[l-1]
-			beforeRails = lastEvent.AfterRails
-			afterRails = lastEvent.AfterRails
-		}
-
 		res = oapi.WsResponseFromType(oapi.WsResponseTypeNoop, jst.Now())
 
 	case oapi.CardTypeOpenSourcerer:
-		return nil
-
-	case oapi.CardTypeRefactoring:
-		if l := len(target.Events); l > 0 {
-			lastEvent := target.Events[l-1]
-			beforeRails = lastEvent.AfterRails
-			afterRails = lastEvent.AfterRails
+		p, ok := h.room.FindPlayer(h.playerID)
+		if !ok {
+			return errors.New("player not found")
 		}
 
+		now := jst.Now()
+		p.LifeEvents = append(p.LifeEvents, domain.NewLifeEvent(
+			uuid.New(),
+			domain.LifeEventTypeHealed,
+			30,
+			now,
+		))
+
+		res, err = oapi.NewWsResponseLifeChanged(now, h.playerID, domain.CalculateLife(p.LifeEvents))
+		if err != nil {
+			return err
+		}
+
+	case oapi.CardTypeRefactoring:
 		if h.playerID != b.TargetId {
 			return errors.New("targetID is different from playerID")
 		}
@@ -95,35 +100,19 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		}
 
 	case oapi.CardTypePairExtraordinaire:
-		if l := len(target.Events); l > 0 {
-			lastEvent := target.Events[l-1]
-			beforeRails = lastEvent.AfterRails
-			afterRails = lastEvent.AfterRails
-		}
-
 		res, err = oapi.NewWsResponseBlockCreated(jst.Now(), h.playerID, b.TargetId, 2, 30)
 		if err != nil {
 			return err
 		}
 
 	case oapi.CardTypeLgtm:
-		if l := len(target.Events); l > 0 {
-			lastEvent := target.Events[l-1]
-			beforeRails = lastEvent.AfterRails
-			afterRails = lastEvent.AfterRails
-		}
-
 		res, err = oapi.NewWsResponseBlockCreated(jst.Now(), h.playerID, b.TargetId, 3, 20)
 		if err != nil {
 			return err
 		}
 
 	case oapi.CardTypePullShark:
-		if l := len(target.Events); l > 0 {
-			lastEvent := target.Events[l-1]
-			beforeRails = lastEvent.AfterRails
-			afterRails = append(beforeRails, domain.NewRail())
-		}
+		afterRails = append(beforeRails, domain.NewRail())
 
 		res, err = oapi.NewWsResponseRailCreated(jst.Now(), uuid.New(), target.Main.ID, h.playerID, b.TargetId)
 		if err != nil {
@@ -131,12 +120,6 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		}
 
 	case oapi.CardTypeStarstruck:
-		if l := len(target.Events); l > 0 {
-			lastEvent := target.Events[l-1]
-			beforeRails = lastEvent.AfterRails
-			afterRails = lastEvent.AfterRails
-		}
-
 		res, err = oapi.NewWsResponseBlockCreated(jst.Now(), h.playerID, b.TargetId, 5, 50)
 		if err != nil {
 			return err

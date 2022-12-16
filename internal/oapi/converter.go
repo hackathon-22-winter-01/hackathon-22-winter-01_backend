@@ -2,29 +2,12 @@ package oapi
 
 import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/log"
 	"go.uber.org/zap"
 )
 
 func PlayerFromDomain(dp *domain.Player) Player {
-	var (
-		life  = consts.MaxLife
-		rails = []Rail{
-			{Id: dp.Main.ID},
-		}
-	)
-
-	for _, le := range dp.LifeEvents {
-		switch le.Type {
-		case domain.LifeEventTypeDamaged:
-			life -= le.Diff
-		case domain.LifeEventTypeHealed:
-			life += le.Diff
-		default:
-			log.L().Warn("invalid life event type", zap.Uint8("type", uint8(le.Type)))
-		}
-	}
+	rails := []Rail{{Id: dp.Main.ID, HasBlock: false}}
 
 	if eventLen := len(dp.Events); eventLen > 0 {
 		rails = make([]Rail, len(dp.Events[eventLen-1].AfterRails))
@@ -36,7 +19,7 @@ func PlayerFromDomain(dp *domain.Player) Player {
 
 	return Player{
 		Id:       dp.ID,
-		Life:     life,
+		Life:     domain.CalculateLife(dp.LifeEvents),
 		MainRail: Rail{Id: dp.Main.ID},
 		Rails:    rails,
 	}
