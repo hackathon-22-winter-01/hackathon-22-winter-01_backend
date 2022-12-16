@@ -105,7 +105,7 @@ func TestWs(t *testing.T) {
 			oapi.WsRequestBodyCardEvent{
 				Id:       uuid.New(),
 				TargetId: pids[0],
-				Type:     oapi.CardTypeCreateRail,
+				Type:     oapi.CardTypePullShark,
 			},
 		))
 		mustWriteWsRequest(t, conns[1], oapi.WsRequestTypeCardEvent, b)
@@ -135,7 +135,7 @@ func TestWs(t *testing.T) {
 			oapi.WsRequestBodyCardEvent{
 				Id:       uuid.New(),
 				TargetId: pids[0],
-				Type:     oapi.CardTypeCreateBlock,
+				Type:     oapi.CardTypePairExtraordinaire,
 			},
 		))
 		mustWriteWsRequest(t, conns[1], oapi.WsRequestTypeCardEvent, b)
