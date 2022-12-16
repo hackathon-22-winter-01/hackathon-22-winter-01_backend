@@ -51,8 +51,8 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 
 func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
 	rails := []*domain.Rail{targetPlayer.Main}
-	if l := len(targetPlayer.RailEvents); l > 0 {
-		rails = targetPlayer.RailEvents[l-1].AfterRails
+	if l := len(targetPlayer.BranchEvents); l > 0 {
+		rails = targetPlayer.BranchEvents[l-1].AfterRails
 	}
 
 	shuffledRails := []*domain.Rail{}
@@ -83,11 +83,11 @@ func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 		}
 	}
 
-	targetPlayer.RailEvents = append(targetPlayer.RailEvents, domain.NewRailEvent(
+	targetPlayer.BranchEvents = append(targetPlayer.BranchEvents, domain.NewBranchEvent(
 		uuid.New(),
 		domain.CardTypeYolo,
 		now,
-		domain.RailEventCreated,
+		domain.BranchEventCreated,
 		targetPlayer.Main.ID,
 		childID,
 		afterRails,
@@ -191,15 +191,15 @@ func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 
 func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
 	afterRails := []*domain.Rail{targetPlayer.Main}
-	if l := len(targetPlayer.RailEvents); l > 0 {
-		afterRails = append(targetPlayer.RailEvents[l-1].AfterRails, domain.NewRail())
+	if l := len(targetPlayer.BranchEvents); l > 0 {
+		afterRails = append(targetPlayer.BranchEvents[l-1].AfterRails, domain.NewRail())
 	}
 
-	targetPlayer.RailEvents = append(targetPlayer.RailEvents, domain.NewRailEvent(
+	targetPlayer.BranchEvents = append(targetPlayer.BranchEvents, domain.NewBranchEvent(
 		uuid.New(),
 		domain.CardTypePullShark,
 		now,
-		domain.RailEventCreated,
+		domain.BranchEventCreated,
 		h.playerID,
 		targetPlayer.ID,
 		afterRails,

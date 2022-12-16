@@ -82,29 +82,29 @@ func CalculateLife(events []*LifeEvent) float32 {
 	return life
 }
 
-// RailEvent プレイヤーのレール関するイベントの情報
-type RailEvent struct {
+// BranchEvent プレイヤーのレールの分岐/結合イベントの情報
+type BranchEvent struct {
 	commonEvent
-	Type       RailEventType
+	Type       BranchEventType
 	AttackerID uuid.UUID
 	TargetID   uuid.UUID
 	AfterRails []*Rail
 }
 
-// RailEventType イベントの種類
-type RailEventType uint8
+// BranchEventType イベントの種類
+type BranchEventType uint8
 
 const (
-	RailEventBlockCreated RailEventType = iota
-	RailEventCardReset
-	RailEventCardUsed
-	RailEventLifeChanged
-	RailEventCreated
-	RailEventMerged
+	BranchEventBlockCreated BranchEventType = iota
+	BranchEventCardReset
+	BranchEventCardUsed
+	BranchEventLifeChanged
+	BranchEventCreated
+	BranchEventMerged
 )
 
-func NewRailEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ RailEventType, attackerID, targetID uuid.UUID, afterRails []*Rail) *RailEvent {
-	return &RailEvent{
+func NewBranchEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ BranchEventType, attackerID, targetID uuid.UUID, afterRails []*Rail) *BranchEvent {
+	return &BranchEvent{
 		commonEvent: commonEvent{
 			ID:        id,
 			CardType:  cardType,
