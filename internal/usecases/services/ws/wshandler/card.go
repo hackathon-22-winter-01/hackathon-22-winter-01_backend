@@ -129,11 +129,10 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 		uuid.New(),
 		cardType,
 		now,
+		domain.BlockEventTypeCreated,
 		h.playerID,
 		targetPlayer.ID,
 		targetRailID,
-		delay,
-		attack,
 	))
 
 	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)
@@ -161,11 +160,10 @@ func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent
 		uuid.New(),
 		domain.CardTypePairExtraordinaire,
 		now,
+		domain.BlockEventTypeCreated,
 		h.playerID,
 		targetPlayer.ID,
 		targetRailID,
-		delay,
-		attack,
 	))
 
 	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)
@@ -193,11 +191,10 @@ func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 		uuid.New(),
 		cardType,
 		now,
+		domain.BlockEventTypeCreated,
 		h.playerID,
 		targetPlayer.ID,
 		targetRailID,
-		delay,
-		attack,
 	))
 
 	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)
@@ -249,11 +246,10 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 		uuid.New(),
 		domain.CardTypeLgtm,
 		now,
+		domain.BlockEventTypeCreated,
 		h.playerID,
 		targetPlayer.ID,
 		targetRailID,
-		delay,
-		attack,
 	))
 
 	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)

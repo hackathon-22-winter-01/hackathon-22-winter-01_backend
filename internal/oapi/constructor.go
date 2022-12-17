@@ -118,3 +118,17 @@ func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, target
 
 	return res, nil
 }
+
+func NewWsResponseBlockCanceled(eventTime time.Time, railID uuid.UUID) (*WsResponse, error) {
+	b := WsResponseBodyBlockCanceled{
+		RailId: railID,
+	}
+
+	res := WsResponseFromType(WsResponseTypeBlockCanceled, eventTime)
+
+	if err := res.Body.FromWsResponseBodyBlockCanceled(b); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
