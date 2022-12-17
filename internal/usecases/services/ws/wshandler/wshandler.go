@@ -45,6 +45,8 @@ func (h *wsHandler) HandleEvent(req *oapi.WsRequest) error {
 	case oapi.WsRequestTypeBlockEvent:
 		return h.handleBlockEvent(req.Body)
 
+	case oapi.WsRequestTypeCardForAllEvent:
+		return h.handleCardForAllEvent(req.Body)
 	default:
 		return errors.New("invalid request type")
 	}

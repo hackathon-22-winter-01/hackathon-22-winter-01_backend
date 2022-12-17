@@ -2,6 +2,7 @@ package domain
 
 import (
 	"errors"
+	"math/rand"
 
 	"github.com/google/uuid"
 )
@@ -76,6 +77,14 @@ const (
 	// - 攻撃力 : 90
 	// - 妨害値 : 1
 	CardTypeZeroDay
+  
+	// Ooops!!!
+	// - レア度 : 2
+	// - 即時自動発動
+	// - レールに妨害を発生させる
+	// - 妨害値 : 1 ~ 3
+	// - 攻撃力 : 妨害値 * 10
+	CardTypeOoops
 
 	// None
 	// - カードを使用しないイベント用
@@ -113,6 +122,9 @@ func (t CardType) DelayAndAttack() (int, float32, error) {
 		return 5, 50, nil
 	case CardTypeZeroDay:
 		return 1, 90, nil
+	case CardTypeOoops:
+		delay := rand.Intn(3) + 1
+		return delay, float32(delay) * 10, errCannotUse
 	case CardTypeNone:
 		return 0, 0, errCannotUse
 	default:

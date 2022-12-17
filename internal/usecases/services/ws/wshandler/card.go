@@ -52,6 +52,35 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 	return nil
 }
 
+func (h *wsHandler) handleCardForAllEvent(body oapi.WsRequest_Body) error {
+	b, err := body.AsWsRequestBodycardForAllEvent()
+	if err != nil {
+		return err
+	}
+
+	fmap := map[oapi.CardType]func(reqbody oapi.WsRequestBodycardForAllEvent, now time.Time) ([]*oapi.WsResponse, error){
+		oapi.CardTypeOoops: h.handleOoops,
+	}
+
+	f, ok := fmap[b.Type]
+	if !ok {
+		return errors.New("存在しないカードです")
+	}
+
+	res, err := f(b, jst.Now())
+	if err != nil {
+		return err
+	}
+
+	for _, r := range res {
+		if err := h.sender.Broadcast(h.room.ID, r); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
 	cardType := domain.CardTypeYolo
 
@@ -431,6 +460,50 @@ func (h *wsHandler) handleZeroDay(reqbody oapi.WsRequestBodyCardEvent, now time.
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	return res, nil
+}
+
+func (h *wsHandler) handleOoops(reqbody oapi.WsRequestBodycardForAllEvent, now time.Time) ([]*oapi.WsResponse, error) {
+	cardType := domain.CardTypeOoops
+
+	var res []*oapi.WsResponse
+
+	for _, targetPlayer := range h.room.Players {
+		targetRail, ok := getNonBlockingRail(targetPlayer, true)
+		if !ok {
+			targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
+				uuid.New(),
+				cardType,
+				now,
+			))
+
+			res = append(res, oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now))
+
+			continue
+		}
+
+		delay, attack, err := cardType.DelayAndAttack()
+		if err != nil {
+			return nil, err
+		}
+
+		targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
+			uuid.New(),
+			cardType,
+			now,
+			domain.BlockEventTypeCreated,
+			targetPlayer.ID,
+			targetRail.ID,
+		))
+
+		r, err := oapi.NewWsResponseBlockCreated(now, h.playerID, targetPlayer.ID, oapi.CardTypeOoops, delay, attack)
+		if err != nil {
+			return nil, err
+		}
+
+		res = append(res, r)
 	}
 
 	return res, nil
