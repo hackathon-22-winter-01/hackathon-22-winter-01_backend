@@ -197,4 +197,18 @@ func TestWs(t *testing.T) {
 				PlayerId:   ps[0].ID,
 			})
 	})
+
+	// プレイヤー1が"Galaxy Brain"カードを出す
+	// バックエンドでは何もしないので空のBodyを返す
+	oapi.WriteWsRequest(t, conns[1], tCardEvent, bCardEvent{
+		Id:       uuid.New(),
+		TargetId: ps[0].ID,
+		Type:     oapi.CardTypeGalaxyBrain,
+	})
+
+	// 各プレイヤーは結果を受信する
+	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		readWsResponse[any](t, c).
+			Equal(tNoop, nil)
+	})
 }
