@@ -130,18 +130,25 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 		return nil, errors.New("targetID is different from playerID")
 	}
 
+	cardType := domain.CardTypeRefactoring
+
+	delay, attack, err := cardType.DelayAndAttack()
+	if err != nil {
+		return nil, err
+	}
+
 	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
 		uuid.New(),
-		domain.CardTypeRefactoring,
+		cardType,
 		now,
 		h.playerID,
 		targetPlayer.ID,
-		reqbody.TargetId,
-		1,
-		5,
+		reqbody.TargetId, // TODO: RailIDではなくPlayerIDになってる
+		delay,
+		attack,
 	))
 
-	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, 1, 5)
+	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)
 	if err != nil {
 		return nil, err
 	}
@@ -150,6 +157,13 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 }
 
 func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	cardType := domain.CardTypePairExtraordinaire
+
+	delay, attack, err := cardType.DelayAndAttack()
+	if err != nil {
+		return nil, err
+	}
+
 	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
 		uuid.New(),
 		domain.CardTypePairExtraordinaire,
@@ -157,11 +171,11 @@ func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent
 		h.playerID,
 		targetPlayer.ID,
 		reqbody.TargetId,
-		2,
-		30,
+		delay,
+		attack,
 	))
 
-	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, 2, 30)
+	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)
 	if err != nil {
 		return nil, err
 	}
@@ -170,6 +184,13 @@ func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent
 }
 
 func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	cardType := domain.CardTypeLgtm
+
+	delay, attack, err := cardType.DelayAndAttack()
+	if err != nil {
+		return nil, err
+	}
+
 	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
 		uuid.New(),
 		domain.CardTypeLgtm,
@@ -177,11 +198,11 @@ func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 		h.playerID,
 		targetPlayer.ID,
 		reqbody.TargetId,
-		3,
-		20,
+		delay,
+		attack,
 	))
 
-	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, 3, 20)
+	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)
 	if err != nil {
 		return nil, err
 	}
@@ -214,6 +235,13 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 }
 
 func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	cardType := domain.CardTypeStarstruck
+
+	delay, attack, err := cardType.DelayAndAttack()
+	if err != nil {
+		return nil, err
+	}
+
 	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
 		uuid.New(),
 		domain.CardTypeLgtm,
@@ -221,11 +249,11 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 		h.playerID,
 		targetPlayer.ID,
 		reqbody.TargetId,
-		5,
-		50,
+		delay,
+		attack,
 	))
 
-	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, 5, 50)
+	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)
 	if err != nil {
 		return nil, err
 	}
