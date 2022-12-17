@@ -130,6 +130,11 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 		return nil, errors.New("targetID is different from playerID")
 	}
 
+	targetRailID, ok := getNonBlockingRailID(targetPlayer)
+	if !ok {
+		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
+	}
+
 	cardType := domain.CardTypeRefactoring
 
 	delay, attack, err := cardType.DelayAndAttack()
@@ -143,7 +148,7 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 		now,
 		h.playerID,
 		targetPlayer.ID,
-		reqbody.TargetId, // TODO: RailIDではなくPlayerIDになってる
+		targetRailID,
 		delay,
 		attack,
 	))
@@ -157,6 +162,11 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 }
 
 func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	targetRailID, ok := getNonBlockingRailID(targetPlayer)
+	if !ok {
+		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
+	}
+
 	cardType := domain.CardTypePairExtraordinaire
 
 	delay, attack, err := cardType.DelayAndAttack()
@@ -170,7 +180,7 @@ func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent
 		now,
 		h.playerID,
 		targetPlayer.ID,
-		reqbody.TargetId,
+		targetRailID,
 		delay,
 		attack,
 	))
@@ -184,6 +194,11 @@ func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent
 }
 
 func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	targetRailID, ok := getNonBlockingRailID(targetPlayer)
+	if !ok {
+		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
+	}
+
 	cardType := domain.CardTypeLgtm
 
 	delay, attack, err := cardType.DelayAndAttack()
@@ -193,11 +208,11 @@ func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 
 	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
 		uuid.New(),
-		domain.CardTypeLgtm,
+		cardType,
 		now,
 		h.playerID,
 		targetPlayer.ID,
-		reqbody.TargetId,
+		targetRailID,
 		delay,
 		attack,
 	))
@@ -235,6 +250,11 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 }
 
 func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	targetRailID, ok := getNonBlockingRailID(targetPlayer)
+	if !ok {
+		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
+	}
+
 	cardType := domain.CardTypeStarstruck
 
 	delay, attack, err := cardType.DelayAndAttack()
@@ -248,7 +268,7 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 		now,
 		h.playerID,
 		targetPlayer.ID,
-		reqbody.TargetId,
+		targetRailID,
 		delay,
 		attack,
 	))
@@ -259,4 +279,38 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 	}
 
 	return res, nil
+}
+
+// getNonBlockingRailID 現状のレールからランダムにブロック対象のレールを取得する
+// 既にブロックされているブランチは取得できない
+func getNonBlockingRailID(p *domain.Player) (uuid.UUID, bool) {
+	// 既にブロックされているブランチのIDを取得
+	blockBranchIDs := make(map[uuid.UUID]struct{})
+	for _, e := range p.BlockEvents {
+		// TODO: 解消時はmapから消す実装を書く
+		blockBranchIDs[e.TargetRailID] = struct{}{}
+	}
+
+	railIDs := []uuid.UUID{p.Main.ID}
+
+	if l := len(p.BranchEvents); l > 0 {
+		rails := p.BranchEvents[l-1].AfterRails
+		railIDs = make([]uuid.UUID, len(rails))
+
+		for i, r := range rails {
+			railIDs[i] = r.ID
+		}
+
+		rand.Shuffle(len(railIDs), func(i, j int) {
+			railIDs[i], railIDs[j] = railIDs[j], railIDs[i]
+		})
+	}
+
+	for _, id := range railIDs {
+		if _, ok := blockBranchIDs[id]; !ok {
+			return id, true
+		}
+	}
+
+	return uuid.Nil, false
 }
