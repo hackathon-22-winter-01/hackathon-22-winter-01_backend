@@ -278,7 +278,7 @@ components:
             - $ref: '#/components/schemas/WsRequestBodyLifeEvent'
             - $ref: '#/components/schemas/WsRequestBodyCardEvent'
             - $ref: '#/components/schemas/WsRequestBodyBlockEvent'
-            - $ref: '#/components/schemas/WsRequestBodyCardEventForAll'
+            - $ref: '#/components/schemas/WsRequestBodycardForAllEvent'
           description: イベントの情報
       required:
         - type
@@ -292,7 +292,7 @@ components:
         - lifeEvent
         - cardEvent
         - blockEvent
-        - cardEventForAll
+        - cardForAllEvent
       description: イベントの種類
     WsRequestBodyGameStartEvent:
       title: WsRequestBodyGameStartEvent
@@ -341,8 +341,8 @@ components:
         - cardType
         - rail
       description: ブロックに関するイベントの情報
-    WsRequestBodyCardEventForAll:
-      title: WsRequestBodyCardEventForAll
+    WsRequestBodycardForAllEvent:
+      title: WsRequestBodycardForAllEvent
       type: object
       properties:
         id:

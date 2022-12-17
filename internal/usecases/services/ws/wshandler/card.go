@@ -52,12 +52,12 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 }
 
 func (h *wsHandler) handleCardEventForAll(body oapi.WsRequest_Body) error {
-	b, err := body.AsWsRequestBodyCardEventForAll()
+	b, err := body.AsWsRequestBodycardForAllEvent()
 	if err != nil {
 		return err
 	}
 
-	fmap := map[oapi.CardType]func(reqbody oapi.WsRequestBodyCardEventForAll, now time.Time) ([]*oapi.WsResponse, error){
+	fmap := map[oapi.CardType]func(reqbody oapi.WsRequestBodycardForAllEvent, now time.Time) ([]*oapi.WsResponse, error){
 		oapi.CardTypeOoops: h.handleOoops,
 	}
 
@@ -421,7 +421,7 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 	return res, nil
 }
 
-func (h *wsHandler) handleOoops(reqbody oapi.WsRequestBodyCardEventForAll, now time.Time) ([]*oapi.WsResponse, error) {
+func (h *wsHandler) handleOoops(reqbody oapi.WsRequestBodycardForAllEvent, now time.Time) ([]*oapi.WsResponse, error) {
 	cardType := domain.CardTypeOoops
 
 	var res []*oapi.WsResponse

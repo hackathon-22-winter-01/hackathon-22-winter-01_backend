@@ -21,8 +21,8 @@ const (
 const (
 	CardTypeGalaxyBrain        CardType = "galaxyBrain"
 	CardTypeLgtm               CardType = "lgtm"
-	CardTypeOoops              CardType = "ooops"
 	CardTypeNone               CardType = "none"
+	CardTypeOoops              CardType = "ooops"
 	CardTypeOpenSourcerer      CardType = "openSourcerer"
 	CardTypePairExtraordinaire CardType = "pairExtraordinaire"
 	CardTypePullShark          CardType = "pullShark"
@@ -41,7 +41,7 @@ const (
 const (
 	WsRequestTypeBlockEvent      WsRequestType = "blockEvent"
 	WsRequestTypeCardEvent       WsRequestType = "cardEvent"
-	WsRequestTypeCardEventForAll WsRequestType = "cardEventForAll"
+	WsRequestTypeCardForAllEvent WsRequestType = "cardForAllEvent"
 	WsRequestTypeGameStartEvent  WsRequestType = "gameStartEvent"
 	WsRequestTypeLifeEvent       WsRequestType = "lifeEvent"
 )
@@ -191,15 +191,6 @@ type WsRequestBodyCardEvent struct {
 	Type CardType `json:"type"`
 }
 
-// WsRequestBodyCardEventForAll 全プレイヤーに影響を与えるカードに関するイベントの情報
-type WsRequestBodyCardEventForAll struct {
-	// Id カードUUID
-	Id CardId `json:"id"`
-
-	// Type カードの効果の種類
-	Type CardType `json:"type"`
-}
-
 // WsRequestBodyGameStartEvent ゲーム開始時にサーバーに送信するオブジェクト
 type WsRequestBodyGameStartEvent = map[string]interface{}
 
@@ -210,6 +201,15 @@ type WsRequestBodyLifeEvent struct {
 
 	// Type ライフに関するイベントの種類
 	Type LifeEventType `json:"type"`
+}
+
+// WsRequestBodycardForAllEvent 全プレイヤーに影響を与えるカードに関するイベントの情報
+type WsRequestBodycardForAllEvent struct {
+	// Id カードUUID
+	Id CardId `json:"id"`
+
+	// Type カードの効果の種類
+	Type CardType `json:"type"`
 }
 
 // WsRequestType イベントの種類
@@ -459,22 +459,22 @@ func (t *WsRequest_Body) MergeWsRequestBodyBlockEvent(v WsRequestBodyBlockEvent)
 	return err
 }
 
-// AsWsRequestBodyCardEventForAll returns the union data inside the WsRequest_Body as a WsRequestBodyCardEventForAll
-func (t WsRequest_Body) AsWsRequestBodyCardEventForAll() (WsRequestBodyCardEventForAll, error) {
-	var body WsRequestBodyCardEventForAll
+// AsWsRequestBodycardForAllEvent returns the union data inside the WsRequest_Body as a WsRequestBodycardForAllEvent
+func (t WsRequest_Body) AsWsRequestBodycardForAllEvent() (WsRequestBodycardForAllEvent, error) {
+	var body WsRequestBodycardForAllEvent
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromWsRequestBodyCardEventForAll overwrites any union data inside the WsRequest_Body as the provided WsRequestBodyCardEventForAll
-func (t *WsRequest_Body) FromWsRequestBodyCardEventForAll(v WsRequestBodyCardEventForAll) error {
+// FromWsRequestBodycardForAllEvent overwrites any union data inside the WsRequest_Body as the provided WsRequestBodycardForAllEvent
+func (t *WsRequest_Body) FromWsRequestBodycardForAllEvent(v WsRequestBodycardForAllEvent) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeWsRequestBodyCardEventForAll performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodyCardEventForAll
-func (t *WsRequest_Body) MergeWsRequestBodyCardEventForAll(v WsRequestBodyCardEventForAll) error {
+// MergeWsRequestBodycardForAllEvent performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodycardForAllEvent
+func (t *WsRequest_Body) MergeWsRequestBodycardForAllEvent(v WsRequestBodycardForAllEvent) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
