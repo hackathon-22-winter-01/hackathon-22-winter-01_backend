@@ -265,9 +265,14 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 func getNonBlockingRailID(p *domain.Player, allowMain bool) (uuid.UUID, bool) {
 	// 既にブロックされているブランチのIDを取得
 	blockBranchIDs := make(map[uuid.UUID]struct{})
+
 	for _, e := range p.BlockEvents {
-		// TODO: 解消時はmapから消す実装を書く
-		blockBranchIDs[e.TargetRailID] = struct{}{}
+		switch e.Type {
+		case domain.BlockEventTypeCreated:
+			blockBranchIDs[e.TargetRailID] = struct{}{}
+		case domain.BlockEventTypeCanceled:
+			delete(blockBranchIDs, e.TargetRailID)
+		}
 	}
 
 	railIDs := []uuid.UUID{p.Main.ID}
