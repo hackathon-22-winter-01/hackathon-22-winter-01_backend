@@ -87,7 +87,6 @@ func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 		now,
 		domain.BranchEventMerged,
 		h.playerID,
-		targetPlayer.ID,
 		afterRails,
 	))
 
@@ -167,7 +166,6 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 		now,
 		domain.BlockEventTypeCreated,
 		h.playerID,
-		targetPlayer.ID,
 		targetRail.ID,
 	))
 
@@ -204,7 +202,6 @@ func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent
 		now,
 		domain.BlockEventTypeCreated,
 		h.playerID,
-		targetPlayer.ID,
 		targetRail.ID,
 	))
 
@@ -241,7 +238,6 @@ func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 		now,
 		domain.BlockEventTypeCreated,
 		h.playerID,
-		targetPlayer.ID,
 		targetRail.ID,
 	))
 
@@ -289,7 +285,6 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 		now,
 		domain.BranchEventCreated,
 		h.playerID,
-		targetPlayer.ID,
 		afterRails,
 	))
 
@@ -352,7 +347,6 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 		now,
 		domain.BlockEventTypeCreated,
 		h.playerID,
-		targetPlayer.ID,
 		targetRail.ID,
 	))
 

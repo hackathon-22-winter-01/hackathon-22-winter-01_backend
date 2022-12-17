@@ -33,7 +33,6 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			jst.Now(),
 			domain.BlockEventTypeCanceled,
 			target.ID,
-			target.ID,
 			b.Rail.Id,
 		))
 
@@ -48,7 +47,6 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			domain.CardTypeNone,
 			jst.Now(),
 			domain.BlockEventTypeCrashed,
-			target.ID,
 			target.ID,
 			b.Rail.Id,
 		))
