@@ -32,6 +32,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		oapi.CardTypeLgtm:               h.handleLgtm,
 		oapi.CardTypePullShark:          h.handlePullShark,
 		oapi.CardTypeStarstruck:         h.handleStarstruck,
+		oapi.CardTypeZeroDay:            h.handleZeroDay,
 	}
 
 	f, ok := fmap[b.Type]
@@ -411,6 +412,49 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 		h.playerID,
 		reqbody.TargetId,
 		oapi.CardTypeStarstruck,
+		delay,
+		attack,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (h *wsHandler) handleZeroDay(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	cardType := domain.CardTypeZeroDay
+
+	targetRail, ok := getNonBlockingRail(targetPlayer, true)
+	if !ok {
+		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
+			uuid.New(),
+			cardType,
+			now,
+		))
+
+		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
+	}
+
+	delay, attack, err := cardType.DelayAndAttack()
+	if err != nil {
+		return nil, err
+	}
+
+	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
+		uuid.New(),
+		cardType,
+		now,
+		domain.BlockEventTypeCreated,
+		h.playerID,
+		targetRail.ID,
+	))
+
+	res, err := oapi.NewWsResponseBlockCreated(
+		now,
+		h.playerID,
+		reqbody.TargetId,
+		oapi.CardTypeZeroDay,
 		delay,
 		attack,
 	)

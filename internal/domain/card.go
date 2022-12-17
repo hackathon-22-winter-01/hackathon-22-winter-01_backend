@@ -71,6 +71,13 @@ const (
 	// - 攻撃力 : 50
 	CardTypeStarstruck
 
+	// Zero Day
+	// - レア度 : 3
+	// - 他プレイヤー1人がランダムに選択される
+	// - 攻撃力 : 90
+	// - 妨害値 : 1
+	CardTypeZeroDay
+  
 	// Ooops!!!
 	// - レア度 : 2
 	// - 即時自動発動
@@ -113,6 +120,8 @@ func (t CardType) DelayAndAttack() (int, float32, error) {
 		return 0, 0, errCannotUse
 	case CardTypeStarstruck:
 		return 5, 50, nil
+	case CardTypeZeroDay:
+		return 1, 90, nil
 	case CardTypeOoops:
 		delay := rand.Intn(3) + 1
 		return delay, float32(delay) * 10, errCannotUse
