@@ -22,6 +22,7 @@ const (
 	CardTypeGalaxyBrain        CardType = "galaxyBrain"
 	CardTypeLgtm               CardType = "lgtm"
 	CardTypeOoops              CardType = "ooops"
+	CardTypeNone               CardType = "none"
 	CardTypeOpenSourcerer      CardType = "openSourcerer"
 	CardTypePairExtraordinaire CardType = "pairExtraordinaire"
 	CardTypePullShark          CardType = "pullShark"
@@ -50,7 +51,6 @@ const (
 	WsResponseTypeBlockCanceled WsResponseType = "blockCanceled"
 	WsResponseTypeBlockCrashed  WsResponseType = "blockCrashed"
 	WsResponseTypeBlockCreated  WsResponseType = "blockCreated"
-	WsResponseTypeCardReset     WsResponseType = "cardReset"
 	WsResponseTypeConnected     WsResponseType = "connected"
 	WsResponseTypeGameOverred   WsResponseType = "gameOverred"
 	WsResponseTypeGameStarted   WsResponseType = "gameStarted"
@@ -93,6 +93,9 @@ type JoinRoomRequest struct {
 	RoomId RoomId `json:"roomId"`
 }
 
+// Life ライフ
+type Life = float32
+
 // LifeEventType ライフに関するイベントの種類
 type LifeEventType string
 
@@ -101,8 +104,8 @@ type Player struct {
 	// Id プレイヤーUUID
 	Id PlayerId `json:"id"`
 
-	// Life プレイヤーのライフ
-	Life float32 `json:"life"`
+	// Life ライフ
+	Life Life `json:"life"`
 
 	// MainRail レール情報
 	MainRail Rail `json:"mainRail"`
@@ -118,6 +121,9 @@ type PlayerId = openapi_types.UUID
 type Rail struct {
 	// Id レールUUID
 	Id RailId `json:"id"`
+
+	// Index レールのインデックス
+	Index int `json:"index"`
 }
 
 // RailId レールUUID
@@ -163,8 +169,11 @@ type WsRequest_Body struct {
 
 // WsRequestBodyBlockEvent ブロックに関するイベントの情報
 type WsRequestBodyBlockEvent struct {
-	// RailId レールUUID
-	RailId RailId `json:"railId"`
+	// CardType カードの効果の種類
+	CardType CardType `json:"cardType"`
+
+	// Rail レール情報
+	Rail Rail `json:"rail"`
 
 	// Type ブロックに関するイベントの種類
 	Type BlockEventType `json:"type"`
@@ -225,20 +234,29 @@ type WsResponse_Body struct {
 
 // WsResponseBodyBlockCanceled 障害物の解消情報
 type WsResponseBodyBlockCanceled struct {
-	// RailId レールUUID
-	RailId RailId `json:"railId"`
+	// CardType カードの効果の種類
+	CardType CardType `json:"cardType"`
+
+	// Rail レール情報
+	Rail Rail `json:"rail"`
+
+	// TargetId プレイヤーUUID
+	TargetId PlayerId `json:"targetId"`
 }
 
 // WsResponseBodyBlockCrashed 障害物と衝突したときの情報
 type WsResponseBodyBlockCrashed struct {
-	// New 変動後のライフ
-	New float32 `json:"new"`
+	// CardType カードの効果の種類
+	CardType CardType `json:"cardType"`
 
-	// PlayerId プレイヤーUUID
-	PlayerId PlayerId `json:"playerId"`
+	// NewLife ライフ
+	NewLife Life `json:"newLife"`
 
-	// RailId レールUUID
-	RailId RailId `json:"railId"`
+	// Rail レール情報
+	Rail Rail `json:"rail"`
+
+	// TargetId プレイヤーUUID
+	TargetId PlayerId `json:"targetId"`
 }
 
 // WsResponseBodyBlockCreated 新規障害物の作成情報
@@ -249,20 +267,14 @@ type WsResponseBodyBlockCreated struct {
 	// AttackerId プレイヤーUUID
 	AttackerId PlayerId `json:"attackerId"`
 
+	// CardType カードの効果の種類
+	CardType CardType `json:"cardType"`
+
 	// Delay 障害物を解消するために必要な秒数
 	Delay int `json:"delay"`
 
 	// TargetId プレイヤーUUID
 	TargetId PlayerId `json:"targetId"`
-}
-
-// WsResponseBodyCardReset 各プレイヤーのカードのリセット情報
-type WsResponseBodyCardReset = []struct {
-	// Cards リセットされたカードのリスト
-	Cards []Card `json:"cards"`
-
-	// PlayerId プレイヤーUUID
-	PlayerId PlayerId `json:"playerId"`
 }
 
 // WsResponseBodyConnected 接続したプレイヤーのID
@@ -285,8 +297,11 @@ type WsResponseBodyGameStarted struct {
 
 // WsResponseBodyLifeChanged ライフの変動情報
 type WsResponseBodyLifeChanged struct {
-	// New 変動後のライフ
-	New float32 `json:"new"`
+	// CardType カードの効果の種類
+	CardType CardType `json:"cardType"`
+
+	// NewLife ライフ
+	NewLife Life `json:"newLife"`
 
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
@@ -297,11 +312,14 @@ type WsResponseBodyRailCreated struct {
 	// AttackerId プレイヤーUUID
 	AttackerId PlayerId `json:"attackerId"`
 
-	// Id レールUUID
-	Id RailId `json:"id"`
+	// CardType カードの効果の種類
+	CardType CardType `json:"cardType"`
 
-	// ParentId レールUUID
-	ParentId RailId `json:"parentId"`
+	// NewRail レール情報
+	NewRail Rail `json:"newRail"`
+
+	// ParentRail レール情報
+	ParentRail Rail `json:"parentRail"`
 
 	// TargetId プレイヤーUUID
 	TargetId PlayerId `json:"targetId"`
@@ -309,11 +327,14 @@ type WsResponseBodyRailCreated struct {
 
 // WsResponseBodyRailMerged レールのマージ情報
 type WsResponseBodyRailMerged struct {
-	// ChildId レールUUID
-	ChildId RailId `json:"childId"`
+	// CardType カードの効果の種類
+	CardType CardType `json:"cardType"`
 
-	// ParentId レールUUID
-	ParentId RailId `json:"parentId"`
+	// ChildRail レール情報
+	ChildRail Rail `json:"childRail"`
+
+	// ParentRail レール情報
+	ParentRail Rail `json:"parentRail"`
 
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
@@ -542,32 +563,6 @@ func (t *WsResponse_Body) FromWsResponseBodyLifeChanged(v WsResponseBodyLifeChan
 
 // MergeWsResponseBodyLifeChanged performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyLifeChanged
 func (t *WsResponse_Body) MergeWsResponseBodyLifeChanged(v WsResponseBodyLifeChanged) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JsonMerge(b, t.union)
-	t.union = merged
-	return err
-}
-
-// AsWsResponseBodyCardReset returns the union data inside the WsResponse_Body as a WsResponseBodyCardReset
-func (t WsResponse_Body) AsWsResponseBodyCardReset() (WsResponseBodyCardReset, error) {
-	var body WsResponseBodyCardReset
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromWsResponseBodyCardReset overwrites any union data inside the WsResponse_Body as the provided WsResponseBodyCardReset
-func (t *WsResponse_Body) FromWsResponseBodyCardReset(v WsResponseBodyCardReset) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeWsResponseBodyCardReset performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyCardReset
-func (t *WsResponse_Body) MergeWsResponseBodyCardReset(v WsResponseBodyCardReset) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err

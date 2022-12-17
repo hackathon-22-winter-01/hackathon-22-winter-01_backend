@@ -33,7 +33,6 @@ type BlockEvent struct {
 	commonEvent
 	Type         BlockEventType
 	AttackerID   uuid.UUID
-	TargetID     uuid.UUID
 	TargetRailID uuid.UUID
 }
 
@@ -46,7 +45,7 @@ const (
 	BlockEventTypeCrashed
 )
 
-func NewBlockEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ BlockEventType, attackerID, targetID, targetRailID uuid.UUID) *BlockEvent {
+func NewBlockEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ BlockEventType, attackerID, targetRailID uuid.UUID) *BlockEvent {
 	return &BlockEvent{
 		commonEvent: commonEvent{
 			ID:        id,
@@ -55,7 +54,6 @@ func NewBlockEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ Blo
 		},
 		Type:         typ,
 		AttackerID:   attackerID,
-		TargetID:     targetID,
 		TargetRailID: targetRailID,
 	}
 }
@@ -108,8 +106,7 @@ type BranchEvent struct {
 	commonEvent
 	Type       BranchEventType
 	AttackerID uuid.UUID
-	TargetID   uuid.UUID
-	AfterRails []*Rail
+	AfterRails Rails
 }
 
 // BranchEventType イベントの種類
@@ -124,7 +121,7 @@ const (
 	BranchEventMerged
 )
 
-func NewBranchEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ BranchEventType, attackerID, targetID uuid.UUID, afterRails []*Rail) *BranchEvent {
+func NewBranchEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ BranchEventType, attackerID uuid.UUID, afterRails Rails) *BranchEvent {
 	return &BranchEvent{
 		commonEvent: commonEvent{
 			ID:        id,
@@ -133,7 +130,6 @@ func NewBranchEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ Br
 		},
 		Type:       typ,
 		AttackerID: attackerID,
-		TargetID:   targetID,
 		AfterRails: afterRails,
 	}
 }

@@ -41,10 +41,11 @@ func NewWsResponseGameStarted(eventTime time.Time, players []Player) (*WsRespons
 	return res, nil
 }
 
-func NewWsResponseLifeChanged(eventTime time.Time, playerID uuid.UUID, newLife float32) (*WsResponse, error) {
+func NewWsResponseLifeChanged(eventTime time.Time, playerID uuid.UUID, cardType CardType, newLife float32) (*WsResponse, error) {
 	b := WsResponseBodyLifeChanged{
 		PlayerId: playerID,
-		New:      newLife,
+		CardType: cardType,
+		NewLife:  newLife,
 	}
 
 	res := WsResponseFromType(WsResponseTypeLifeChanged, eventTime)
@@ -56,24 +57,13 @@ func NewWsResponseLifeChanged(eventTime time.Time, playerID uuid.UUID, newLife f
 	return res, nil
 }
 
-func NewWsResponseCardReset(eventTime time.Time) (*WsResponse, error) {
-	b := WsResponseBodyCardReset{}
-
-	res := WsResponseFromType(WsResponseTypeCardReset, eventTime)
-
-	if err := res.Body.FromWsResponseBodyCardReset(b); err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
-func NewWsResponseRailCreated(eventTime time.Time, railID, parentRailID, attackerID, targetID uuid.UUID) (*WsResponse, error) {
+func NewWsResponseRailCreated(eventTime time.Time, newRail, parentRail Rail, attackerID, targetID uuid.UUID, cardType CardType) (*WsResponse, error) {
 	b := WsResponseBodyRailCreated{
-		Id:         railID,
-		ParentId:   parentRailID,
+		NewRail:    newRail,
+		ParentRail: parentRail,
 		AttackerId: attackerID,
 		TargetId:   targetID,
+		CardType:   cardType,
 	}
 
 	res := WsResponseFromType(WsResponseTypeRailCreated, eventTime)
@@ -85,11 +75,12 @@ func NewWsResponseRailCreated(eventTime time.Time, railID, parentRailID, attacke
 	return res, nil
 }
 
-func NewWsResponseRailMerged(eventTime time.Time, childID, parentID, playerID uuid.UUID) (*WsResponse, error) {
+func NewWsResponseRailMerged(eventTime time.Time, childRail, parentRail Rail, playerID uuid.UUID, cardType CardType) (*WsResponse, error) {
 	b := WsResponseBodyRailMerged{
-		ChildId:  childID,
-		ParentId: parentID,
-		PlayerId: playerID,
+		ChildRail:  childRail,
+		ParentRail: parentRail,
+		PlayerId:   playerID,
+		CardType:   cardType,
 	}
 
 	res := WsResponseFromType(WsResponseTypeRailMerged, eventTime)
@@ -101,10 +92,11 @@ func NewWsResponseRailMerged(eventTime time.Time, childID, parentID, playerID uu
 	return res, nil
 }
 
-func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, targetID uuid.UUID, delay int, attack float32) (*WsResponse, error) {
+func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, targetID uuid.UUID, cardType CardType, delay int, attack float32) (*WsResponse, error) {
 	b := WsResponseBodyBlockCreated{
 		AttackerId: attackerID,
 		TargetId:   targetID,
+		CardType:   cardType,
 		Delay:      delay,
 		Attack:     attack,
 	}
@@ -118,9 +110,11 @@ func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, target
 	return res, nil
 }
 
-func NewWsResponseBlockCanceled(eventTime time.Time, railID uuid.UUID) (*WsResponse, error) {
+func NewWsResponseBlockCanceled(eventTime time.Time, targetID uuid.UUID, rail Rail, cardType CardType) (*WsResponse, error) {
 	b := WsResponseBodyBlockCanceled{
-		RailId: railID,
+		TargetId: targetID,
+		Rail:     rail,
+		CardType: cardType,
 	}
 
 	res := WsResponseFromType(WsResponseTypeBlockCanceled, eventTime)
@@ -132,11 +126,12 @@ func NewWsResponseBlockCanceled(eventTime time.Time, railID uuid.UUID) (*WsRespo
 	return res, nil
 }
 
-func NewWsResponseBlockCrashed(eventTime time.Time, newLife float32, playerID uuid.UUID, railID uuid.UUID) (*WsResponse, error) {
+func NewWsResponseBlockCrashed(eventTime time.Time, newLife float32, targetID uuid.UUID, rail Rail, cardType CardType) (*WsResponse, error) {
 	b := WsResponseBodyBlockCrashed{
-		New:      newLife,
-		PlayerId: playerID,
-		RailId:   railID,
+		NewLife:  newLife,
+		TargetId: targetID,
+		Rail:     rail,
+		CardType: cardType,
 	}
 
 	res := WsResponseFromType(WsResponseTypeBlockCrashed, eventTime)
@@ -160,4 +155,11 @@ func NewWsResponseGameOverred(eventTime time.Time, playerID uuid.UUID) (*WsRespo
 	}
 
 	return res, nil
+}
+
+func NewRail(id uuid.UUID, index int) Rail {
+	return Rail{
+		Id:    id,
+		Index: index,
+	}
 }

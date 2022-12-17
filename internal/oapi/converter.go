@@ -2,6 +2,7 @@ package oapi
 
 import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/log"
 	"go.uber.org/zap"
 )
@@ -20,7 +21,7 @@ func PlayerFromDomain(dp *domain.Player) Player {
 	return Player{
 		Id:       dp.ID,
 		Life:     domain.CalculateLife(dp.LifeEvents),
-		MainRail: Rail{Id: dp.Main.ID},
+		MainRail: NewRail(dp.Main.ID, consts.RailLimit/2),
 		Rails:    rails,
 	}
 }
@@ -57,4 +58,23 @@ func RoomFromDomain(dr *domain.Room) Room {
 		Players:   PLayers,
 		StartedAt: dr.StartedAt,
 	}
+}
+
+func (t CardType) ToDomain() domain.CardType {
+	m := map[CardType]domain.CardType{
+		CardTypeYolo:               domain.CardTypeYolo,
+		CardTypeGalaxyBrain:        domain.CardTypeGalaxyBrain,
+		CardTypeOpenSourcerer:      domain.CardTypeOpenSourcerer,
+		CardTypeRefactoring:        domain.CardTypeRefactoring,
+		CardTypePairExtraordinaire: domain.CardTypePairExtraordinaire,
+		CardTypeLgtm:               domain.CardTypeLgtm,
+		CardTypePullShark:          domain.CardTypePullShark,
+		CardTypeStarstruck:         domain.CardTypeStarstruck,
+	}
+
+	if t, ok := m[t]; ok {
+		return t
+	}
+
+	return domain.CardTypeNone
 }

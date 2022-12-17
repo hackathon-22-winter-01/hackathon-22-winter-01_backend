@@ -114,13 +114,13 @@ func TestWs(t *testing.T) {
 			require.NoError(t, err)
 			require.Equal(t, oapi.WsResponseTypeRailCreated, res.Type)
 			// 作成されたレールのID以外の確認
-			require.Equal(t, mainRails[0].Id, resbody.ParentId)
+			require.Equal(t, mainRails[0], resbody.ParentRail)
 			require.Equal(t, pids[1], resbody.AttackerId)
 			require.Equal(t, pids[0], resbody.TargetId)
 
 			// レールの更新
 			if i == 0 {
-				rails[0] = append(rails[0], oapi.Rail{Id: resbody.Id})
+				rails[0] = append(rails[0], oapi.Rail{Id: resbody.NewRail.Id, Index: 0})
 			}
 		})
 	})
@@ -146,6 +146,7 @@ func TestWs(t *testing.T) {
 			require.Equal(t, oapi.WsResponseBodyBlockCreated{
 				AttackerId: pids[1],
 				TargetId:   pids[0],
+				CardType:   oapi.CardTypePairExtraordinaire,
 				Delay:      2,
 				Attack:     30,
 			}, resbody)
@@ -170,8 +171,9 @@ func TestWs(t *testing.T) {
 			require.NoError(t, err)
 			require.Equal(t, oapi.WsResponseTypeLifeChanged, res.Type)
 			require.Equal(t, oapi.WsResponseBodyLifeChanged{
+				CardType: oapi.CardTypeNone,
 				PlayerId: pids[0],
-				New:      99,
+				NewLife:  99,
 			}, resbody)
 		})
 	})
