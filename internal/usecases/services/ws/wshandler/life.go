@@ -40,15 +40,19 @@ func (h *wsHandler) handleLifeEvent(body oapi.WsRequest_Body) error {
 		b.Diff,
 	))
 
-	life := domain.CalculateLife(target.LifeEvents)
+	var res *oapi.WsResponse
 
-	// TODO: 実装
-	// if life <= 0 {
-	// }
-
-	res, err := oapi.NewWsResponseLifeChanged(now, h.playerID, life)
-	if err != nil {
-		return err
+	if life := domain.CalculateLife(target.LifeEvents); life > 0 {
+		res, err = oapi.NewWsResponseLifeChanged(now, h.playerID, life)
+		if err != nil {
+			return err
+		}
+	} else {
+		target.IsAlive = false
+		res, err = oapi.NewWsResponseGameOverred(now, h.playerID)
+		if err != nil {
+			return err
+		}
 	}
 
 	if err := h.sender.Broadcast(h.room.ID, res); err != nil {

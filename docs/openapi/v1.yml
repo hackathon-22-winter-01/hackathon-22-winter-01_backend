@@ -351,6 +351,7 @@ components:
             - $ref: '#/components/schemas/WsResponseBodyRailMerged'
             - $ref: '#/components/schemas/WsResponseBodyBlockCreated'
             - $ref: '#/components/schemas/WsResponseBodyBlockCanceled'
+            - $ref: '#/components/schemas/WsResponseBodyGameOverred'
           description: イベントの情報
         eventTime:
           type: string
@@ -373,6 +374,7 @@ components:
         - railMerged
         - blockCreated
         - blockCanceled
+        - gameOverred
         - noop
       description: イベントの種類
     WsResponseBodyConnected:
@@ -486,6 +488,13 @@ components:
       required:
         - railId
       description: 障害物の解消情報
+    WsResponseBodyGameOverred:
+      type: object
+      properties:
+        playerId:
+          $ref: '#/components/schemas/PlayerId'
+      required:
+        - playerId
 tags:
   - name: ping
     description: Ping API
