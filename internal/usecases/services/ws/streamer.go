@@ -68,7 +68,14 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, playerID uuid
 		return fmt.Errorf("failed to send connected: %w", err)
 	}
 
-	client.send <- res
+	room, err := s.hub.roomRepo.FindRoomFromPlayerID(playerID)
+	if err != nil {
+		return fmt.Errorf("failed to find room from player id: %w", err)
+	}
+
+	if err := client.Broadcast(room.ID, res); err != nil {
+		return fmt.Errorf("failed to broadcast: %w", err)
+	}
 
 	return nil
 }
