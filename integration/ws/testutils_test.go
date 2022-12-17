@@ -2,6 +2,8 @@ package ws_test
 
 import (
 	"net/http"
+	"net/http/httptest"
+	"strings"
 	"sync"
 	"testing"
 
@@ -11,15 +13,6 @@ import (
 	"github.com/shiguredo/websocket"
 	"github.com/stretchr/testify/require"
 )
-
-func mustWriteWsRequest(t *testing.T, c *websocket.Conn, typ oapi.WsRequestType, body oapi.WsRequest_Body) {
-	t.Helper()
-
-	require.NoError(t, c.WriteJSON(oapi.WsRequest{
-		Type: typ,
-		Body: body,
-	}))
-}
 
 func forEachClientAsync(t *testing.T, wg *sync.WaitGroup, c []*websocket.Conn, f func(int, *websocket.Conn)) {
 	t.Helper()
@@ -36,13 +29,18 @@ func forEachClientAsync(t *testing.T, wg *sync.WaitGroup, c []*websocket.Conn, f
 	wg.Wait()
 }
 
-func readWsResponse(t *testing.T, c *websocket.Conn) *oapi.WsResponse {
+func readWsResponse[T any](t *testing.T, c *websocket.Conn) *oapi.WsResponseWrapper[T] {
 	t.Helper()
+
+	var w oapi.WsResponseWrapper[T]
 
 	res := new(oapi.WsResponse)
 	require.NoError(t, c.ReadJSON(res))
 
-	return res
+	w.T = t
+	w.Res = res
+
+	return &w
 }
 
 type httpHandler struct {
@@ -56,3 +54,15 @@ func (h *httpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.t.Error(err)
 	}
 }
+
+func connectToWs(t *testing.T, streamer ws.Streamer, playerID uuid.UUID) *websocket.Conn {
+	server := httptest.NewServer(&httpHandler{t, streamer, playerID})
+	server.URL = "ws" + strings.TrimPrefix(server.URL, "http")
+	c, _, err := websocket.DefaultDialer.Dial(server.URL, nil)
+	require.NoError(t, err)
+
+	return c
+}
+
+// randint 乱数であることを明示する
+type randint = int
