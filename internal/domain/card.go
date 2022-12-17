@@ -70,6 +70,13 @@ const (
 	// - 攻撃力 : 50
 	CardTypeStarstruck
 
+	// Zero Day
+	// - レア度 : 3
+	// - 他プレイヤー1人がランダムに選択される
+	// - 攻撃力 : 90
+	// - 妨害値 : 1
+	CardTypeZeroDay
+
 	// None
 	// - カードを使用しないイベント用
 	CardTypeNone
@@ -104,6 +111,8 @@ func (t CardType) DelayAndAttack() (int, float32, error) {
 		return 0, 0, errCannotUse
 	case CardTypeStarstruck:
 		return 5, 50, nil
+	case CardTypeZeroDay:
+		return 1, 90, nil
 	case CardTypeNone:
 		return 0, 0, errCannotUse
 	default:

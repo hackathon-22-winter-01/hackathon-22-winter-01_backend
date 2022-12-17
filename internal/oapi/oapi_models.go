@@ -28,6 +28,7 @@ const (
 	CardTypeRefactoring        CardType = "refactoring"
 	CardTypeStarstruck         CardType = "starstruck"
 	CardTypeYolo               CardType = "yolo"
+	CardTypeZeroDay            CardType = "zeroDay"
 )
 
 // Defines values for LifeEventType.

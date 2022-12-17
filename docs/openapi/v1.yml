@@ -138,6 +138,7 @@ components:
         - lgtm
         - pullShark
         - starstruck
+        - zeroDay
         - none
       description: カードの効果の種類
     LifeEventType:
