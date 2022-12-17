@@ -17,25 +17,31 @@ type commonEvent struct {
 // BlockEvent 妨害イベントの情報
 type BlockEvent struct {
 	commonEvent
-	AttackerID   uuid.UUID
-	TargetID     uuid.UUID
-	TargetRailID uuid.UUID
-	Delay        int
-	Attack       int
+	Type BlockEventType
+	AttackerID     uuid.UUID
+	TargetID       uuid.UUID
+	TargetRailID   uuid.UUID
 }
 
-func NewBlockEvent(id uuid.UUID, cardType CardType, createdAt time.Time, attackerID, targetID, targetRailID uuid.UUID, delay int, attack int) *BlockEvent {
+// BlockEventType 妨害イベントの種類
+type BlockEventType uint8
+
+const (
+	BlockEventTypeCreated BlockEventType = iota
+	BlockEventTypeCanceled
+)
+
+func NewBlockEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ BlockEventType, attackerID, targetID, targetRailID uuid.UUID) *BlockEvent {
 	return &BlockEvent{
 		commonEvent: commonEvent{
 			ID:        id,
 			CardType:  cardType,
 			CreatedAt: createdAt,
 		},
+		Type: typ,
 		AttackerID:   attackerID,
 		TargetID:     targetID,
 		TargetRailID: targetRailID,
-		Delay:        delay,
-		Attack:       attack,
 	}
 }
 

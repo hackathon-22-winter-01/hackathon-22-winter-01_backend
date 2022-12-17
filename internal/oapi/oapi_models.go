@@ -11,6 +11,11 @@ import (
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 )
 
+// Defines values for BlockEventType.
+const (
+	BlockEventTypeCanceled BlockEventType = "canceled"
+)
+
 // Defines values for CardType.
 const (
 	CardTypeGalaxyBrain        CardType = "galaxyBrain"
@@ -31,6 +36,7 @@ const (
 
 // Defines values for WsRequestType.
 const (
+	WsRequestTypeBlockEvent     WsRequestType = "blockEvent"
 	WsRequestTypeCardEvent      WsRequestType = "cardEvent"
 	WsRequestTypeGameStartEvent WsRequestType = "gameStartEvent"
 	WsRequestTypeLifeEvent      WsRequestType = "lifeEvent"
@@ -38,15 +44,19 @@ const (
 
 // Defines values for WsResponseType.
 const (
-	WsResponseTypeBlockCreated WsResponseType = "blockCreated"
-	WsResponseTypeCardReset    WsResponseType = "cardReset"
-	WsResponseTypeConnected    WsResponseType = "connected"
-	WsResponseTypeGameStarted  WsResponseType = "gameStarted"
-	WsResponseTypeLifeChanged  WsResponseType = "lifeChanged"
-	WsResponseTypeNoop         WsResponseType = "noop"
-	WsResponseTypeRailCreated  WsResponseType = "railCreated"
-	WsResponseTypeRailMerged   WsResponseType = "railMerged"
+	WsResponseTypeBlockCanceled WsResponseType = "blockCanceled"
+	WsResponseTypeBlockCreated  WsResponseType = "blockCreated"
+	WsResponseTypeCardReset     WsResponseType = "cardReset"
+	WsResponseTypeConnected     WsResponseType = "connected"
+	WsResponseTypeGameStarted   WsResponseType = "gameStarted"
+	WsResponseTypeLifeChanged   WsResponseType = "lifeChanged"
+	WsResponseTypeNoop          WsResponseType = "noop"
+	WsResponseTypeRailCreated   WsResponseType = "railCreated"
+	WsResponseTypeRailMerged    WsResponseType = "railMerged"
 )
+
+// BlockEventType ブロックに関するイベントの種類
+type BlockEventType string
 
 // Card カード情報
 type Card struct {
@@ -149,6 +159,15 @@ type WsRequest_Body struct {
 	union json.RawMessage
 }
 
+// WsRequestBodyBlockEvent ブロックに関するイベントの情報
+type WsRequestBodyBlockEvent struct {
+	// RailId レールUUID
+	RailId RailId `json:"railId"`
+
+	// Type ブロックに関するイベントの種類
+	Type BlockEventType `json:"type"`
+}
+
 // WsRequestBodyCardEvent カードに関するイベントの情報
 type WsRequestBodyCardEvent struct {
 	// Id カードUUID
@@ -191,6 +210,12 @@ type WsResponse struct {
 // WsResponse_Body イベントの情報
 type WsResponse_Body struct {
 	union json.RawMessage
+}
+
+// WsResponseBodyBlockCanceled 障害物の解消情報
+type WsResponseBodyBlockCanceled struct {
+	// RailId レールUUID
+	RailId RailId `json:"railId"`
 }
 
 // WsResponseBodyBlockCreated 新規障害物の作成情報
@@ -348,6 +373,32 @@ func (t *WsRequest_Body) FromWsRequestBodyCardEvent(v WsRequestBodyCardEvent) er
 
 // MergeWsRequestBodyCardEvent performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodyCardEvent
 func (t *WsRequest_Body) MergeWsRequestBodyCardEvent(v WsRequestBodyCardEvent) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsWsRequestBodyBlockEvent returns the union data inside the WsRequest_Body as a WsRequestBodyBlockEvent
+func (t WsRequest_Body) AsWsRequestBodyBlockEvent() (WsRequestBodyBlockEvent, error) {
+	var body WsRequestBodyBlockEvent
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWsRequestBodyBlockEvent overwrites any union data inside the WsRequest_Body as the provided WsRequestBodyBlockEvent
+func (t *WsRequest_Body) FromWsRequestBodyBlockEvent(v WsRequestBodyBlockEvent) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWsRequestBodyBlockEvent performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodyBlockEvent
+func (t *WsRequest_Body) MergeWsRequestBodyBlockEvent(v WsRequestBodyBlockEvent) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -540,6 +591,32 @@ func (t *WsResponse_Body) FromWsResponseBodyBlockCreated(v WsResponseBodyBlockCr
 
 // MergeWsResponseBodyBlockCreated performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyBlockCreated
 func (t *WsResponse_Body) MergeWsResponseBodyBlockCreated(v WsResponseBodyBlockCreated) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsWsResponseBodyBlockCanceled returns the union data inside the WsResponse_Body as a WsResponseBodyBlockCanceled
+func (t WsResponse_Body) AsWsResponseBodyBlockCanceled() (WsResponseBodyBlockCanceled, error) {
+	var body WsResponseBodyBlockCanceled
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWsResponseBodyBlockCanceled overwrites any union data inside the WsResponse_Body as the provided WsResponseBodyBlockCanceled
+func (t *WsResponse_Body) FromWsResponseBodyBlockCanceled(v WsResponseBodyBlockCanceled) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWsResponseBodyBlockCanceled performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyBlockCanceled
+func (t *WsResponse_Body) MergeWsResponseBodyBlockCanceled(v WsResponseBodyBlockCanceled) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err

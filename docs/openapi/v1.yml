@@ -146,6 +146,12 @@ components:
         - damaged
         - healed
       description: ライフに関するイベントの種類
+    BlockEventType:
+      title: BlockEventType
+      type: string
+      enum:
+        - canceled
+      description: ブロックに関するイベントの種類
     Card:
       title: Card
       type: object
@@ -270,6 +276,7 @@ components:
             - $ref: '#/components/schemas/WsRequestBodyGameStartEvent'
             - $ref: '#/components/schemas/WsRequestBodyLifeEvent'
             - $ref: '#/components/schemas/WsRequestBodyCardEvent'
+            - $ref: '#/components/schemas/WsRequestBodyBlockEvent'
           description: イベントの情報
       required:
         - type
@@ -282,6 +289,7 @@ components:
         - gameStartEvent
         - lifeEvent
         - cardEvent
+        - blockEvent
       description: イベントの種類
     WsRequestBodyGameStartEvent:
       title: WsRequestBodyGameStartEvent
@@ -315,6 +323,18 @@ components:
         - targetId
         - type
       description: カードに関するイベントの情報
+    WsRequestBodyBlockEvent:
+      title: WsRequestBodyBlockEvent
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/BlockEventType'
+        railId:
+          $ref: '#/components/schemas/RailId'
+      required:
+        - type
+        - railId
+      description: ブロックに関するイベントの情報
     WsResponse:
       title: WsResponse
       type: object
@@ -330,6 +350,7 @@ components:
             - $ref: '#/components/schemas/WsResponseBodyRailCreated'
             - $ref: '#/components/schemas/WsResponseBodyRailMerged'
             - $ref: '#/components/schemas/WsResponseBodyBlockCreated'
+            - $ref: '#/components/schemas/WsResponseBodyBlockCanceled'
           description: イベントの情報
         eventTime:
           type: string
@@ -351,6 +372,7 @@ components:
         - railCreated
         - railMerged
         - blockCreated
+        - blockCanceled
         - noop
       description: イベントの種類
     WsResponseBodyConnected:
@@ -456,6 +478,14 @@ components:
         - delay
         - attack
       description: 新規障害物の作成情報
+    WsResponseBodyBlockCanceled:
+      type: object
+      properties:
+        railId:
+          $ref: '#/components/schemas/RailId'
+      required:
+        - railId
+      description: 障害物の解消情報
 tags:
   - name: ping
     description: Ping API
