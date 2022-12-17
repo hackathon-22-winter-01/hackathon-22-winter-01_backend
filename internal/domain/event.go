@@ -14,13 +14,27 @@ type commonEvent struct {
 	CreatedAt time.Time
 }
 
+type JustCardEvent struct {
+	commonEvent
+}
+
+func NewJustCardEvent(id uuid.UUID, cardType CardType, createdAt time.Time) *JustCardEvent {
+	return &JustCardEvent{
+		commonEvent{
+			ID:        id,
+			CardType:  cardType,
+			CreatedAt: createdAt,
+		},
+	}
+}
+
 // BlockEvent 妨害イベントの情報
 type BlockEvent struct {
 	commonEvent
-	Type BlockEventType
-	AttackerID     uuid.UUID
-	TargetID       uuid.UUID
-	TargetRailID   uuid.UUID
+	Type         BlockEventType
+	AttackerID   uuid.UUID
+	TargetID     uuid.UUID
+	TargetRailID uuid.UUID
 }
 
 // BlockEventType 妨害イベントの種類
@@ -38,7 +52,7 @@ func NewBlockEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ Blo
 			CardType:  cardType,
 			CreatedAt: createdAt,
 		},
-		Type: typ,
+		Type:         typ,
 		AttackerID:   attackerID,
 		TargetID:     targetID,
 		TargetRailID: targetRailID,
