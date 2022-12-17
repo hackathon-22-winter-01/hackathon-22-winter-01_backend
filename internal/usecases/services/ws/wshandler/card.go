@@ -51,7 +51,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 	return nil
 }
 
-func (h *wsHandler) handleCardEventForAll(body oapi.WsRequest_Body) error {
+func (h *wsHandler) handleCardForAllEvent(body oapi.WsRequest_Body) error {
 	b, err := body.AsWsRequestBodycardForAllEvent()
 	if err != nil {
 		return err
