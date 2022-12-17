@@ -2,6 +2,7 @@ package oapi
 
 import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/log"
 	"go.uber.org/zap"
 )
@@ -20,7 +21,7 @@ func PlayerFromDomain(dp *domain.Player) Player {
 	return Player{
 		Id:       dp.ID,
 		Life:     domain.CalculateLife(dp.LifeEvents),
-		MainRail: Rail{Id: dp.Main.ID},
+		MainRail: NewRail(dp.Main.ID, consts.RailLimit/2),
 		Rails:    rails,
 	}
 }

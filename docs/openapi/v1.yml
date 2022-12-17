@@ -217,8 +217,14 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/RailId'
+        index:
+          type: integer
+          minimum: 0
+          maximum: 7
+          description: レールのインデックス
       required:
         - id
+        - index
       description: レール情報
     CreateRoomRequest:
       title: CreateRoomRequest
@@ -320,11 +326,11 @@ components:
       properties:
         type:
           $ref: '#/components/schemas/BlockEventType'
-        railId:
-          $ref: '#/components/schemas/RailId'
+        rail:
+          $ref: '#/components/schemas/Rail'
       required:
         - type
-        - railId
+        - rail
       description: ブロックに関するイベントの情報
     WsResponse:
       title: WsResponse
@@ -422,32 +428,39 @@ components:
     WsResponseBodyRailCreated:
       type: object
       properties:
-        id:
-          $ref: '#/components/schemas/RailId'
-        parentId:
-          $ref: '#/components/schemas/RailId'
+        newRail:
+          $ref: '#/components/schemas/Rail'
+          description: 新規に作成されたレール
+        parentRail:
+          $ref: '#/components/schemas/Rail'
+          description: 分岐元のレール
         attackerId:
           $ref: '#/components/schemas/PlayerId'
         targetId:
           $ref: '#/components/schemas/PlayerId'
+        cardType:
+          $ref: '#/components/schemas/CardType'
       required:
-        - id
-        - parentId
+        - newRail
+        - parentRail
         - attackerId
         - targetId
+        - cardType
       description: 新規レールの作成情報
     WsResponseBodyRailMerged:
       type: object
       properties:
-        childId:
-          $ref: '#/components/schemas/RailId'
-        parentId:
-          $ref: '#/components/schemas/RailId'
+        childRail:
+          $ref: '#/components/schemas/Rail'
+          description: マージされたレール
+        parentRail:
+          $ref: '#/components/schemas/Rail'
+          description: 結合先のレール
         playerId:
           $ref: '#/components/schemas/PlayerId'
       required:
-        - childId
-        - parentId
+        - childRail
+        - parentRail
         - playerId
       description: レールのマージ情報
     WsResponseBodyBlockCreated:
@@ -477,16 +490,17 @@ components:
     WsResponseBodyBlockCanceled:
       type: object
       properties:
-        railId:
-          $ref: '#/components/schemas/RailId'
+        rail:
+          $ref: '#/components/schemas/Rail'
       required:
-        - railId
+        - rail
       description: 障害物の解消情報
     WsResponseBodyBlockCrashed:
       type: object
       properties:
-        railId:
-          $ref: '#/components/schemas/RailId'
+        rail:
+          $ref: '#/components/schemas/Rail'
+          description: 衝突したレール
         playerId:
           $ref: '#/components/schemas/PlayerId'
         new:
@@ -495,7 +509,7 @@ components:
           minimum: 0
           description: 変動後のライフ
       required:
-        - railId
+        - rail
         - playerId
         - new
       description: 障害物と衝突したときの情報

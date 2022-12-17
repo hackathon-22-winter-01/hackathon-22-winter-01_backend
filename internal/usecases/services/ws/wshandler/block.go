@@ -34,10 +34,10 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			domain.BlockEventTypeCanceled,
 			target.ID,
 			target.ID,
-			b.RailId,
+			b.Rail.Id,
 		))
 
-		res, err = oapi.NewWsResponseBlockCanceled(now, b.RailId)
+		res, err = oapi.NewWsResponseBlockCanceled(now, b.Rail)
 		if err != nil {
 			return err
 		}
@@ -50,10 +50,10 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			domain.BlockEventTypeCrashed,
 			target.ID,
 			target.ID,
-			b.RailId,
+			b.Rail.Id,
 		))
 
-		cardType := getCardTypeFromRailID(target, b.RailId)
+		cardType := getCardTypeFromRailID(target, b.Rail.Id)
 
 		_, attack, err := cardType.DelayAndAttack()
 		if err != nil {
@@ -68,7 +68,7 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			attack,
 		))
 
-		res, err = oapi.NewWsResponseBlockCrashed(now, domain.CalculateLife(target.LifeEvents), target.ID, b.RailId)
+		res, err = oapi.NewWsResponseBlockCrashed(now, domain.CalculateLife(target.LifeEvents), target.ID, b.Rail)
 		if err != nil {
 			return err
 		}
