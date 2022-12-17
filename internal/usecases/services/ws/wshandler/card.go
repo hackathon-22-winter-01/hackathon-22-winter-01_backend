@@ -253,7 +253,7 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 	emptys := []int{}
 
 	for i, r := range afterRails {
-		if r.ID == uuid.Nil {
+		if r == nil {
 			emptys = append(emptys, i)
 		}
 	}
