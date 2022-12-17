@@ -32,6 +32,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		oapi.CardTypeLgtm:               h.handleLgtm,
 		oapi.CardTypePullShark:          h.handlePullShark,
 		oapi.CardTypeStarstruck:         h.handleStarstruck,
+		oapi.CardTypeNowInArchiveMode:   h.handleNowInArchiveMode,
 	}
 
 	f, ok := fmap[b.Type]
@@ -340,6 +341,74 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 	))
 
 	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+// handlePullShark のパクリになっちゃったわ
+func (h *wsHandler) handleNowInArchiveMode(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	cardType := domain.CardTypeNowINArchiveMode
+
+	afterRails := domain.NewRails(targetPlayer.Main)
+	if l := len(targetPlayer.BranchEvents); l > 0 {
+		copy(afterRails[:], targetPlayer.BranchEvents[l-1].AfterRails[:])
+	}
+
+	emptys := []int{}
+
+	for i, r := range afterRails {
+		if r == nil {
+			emptys = append(emptys, i)
+		}
+	}
+
+	if len(emptys) == 0 {
+		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
+			uuid.New(),
+			cardType,
+			now,
+		))
+
+		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
+	}
+
+	rid := uuid.New()
+	newRailIndex := emptys[rand.Intn(len(emptys))]
+	afterRails[newRailIndex] = domain.NewRail(rid)
+
+	targetPlayer.BranchEvents = append(targetPlayer.BranchEvents, domain.NewBranchEvent(
+		uuid.New(),
+		cardType,
+		now,
+		domain.BranchEventCreated,
+		h.playerID,
+		targetPlayer.ID,
+		afterRails,
+	))
+
+	// newRailIndexからmainに向かってサーチし、始めに見つかったレールを親とする
+	parentID := targetPlayer.Main.ID
+
+	if newRailIndex < consts.RailLimit {
+		for i := newRailIndex + 1; i < consts.RailLimit/2; i++ {
+			if afterRails[i].ID != uuid.Nil {
+				parentID = afterRails[i].ID
+				break
+			}
+		}
+	} else {
+		for i := newRailIndex - 1; i >= consts.RailLimit/2; i-- {
+			if afterRails[i].ID != uuid.Nil {
+				parentID = afterRails[i].ID
+				break
+			}
+		}
+	}
+
+	res, err := oapi.NewWsResponseRailCreated(now, rid, parentID, h.playerID, targetPlayer.ID)
 	if err != nil {
 		return nil, err
 	}
