@@ -41,9 +41,10 @@ func NewWsResponseGameStarted(eventTime time.Time, players []Player) (*WsRespons
 	return res, nil
 }
 
-func NewWsResponseLifeChanged(eventTime time.Time, playerID uuid.UUID, newLife float32) (*WsResponse, error) {
+func NewWsResponseLifeChanged(eventTime time.Time, playerID uuid.UUID, cardType CardType, newLife float32) (*WsResponse, error) {
 	b := WsResponseBodyLifeChanged{
 		PlayerId: playerID,
+		CardType: cardType,
 		NewLife:  newLife,
 	}
 
@@ -74,11 +75,12 @@ func NewWsResponseRailCreated(eventTime time.Time, newRail, parentRail Rail, att
 	return res, nil
 }
 
-func NewWsResponseRailMerged(eventTime time.Time, childRail, parentRail Rail, playerID uuid.UUID) (*WsResponse, error) {
+func NewWsResponseRailMerged(eventTime time.Time, childRail, parentRail Rail, playerID uuid.UUID, cardType CardType) (*WsResponse, error) {
 	b := WsResponseBodyRailMerged{
 		ChildRail:  childRail,
 		ParentRail: parentRail,
 		PlayerId:   playerID,
+		CardType:   cardType,
 	}
 
 	res := WsResponseFromType(WsResponseTypeRailMerged, eventTime)
@@ -90,10 +92,11 @@ func NewWsResponseRailMerged(eventTime time.Time, childRail, parentRail Rail, pl
 	return res, nil
 }
 
-func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, targetID uuid.UUID, delay int, attack float32) (*WsResponse, error) {
+func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, targetID uuid.UUID, cardType CardType, delay int, attack float32) (*WsResponse, error) {
 	b := WsResponseBodyBlockCreated{
 		AttackerId: attackerID,
 		TargetId:   targetID,
+		CardType:   cardType,
 		Delay:      delay,
 		Attack:     attack,
 	}
@@ -107,10 +110,11 @@ func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, target
 	return res, nil
 }
 
-func NewWsResponseBlockCanceled(eventTime time.Time, targetID uuid.UUID, rail Rail) (*WsResponse, error) {
+func NewWsResponseBlockCanceled(eventTime time.Time, targetID uuid.UUID, rail Rail, cardType CardType) (*WsResponse, error) {
 	b := WsResponseBodyBlockCanceled{
 		TargetId: targetID,
 		Rail:     rail,
+		CardType: cardType,
 	}
 
 	res := WsResponseFromType(WsResponseTypeBlockCanceled, eventTime)
@@ -122,11 +126,12 @@ func NewWsResponseBlockCanceled(eventTime time.Time, targetID uuid.UUID, rail Ra
 	return res, nil
 }
 
-func NewWsResponseBlockCrashed(eventTime time.Time, newLife float32, targetID uuid.UUID, rail Rail) (*WsResponse, error) {
+func NewWsResponseBlockCrashed(eventTime time.Time, newLife float32, targetID uuid.UUID, rail Rail, cardType CardType) (*WsResponse, error) {
 	b := WsResponseBodyBlockCrashed{
 		NewLife:  newLife,
 		TargetId: targetID,
 		Rail:     rail,
+		CardType: cardType,
 	}
 
 	res := WsResponseFromType(WsResponseTypeBlockCrashed, eventTime)

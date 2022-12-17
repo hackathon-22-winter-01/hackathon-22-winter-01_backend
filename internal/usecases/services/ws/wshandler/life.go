@@ -43,7 +43,12 @@ func (h *wsHandler) handleLifeEvent(body oapi.WsRequest_Body) error {
 	var res *oapi.WsResponse
 
 	if life := domain.CalculateLife(target.LifeEvents); life > 0 {
-		res, err = oapi.NewWsResponseLifeChanged(now, h.playerID, life)
+		res, err = oapi.NewWsResponseLifeChanged(
+			now,
+			h.playerID,
+			oapi.CardTypeNone,
+			life,
+		)
 		if err != nil {
 			return err
 		}

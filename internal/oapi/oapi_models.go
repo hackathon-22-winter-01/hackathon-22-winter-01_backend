@@ -21,6 +21,7 @@ const (
 const (
 	CardTypeGalaxyBrain        CardType = "galaxyBrain"
 	CardTypeLgtm               CardType = "lgtm"
+	CardTypeNone               CardType = "none"
 	CardTypeOpenSourcerer      CardType = "openSourcerer"
 	CardTypePairExtraordinaire CardType = "pairExtraordinaire"
 	CardTypePullShark          CardType = "pullShark"
@@ -222,6 +223,9 @@ type WsResponse_Body struct {
 
 // WsResponseBodyBlockCanceled 障害物の解消情報
 type WsResponseBodyBlockCanceled struct {
+	// CardType カードの効果の種類
+	CardType CardType `json:"cardType"`
+
 	// Rail レール情報
 	Rail Rail `json:"rail"`
 
@@ -231,6 +235,9 @@ type WsResponseBodyBlockCanceled struct {
 
 // WsResponseBodyBlockCrashed 障害物と衝突したときの情報
 type WsResponseBodyBlockCrashed struct {
+	// CardType カードの効果の種類
+	CardType CardType `json:"cardType"`
+
 	// NewLife ライフ
 	NewLife Life `json:"newLife"`
 
@@ -248,6 +255,9 @@ type WsResponseBodyBlockCreated struct {
 
 	// AttackerId プレイヤーUUID
 	AttackerId PlayerId `json:"attackerId"`
+
+	// CardType カードの効果の種類
+	CardType CardType `json:"cardType"`
 
 	// Delay 障害物を解消するために必要な秒数
 	Delay int `json:"delay"`
@@ -276,6 +286,9 @@ type WsResponseBodyGameStarted struct {
 
 // WsResponseBodyLifeChanged ライフの変動情報
 type WsResponseBodyLifeChanged struct {
+	// CardType カードの効果の種類
+	CardType CardType `json:"cardType"`
+
 	// NewLife ライフ
 	NewLife Life `json:"newLife"`
 
@@ -303,6 +316,9 @@ type WsResponseBodyRailCreated struct {
 
 // WsResponseBodyRailMerged レールのマージ情報
 type WsResponseBodyRailMerged struct {
+	// CardType カードの効果の種類
+	CardType CardType `json:"cardType"`
+
 	// ChildRail レール情報
 	ChildRail Rail `json:"childRail"`
 

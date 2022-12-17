@@ -138,6 +138,7 @@ components:
         - lgtm
         - pullShark
         - starstruck
+        - none
       description: カードの効果の種類
     LifeEventType:
       title: LifeEventType
@@ -403,11 +404,14 @@ components:
       properties:
         playerId:
           $ref: '#/components/schemas/PlayerId'
+        cardType:
+          $ref: '#/components/schemas/CardType'
         newLife:
           $ref: '#/components/schemas/Life'
           description: 変動後のライフ
       required:
         - playerId
+        - cardType
         - newLife
       description: ライフの変動情報
     WsResponseBodyRailCreated:
@@ -443,10 +447,13 @@ components:
           description: 結合先のレール
         playerId:
           $ref: '#/components/schemas/PlayerId'
+        cardType:
+          $ref: '#/components/schemas/CardType'
       required:
         - childRail
         - parentRail
         - playerId
+        - cardType
       description: レールのマージ情報
     WsResponseBodyBlockCreated:
       type: object
@@ -455,6 +462,8 @@ components:
           $ref: '#/components/schemas/PlayerId'
         targetId:
           $ref: '#/components/schemas/PlayerId'
+        cardType:
+          $ref: '#/components/schemas/CardType'
         delay:
           type: integer
           minimum: 1
@@ -469,6 +478,7 @@ components:
       required:
         - attackerId
         - targetId
+        - cardType
         - delay
         - attack
       description: 新規障害物の作成情報
@@ -479,9 +489,12 @@ components:
           $ref: '#/components/schemas/PlayerId'
         rail:
           $ref: '#/components/schemas/Rail'
+        cardType:
+          $ref: '#/components/schemas/CardType'
       required:
         - targetId
         - rail
+        - cardType
       description: 障害物の解消情報
     WsResponseBodyBlockCrashed:
       type: object
@@ -491,12 +504,15 @@ components:
         rail:
           $ref: '#/components/schemas/Rail'
           description: 衝突したレール
+        cardType:
+          $ref: '#/components/schemas/CardType'
         newLife:
           $ref: '#/components/schemas/Life'
           description: 変動後のライフ
       required:
         - targetId
         - rail
+        - cardType
         - newLife
       description: 障害物と衝突したときの情報
     WsResponseBodyGameOverred:

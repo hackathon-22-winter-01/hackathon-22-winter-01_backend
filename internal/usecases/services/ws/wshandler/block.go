@@ -36,7 +36,7 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			b.Rail.Id,
 		))
 
-		res, err = oapi.NewWsResponseBlockCanceled(now, h.playerID, b.Rail)
+		res, err = oapi.NewWsResponseBlockCanceled(now, h.playerID, b.Rail, b.CardType)
 		if err != nil {
 			return err
 		}
@@ -66,7 +66,13 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			attack,
 		))
 
-		res, err = oapi.NewWsResponseBlockCrashed(now, domain.CalculateLife(target.LifeEvents), target.ID, b.Rail)
+		res, err = oapi.NewWsResponseBlockCrashed(
+			now,
+			domain.CalculateLife(target.LifeEvents),
+			target.ID,
+			b.Rail,
+			b.CardType,
+		)
 		if err != nil {
 			return err
 		}
