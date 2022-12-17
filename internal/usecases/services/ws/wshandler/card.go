@@ -95,25 +95,8 @@ func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
 	}
 
-	afterRails := domain.NewRails(targetPlayer.Main)
-	if l := len(targetPlayer.BranchEvents); l > 0 {
-		copy(afterRails[:], targetPlayer.BranchEvents[l-1].AfterRails[:])
-	}
-
-	var targetRailIndex int
-
-	for i, r := range afterRails {
-		if r == nil {
-			continue
-		}
-
-		if r.Index != targetRail.Index {
-			afterRails[i] = nil
-			targetRailIndex = i
-
-			break
-		}
-	}
+	usedRails := domain.CalcUsedRails(targetPlayer.BranchEvents)
+	parentRailIndex := domain.GetParentRailIndex(targetRail.Index, usedRails)
 
 	targetPlayer.BranchEvents = append(targetPlayer.BranchEvents, domain.NewBranchEvent(
 		uuid.New(),
@@ -121,13 +104,14 @@ func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 		now,
 		domain.BranchEventMerged,
 		h.playerID,
-		afterRails,
+		targetRail.Index,
+		parentRailIndex,
 	))
 
 	res, err := oapi.NewWsResponseRailMerged(
 		now,
-		targetRailIndex,
-		consts.RailLimit/2,
+		targetRail.Index,
+		parentRailIndex,
 		h.playerID,
 		oapi.CardTypeYolo,
 	)
@@ -318,20 +302,19 @@ func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
 	cardType := domain.CardTypePullShark
 
-	afterRails := domain.NewRails(targetPlayer.Main)
-	if l := len(targetPlayer.BranchEvents); l > 0 {
-		copy(afterRails[:], targetPlayer.BranchEvents[l-1].AfterRails[:])
-	}
+	usedRails := domain.CalcUsedRails(targetPlayer.BranchEvents)
+	blockedRails := domain.CalcBlockedRails(targetPlayer.BlockEvents)
 
-	emptys := []int{}
+	// usedRails[i] == false && blockedRails[i] == false のとき、レールiは空いている
+	emptyRails := make([]int, 0, consts.RailLimit)
 
-	for i, r := range afterRails {
-		if r == nil {
-			emptys = append(emptys, i)
+	for i := 0; i < consts.RailLimit; i++ {
+		if !usedRails[i] && !blockedRails[i] {
+			emptyRails = append(emptyRails, i)
 		}
 	}
 
-	if len(emptys) == 0 {
+	if len(emptyRails) == 0 {
 		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
 			uuid.New(),
 			cardType,
@@ -341,9 +324,11 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
 	}
 
-	// railID := uuid.New()
-	newRailIndex := emptys[rand.Intn(len(emptys))]
-	afterRails[newRailIndex] = domain.NewRail(newRailIndex)
+	// 空いているレールをランダムで指定する
+	newRailIndex := emptyRails[rand.Intn(len(emptyRails))]
+
+	// newRailIndexからmain方向に向かって一番近い使用中のレールを親として分岐させる
+	parentRailIndex := domain.GetParentRailIndex(newRailIndex, usedRails)
 
 	targetPlayer.BranchEvents = append(targetPlayer.BranchEvents, domain.NewBranchEvent(
 		uuid.New(),
@@ -351,32 +336,14 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 		now,
 		domain.BranchEventCreated,
 		h.playerID,
-		afterRails,
+		newRailIndex,
+		parentRailIndex,
 	))
-
-	// newRailIndexからmainに向かってサーチし、始めに見つかったレールを親とする
-	parent := consts.RailLimit / 2
-
-	if newRailIndex < consts.RailLimit {
-		for i := newRailIndex + 1; i < consts.RailLimit/2; i++ {
-			if afterRails[i] != nil {
-				parent = i
-				break
-			}
-		}
-	} else {
-		for i := newRailIndex - 1; i >= consts.RailLimit/2; i-- {
-			if afterRails[i] != nil {
-				parent = i
-				break
-			}
-		}
-	}
 
 	res, err := oapi.NewWsResponseRailCreated(
 		now,
 		newRailIndex,
-		parent,
+		parentRailIndex,
 		h.playerID,
 		targetPlayer.ID,
 		oapi.CardTypePullShark,
@@ -531,46 +498,28 @@ func (h *wsHandler) handleOoops(reqbody oapi.WsRequestBodyCardForAllEvent, now t
 // getNonBlockingRail 現状のレールからランダムにブロック対象のレールを取得する
 // 既にブロックされているブランチは取得できない
 func getNonBlockingRail(p *domain.Player, allowMain bool) (*domain.Rail, bool) {
-	// 既にブロックされているブランチのIDを取得
-	blockBranchIDs := make(map[int]struct{})
+	usedRails := domain.CalcUsedRails(p.BranchEvents)
+	blockedRails := domain.CalcBlockedRails(p.BlockEvents)
 
-	for _, e := range p.BlockEvents {
-		switch e.Type {
-		case domain.BlockEventTypeCreated:
-			blockBranchIDs[e.TargetRailIndex] = struct{}{}
+	// 存在しているかつブロックされていているブランチを対象にする
+	targetRails := make([]int, 0)
 
-		case domain.BlockEventTypeCanceled:
-			fallthrough
-		case domain.BlockEventTypeCrashed:
-			delete(blockBranchIDs, e.TargetRailIndex)
-		}
-	}
-
-	shuffleRails := []*domain.Rail{p.Main}
-
-	if l := len(p.BranchEvents); l > 0 {
-		rails := p.BranchEvents[l-1].AfterRails
-		shuffleRails = make([]*domain.Rail, len(rails))
-		copy(shuffleRails, rails[:])
-
-		rand.Shuffle(len(shuffleRails), func(i, j int) {
-			shuffleRails[i], shuffleRails[j] = shuffleRails[j], shuffleRails[i]
-		})
-	}
-
-	for _, r := range shuffleRails {
-		if r == nil {
+	for i := 0; i < consts.RailLimit; i++ {
+		if !allowMain && i == consts.PlayerLimit/2 {
 			continue
 		}
 
-		if _, ok := blockBranchIDs[r.Index]; !ok {
-			if !allowMain && r.Index == p.Main.Index {
-				continue
-			}
-
-			return r, true
+		if usedRails[i] && blockedRails[i] {
+			targetRails = append(targetRails, i)
 		}
 	}
 
-	return nil, false
+	if len(targetRails) == 0 {
+		return nil, false
+	}
+
+	// ランダムにブロック対称のレールを取得する
+	targetRailIndex := targetRails[rand.Intn(len(targetRails))]
+
+	return &domain.Rail{Index: targetRailIndex}, true
 }
