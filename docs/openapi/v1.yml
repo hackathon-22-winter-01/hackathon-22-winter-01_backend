@@ -138,6 +138,7 @@ components:
         - lgtm
         - pullShark
         - starstruck
+        - nowInArchiveMode
       description: カードの効果の種類
     LifeEventType:
       title: LifeEventType

@@ -70,6 +70,12 @@ const (
 	// - 攻撃力 : 50
 	CardTypeStarstruck
 
+	// 	Now In Archive-Mode
+	// 	- レア度 : 3
+	// 	- 即時自動発動
+	// 	- 全プレイヤーのレールを１つ増やす
+	CardTypeNowINArchiveMode
+
 	// None
 	// - カードを使用しないイベント用
 	CardTypeNone
@@ -105,6 +111,8 @@ func (t CardType) DelayAndAttack() (int, float32, error) {
 	case CardTypeStarstruck:
 		return 5, 50, nil
 	case CardTypeNone:
+		return 0, 0, errCannotUse
+	case CardTypeNowINArchiveMode:
 		return 0, 0, errCannotUse
 	default:
 		return 0, 0, errCannotUse
