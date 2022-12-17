@@ -54,7 +54,11 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 		))
 
 		cardType := getCardTypeFromRailID(target, b.RailId)
-		_, attack, _ := cardType.DelayAndAttack()
+
+		_, attack, err := cardType.DelayAndAttack()
+		if err != nil {
+			return err
+		}
 
 		target.LifeEvents = append(target.LifeEvents, domain.NewLifeEvent(
 			uuid.New(),
