@@ -238,9 +238,6 @@ type WsResponseBodyBlockCrashed struct {
 	// CardType カードの効果の種類
 	CardType *CardType `json:"cardType,omitempty"`
 
-	// NewLife ライフ
-	NewLife Life `json:"newLife"`
-
 	// RailIndex レールのインデックス
 	RailIndex RailIndex `json:"railIndex"`
 
@@ -290,7 +287,7 @@ type WsResponseBodyGameStarted struct {
 // WsResponseBodyLifeChanged ライフの変動情報
 type WsResponseBodyLifeChanged struct {
 	// CardType カードの効果の種類
-	CardType CardType `json:"cardType"`
+	CardType *CardType `json:"cardType,omitempty"`
 
 	// NewLife ライフ
 	NewLife Life `json:"newLife"`
