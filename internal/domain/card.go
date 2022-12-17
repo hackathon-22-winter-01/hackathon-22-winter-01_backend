@@ -2,6 +2,8 @@ package domain
 
 import (
 	"errors"
+	"math/rand"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -70,6 +72,14 @@ const (
 	// - 攻撃力 : 50
 	CardTypeStarstruck
 
+	// Ooops!!!
+	// - レア度 : 2
+	// - 即時自動発動
+	// - レールに妨害を発生させる
+	// - 妨害値 : 1 ~ 3
+	// - 攻撃力 : 妨害値 * 10
+	CardTypeOoops
+
 	// None
 	// - カードを使用しないイベント用
 	CardTypeNone
@@ -86,6 +96,8 @@ func NewCard(id uuid.UUID, typ CardType) *Card {
 // いずれかがない場合はエラーを返す
 func (t CardType) DelayAndAttack() (int, float32, error) {
 	errCannotUse := errors.New("このカードを妨害に使用することはできません")
+
+	rand.Seed(time.Now().UnixNano())
 
 	switch t {
 	case CardTypeYolo:
@@ -104,6 +116,9 @@ func (t CardType) DelayAndAttack() (int, float32, error) {
 		return 0, 0, errCannotUse
 	case CardTypeStarstruck:
 		return 5, 50, nil
+	case CardTypeOoops:
+		delay := rand.Intn(3) + 1
+		return delay, float32(delay) * 10, errCannotUse
 	case CardTypeNone:
 		return 0, 0, errCannotUse
 	default:

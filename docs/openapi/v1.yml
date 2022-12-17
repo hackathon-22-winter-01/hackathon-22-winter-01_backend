@@ -138,6 +138,7 @@ components:
         - lgtm
         - pullShark
         - starstruck
+        - ooops
       description: カードの効果の種類
     LifeEventType:
       title: LifeEventType

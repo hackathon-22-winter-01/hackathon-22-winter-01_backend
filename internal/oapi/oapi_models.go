@@ -21,6 +21,7 @@ const (
 const (
 	CardTypeGalaxyBrain        CardType = "galaxyBrain"
 	CardTypeLgtm               CardType = "lgtm"
+	CardTypeOoops              CardType = "ooops"
 	CardTypeOpenSourcerer      CardType = "openSourcerer"
 	CardTypePairExtraordinaire CardType = "pairExtraordinaire"
 	CardTypePullShark          CardType = "pullShark"

@@ -31,6 +31,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		oapi.CardTypeLgtm:               h.handleLgtm,
 		oapi.CardTypePullShark:          h.handlePullShark,
 		oapi.CardTypeStarstruck:         h.handleStarstruck,
+		oapi.CardTypeOoops:              h.handleOoops,
 	}
 
 	f, ok := fmap[b.Type]
