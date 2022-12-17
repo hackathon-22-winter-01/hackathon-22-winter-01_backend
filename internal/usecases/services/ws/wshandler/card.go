@@ -95,6 +95,7 @@ func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 		oapi.NewRail(targetRail.ID, targetRailIndex),
 		oapi.NewRail(targetPlayer.Main.ID, consts.RailLimit/2),
 		h.playerID,
+		oapi.CardTypeYolo,
 	)
 	if err != nil {
 		return nil, err
@@ -129,7 +130,12 @@ func (h *wsHandler) handleOpenSourcerer(reqbody oapi.WsRequestBodyCardEvent, now
 		consts.MaxLife-nowLife,
 	))
 
-	res, err := oapi.NewWsResponseLifeChanged(now, h.playerID, domain.CalculateLife(targetPlayer.LifeEvents))
+	res, err := oapi.NewWsResponseLifeChanged(
+		now,
+		h.playerID,
+		oapi.CardTypeOpenSourcerer,
+		domain.CalculateLife(targetPlayer.LifeEvents),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +175,14 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 		targetRail.ID,
 	))
 
-	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)
+	res, err := oapi.NewWsResponseBlockCreated(
+		now,
+		h.playerID,
+		reqbody.TargetId,
+		oapi.CardTypeRefactoring,
+		delay,
+		attack,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -205,7 +218,14 @@ func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent
 		targetRail.ID,
 	))
 
-	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)
+	res, err := oapi.NewWsResponseBlockCreated(
+		now,
+		h.playerID,
+		reqbody.TargetId,
+		oapi.CardTypePairExtraordinaire,
+		delay,
+		attack,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -241,7 +261,14 @@ func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 		targetRail.ID,
 	))
 
-	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)
+	res, err := oapi.NewWsResponseBlockCreated(
+		now,
+		h.playerID,
+		reqbody.TargetId,
+		oapi.CardTypeLgtm,
+		delay,
+		attack,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -350,7 +377,14 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 		targetRail.ID,
 	))
 
-	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)
+	res, err := oapi.NewWsResponseBlockCreated(
+		now,
+		h.playerID,
+		reqbody.TargetId,
+		oapi.CardTypeStarstruck,
+		delay,
+		attack,
+	)
 	if err != nil {
 		return nil, err
 	}

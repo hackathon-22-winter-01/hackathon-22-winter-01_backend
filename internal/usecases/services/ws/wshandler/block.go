@@ -29,14 +29,14 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 	case oapi.BlockEventTypeCanceled:
 		target.BlockEvents = append(target.BlockEvents, domain.NewBlockEvent(
 			uuid.New(),
-			domain.CardTypeNone,
+			b.CardType.ToDomain(),
 			jst.Now(),
 			domain.BlockEventTypeCanceled,
 			target.ID,
 			b.Rail.Id,
 		))
 
-		res, err = oapi.NewWsResponseBlockCanceled(now, b.Rail)
+		res, err = oapi.NewWsResponseBlockCanceled(now, h.playerID, b.Rail, b.CardType)
 		if err != nil {
 			return err
 		}
@@ -44,7 +44,7 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 	case oapi.BlockEventTypeCrashed:
 		target.BlockEvents = append(target.BlockEvents, domain.NewBlockEvent(
 			uuid.New(),
-			domain.CardTypeNone,
+			b.CardType.ToDomain(),
 			jst.Now(),
 			domain.BlockEventTypeCrashed,
 			target.ID,
@@ -60,13 +60,19 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 
 		target.LifeEvents = append(target.LifeEvents, domain.NewLifeEvent(
 			uuid.New(),
-			domain.CardTypeNone,
+			b.CardType.ToDomain(),
 			jst.Now(),
 			domain.LifeEventTypeDamaged,
 			attack,
 		))
 
-		res, err = oapi.NewWsResponseBlockCrashed(now, domain.CalculateLife(target.LifeEvents), target.ID, b.Rail)
+		res, err = oapi.NewWsResponseBlockCrashed(
+			now,
+			domain.CalculateLife(target.LifeEvents),
+			target.ID,
+			b.Rail,
+			b.CardType,
+		)
 		if err != nil {
 			return err
 		}
