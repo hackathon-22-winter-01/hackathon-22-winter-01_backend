@@ -56,11 +56,10 @@ func TestWs(t *testing.T) {
 	}
 
 	// オーナーがゲーム開始リクエストを送信
-	b := oapi.WsRequest_Body{}
-	require.NoError(t, b.FromWsRequestBodyGameStartEvent(
+	oapi.WriteWsRequest(t, conns[0],
+		oapi.WsRequestTypeGameStartEvent,
 		oapi.WsRequestBodyGameStartEvent{},
-	))
-	mustWriteWsRequest(t, conns[0], oapi.WsRequestTypeGameStartEvent, b)
+	)
 
 	// 各プレイヤーはゲーム開始通知を受信
 	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
@@ -85,15 +84,14 @@ func TestWs(t *testing.T) {
 		// t.Parallel()をつける場合はc.Close()を実行しない必要がある
 
 		// プレイヤー1がプレイヤー0に対してカードを出す
-		b := oapi.WsRequest_Body{}
-		require.NoError(t, b.FromWsRequestBodyCardEvent(
+		oapi.WriteWsRequest(t, conns[1],
+			oapi.WsRequestTypeCardEvent,
 			oapi.WsRequestBodyCardEvent{
 				Id:       uuid.New(),
 				TargetId: ps[0].ID,
 				Type:     oapi.CardTypePullShark,
 			},
-		))
-		mustWriteWsRequest(t, conns[1], oapi.WsRequestTypeCardEvent, b)
+		)
 
 		// 各プレイヤーは結果を受信する
 		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
@@ -114,15 +112,14 @@ func TestWs(t *testing.T) {
 
 	t.Run("プレイヤー1がプレイヤー0に対してカードを出して障害物を生成する", func(t *testing.T) {
 		// プレイヤー1がプレイヤー0に対してカードを出す
-		b := oapi.WsRequest_Body{}
-		require.NoError(t, b.FromWsRequestBodyCardEvent(
+		oapi.WriteWsRequest(t, conns[1],
+			oapi.WsRequestTypeCardEvent,
 			oapi.WsRequestBodyCardEvent{
 				Id:       uuid.New(),
 				TargetId: ps[0].ID,
 				Type:     oapi.CardTypePairExtraordinaire,
 			},
-		))
-		mustWriteWsRequest(t, conns[1], oapi.WsRequestTypeCardEvent, b)
+		)
 
 		// 各プレイヤーは結果を受信する
 		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
@@ -142,14 +139,13 @@ func TestWs(t *testing.T) {
 
 	t.Run("プレイヤー0が障害物に当たってライフが1減少する", func(t *testing.T) {
 		// プレイヤー0がライフ減少のリクエストを出す
-		b := oapi.WsRequest_Body{}
-		require.NoError(t, b.FromWsRequestBodyLifeEvent(
+		oapi.WriteWsRequest(t, conns[0],
+			oapi.WsRequestTypeLifeEvent,
 			oapi.WsRequestBodyLifeEvent{
 				Type: oapi.LifeEventTypeDamaged,
 				Diff: 1,
 			},
-		))
-		mustWriteWsRequest(t, conns[0], oapi.WsRequestTypeLifeEvent, b)
+		)
 
 		// 各プレイヤーは結果を受信する
 		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
