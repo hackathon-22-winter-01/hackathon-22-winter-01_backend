@@ -50,11 +50,13 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 }
 
 func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	cardType := domain.CardTypeYolo
+
 	targetRailID, ok := getNonBlockingRailID(targetPlayer, false)
 	if !ok {
 		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
 			uuid.New(),
-			domain.CardTypeYolo,
+			cardType,
 			now,
 		))
 
@@ -74,7 +76,7 @@ func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 
 	targetPlayer.BranchEvents = append(targetPlayer.BranchEvents, domain.NewBranchEvent(
 		uuid.New(),
-		domain.CardTypeYolo,
+		cardType,
 		now,
 		domain.BranchEventCreated,
 		h.playerID,
@@ -91,9 +93,11 @@ func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 }
 
 func (h *wsHandler) handleGalaxyBrain(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	cardType := domain.CardTypeGalaxyBrain
+
 	targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
 		uuid.New(),
-		domain.CardTypeGalaxyBrain,
+		cardType,
 		now,
 	))
 
@@ -103,9 +107,11 @@ func (h *wsHandler) handleGalaxyBrain(reqbody oapi.WsRequestBodyCardEvent, now t
 }
 
 func (h *wsHandler) handleOpenSourcerer(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	cardType := domain.CardTypeOpenSourcerer
+
 	targetPlayer.LifeEvents = append(targetPlayer.LifeEvents, domain.NewLifeEvent(
 		uuid.New(),
-		domain.CardTypeOpenSourcerer,
+		cardType,
 		now,
 		domain.LifeEventTypeHealed,
 		30,
@@ -120,6 +126,8 @@ func (h *wsHandler) handleOpenSourcerer(reqbody oapi.WsRequestBodyCardEvent, now
 }
 
 func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	cardType := domain.CardTypeRefactoring
+
 	if h.playerID != targetPlayer.ID {
 		return nil, errors.New("targetID is different from playerID")
 	}
@@ -128,14 +136,12 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 	if !ok {
 		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
 			uuid.New(),
-			domain.CardTypeRefactoring,
+			cardType,
 			now,
 		))
 
 		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
 	}
-
-	cardType := domain.CardTypeRefactoring
 
 	delay, attack, err := cardType.DelayAndAttack()
 	if err != nil {
@@ -161,18 +167,18 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 }
 
 func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	cardType := domain.CardTypePairExtraordinaire
+
 	targetRailID, ok := getNonBlockingRailID(targetPlayer, true)
 	if !ok {
 		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
 			uuid.New(),
-			domain.CardTypePairExtraordinaire,
+			cardType,
 			now,
 		))
 
 		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
 	}
-
-	cardType := domain.CardTypePairExtraordinaire
 
 	delay, attack, err := cardType.DelayAndAttack()
 	if err != nil {
@@ -181,7 +187,7 @@ func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent
 
 	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
 		uuid.New(),
-		domain.CardTypePairExtraordinaire,
+		cardType,
 		now,
 		domain.BlockEventTypeCreated,
 		h.playerID,
@@ -198,18 +204,18 @@ func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent
 }
 
 func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	cardType := domain.CardTypeLgtm
+
 	targetRailID, ok := getNonBlockingRailID(targetPlayer, true)
 	if !ok {
 		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
 			uuid.New(),
-			domain.CardTypeLgtm,
+			cardType,
 			now,
 		))
 
 		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
 	}
-
-	cardType := domain.CardTypeLgtm
 
 	delay, attack, err := cardType.DelayAndAttack()
 	if err != nil {
@@ -235,6 +241,8 @@ func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 }
 
 func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	cardType := domain.CardTypePullShark
+
 	afterRails := []*domain.Rail{targetPlayer.Main}
 	if l := len(targetPlayer.BranchEvents); l > 0 {
 		afterRails = append(targetPlayer.BranchEvents[l-1].AfterRails, domain.NewRail())
@@ -242,7 +250,7 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 
 	targetPlayer.BranchEvents = append(targetPlayer.BranchEvents, domain.NewBranchEvent(
 		uuid.New(),
-		domain.CardTypePullShark,
+		cardType,
 		now,
 		domain.BranchEventCreated,
 		h.playerID,
@@ -259,18 +267,18 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 }
 
 func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	cardType := domain.CardTypeStarstruck
+
 	targetRailID, ok := getNonBlockingRailID(targetPlayer, true)
 	if !ok {
 		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
 			uuid.New(),
-			domain.CardTypeStarstruck,
+			cardType,
 			now,
 		))
 
 		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
 	}
-
-	cardType := domain.CardTypeStarstruck
 
 	delay, attack, err := cardType.DelayAndAttack()
 	if err != nil {
@@ -279,7 +287,7 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 
 	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
 		uuid.New(),
-		domain.CardTypeLgtm,
+		cardType,
 		now,
 		domain.BlockEventTypeCreated,
 		h.playerID,
