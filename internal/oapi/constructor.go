@@ -132,6 +132,22 @@ func NewWsResponseBlockCanceled(eventTime time.Time, railID uuid.UUID) (*WsRespo
 	return res, nil
 }
 
+func NewWsResponseBlockCrashed(eventTime time.Time, newLife float32, playerID uuid.UUID, railID uuid.UUID) (*WsResponse, error) {
+	b := WsResponseBodyBlockCrashed{
+		New:      newLife,
+		PlayerId: playerID,
+		RailId:   railID,
+	}
+
+	res := WsResponseFromType(WsResponseTypeBlockCrashed, eventTime)
+
+	if err := res.Body.FromWsResponseBodyBlockCrashed(b); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
 func NewWsResponseGameOverred(eventTime time.Time, playerID uuid.UUID) (*WsResponse, error) {
 	b := WsResponseBodyGameOverred{
 		PlayerId: playerID,

@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws/wshandler"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/log"
 	"github.com/shiguredo/websocket"
 	"go.uber.org/zap"
@@ -45,12 +46,12 @@ func (c *Client) readPump() error {
 	defer c.hub.Unregister(c)
 	c.conn.SetReadLimit(maxMessageSize)
 
-	if err := c.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
+	if err := c.conn.SetReadDeadline(jst.Now().Add(pongWait)); err != nil {
 		return err
 	}
 
 	c.conn.SetPongHandler(func(string) error {
-		return c.conn.SetReadDeadline(time.Now().Add(pongWait))
+		return c.conn.SetReadDeadline(jst.Now().Add(pongWait))
 	})
 
 	room, err := c.hub.roomRepo.FindRoomFromPlayerID(c.playerID)
@@ -92,7 +93,7 @@ func (c *Client) writePump() error {
 	for {
 		select {
 		case message, ok := <-c.send:
-			if err := c.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+			if err := c.conn.SetWriteDeadline(jst.Now().Add(writeWait)); err != nil {
 				log.L().Error("failed to set write deadline", zap.Error(err))
 			}
 
@@ -109,7 +110,7 @@ func (c *Client) writePump() error {
 			}
 
 		case <-ticker.C:
-			if err := c.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+			if err := c.conn.SetWriteDeadline(jst.Now().Add(writeWait)); err != nil {
 				log.L().Error("failed to set write deadline", zap.Error(err))
 			}
 
