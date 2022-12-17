@@ -1,7 +1,9 @@
 package main
 
 import (
+	"embed"
 	"fmt"
+	"net/http"
 
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/handler"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
@@ -15,12 +17,20 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+//go:embed bin/frontend/dist
+var dist embed.FS
+
 const baseURL = "/api/v1"
 
 func main() {
 	config.ParseFlags()
 
 	e := echo.New()
+
+	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
+		Root:       "bin/frontend/dist/*",
+		Filesystem: http.FS(dist),
+	}))
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
