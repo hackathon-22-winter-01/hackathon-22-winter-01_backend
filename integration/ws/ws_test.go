@@ -192,8 +192,8 @@ func TestWs(t *testing.T) {
 		readWsResponse[bRailMerged](t, c).
 			Equal(tRailMerged, bRailMerged{
 				CardType:   oapi.CardTypeYolo,
-				ChildRail:  randint(3),
-				ParentRail: 3, // TODO: childRailとparentRailが同じになることはないため直す
+				ChildRail:  randint(6),
+				ParentRail: 3,
 				PlayerId:   ps[0].ID,
 			})
 	})

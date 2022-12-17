@@ -505,7 +505,7 @@ func getNonBlockingRail(p *domain.Player, allowMain bool) (*domain.Rail, bool) {
 	targetRails := make([]int, 0)
 
 	for i := 0; i < consts.RailLimit; i++ {
-		if !allowMain && i == consts.PlayerLimit/2 {
+		if !allowMain && i == consts.RailLimit/2 {
 			continue
 		}
 
