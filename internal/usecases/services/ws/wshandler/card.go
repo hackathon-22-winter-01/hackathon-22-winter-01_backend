@@ -320,7 +320,7 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 
 	if newRailIndex < consts.RailLimit {
 		for i := newRailIndex + 1; i < consts.RailLimit/2; i++ {
-			if afterRails[i].ID != uuid.Nil {
+			if afterRails[i] != nil {
 				parent = oapi.NewRail(afterRails[i].ID, i)
 				break
 			}

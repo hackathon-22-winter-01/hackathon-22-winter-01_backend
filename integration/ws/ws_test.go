@@ -7,6 +7,7 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
@@ -19,11 +20,9 @@ import (
 
 func TestWs(t *testing.T) {
 	var (
-		conns     = make([]*websocket.Conn, consts.PlayerLimit)
-		pids      = make([]uuid.UUID, consts.PlayerLimit)
-		mainRails = make([]oapi.Rail, consts.PlayerLimit)
-		rails     = make([][]oapi.Rail, consts.PlayerLimit)
-		wg        = new(sync.WaitGroup)
+		conns = make([]*websocket.Conn, consts.PlayerLimit)
+		pids  = make([]uuid.UUID, consts.PlayerLimit)
+		wg    = new(sync.WaitGroup)
 	)
 
 	// プレイヤーIDのセットアップ
@@ -58,11 +57,11 @@ func TestWs(t *testing.T) {
 		defer c.Close()
 
 		// 接続を確認
-		res := readWsResponse(t, c)
-		resbody, err := res.Body.AsWsResponseBodyConnected()
-		require.NoError(t, err)
-		require.Equal(t, oapi.WsResponseTypeConnected, res.Type)
-		require.Equal(t, oapi.WsResponseBodyConnected{PlayerId: pids[i]}, resbody)
+		readWsResponse[oapi.WsResponseBodyConnected](t, c).
+			Equal(
+				oapi.WsResponseTypeConnected,
+				oapi.WsResponseBodyConnected{PlayerId: pids[i]},
+			)
 	}
 
 	// オーナーがゲーム開始リクエストを送信
@@ -73,22 +72,20 @@ func TestWs(t *testing.T) {
 	mustWriteWsRequest(t, conns[0], oapi.WsRequestTypeGameStartEvent, b)
 
 	// 各プレイヤーはゲーム開始通知を受信
-	forEachClientAsync(t, wg, conns, func(i int, c *websocket.Conn) {
-		res := readWsResponse(t, c)
-		resbody, err := res.Body.AsWsResponseBodyGameStarted()
-		require.NoError(t, err)
-		require.Equal(t, oapi.WsResponseTypeGameStarted, res.Type)
-		require.Len(t, resbody.Players, consts.PlayerLimit)
-		for j, p := range resbody.Players {
-			require.Equal(t, pids[j], p.Id)
-			require.Equal(t, consts.MaxLife, p.Life)
-
-			// レールを記録しておく
-			if i == 0 {
-				mainRails[j] = p.MainRail
-				rails[j] = p.Rails
-			}
-		}
+	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		readWsResponse[oapi.WsResponseBodyGameStarted](t, c).
+			Equal(
+				oapi.WsResponseTypeGameStarted,
+				oapi.WsResponseBodyGameStarted{
+					Players: []oapi.Player{
+						{Id: pids[0], Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
+						{Id: pids[1], Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
+						{Id: pids[2], Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
+						{Id: pids[3], Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
+					},
+				},
+				cmpopts.IgnoreFields(oapi.Rail{}, "Id"),
+			)
 	})
 
 	t.Run("プレイヤー1がプレイヤー0に対してカードを出してレールを生成する", func(t *testing.T) {
@@ -108,20 +105,19 @@ func TestWs(t *testing.T) {
 		mustWriteWsRequest(t, conns[1], oapi.WsRequestTypeCardEvent, b)
 
 		// 各プレイヤーは結果を受信する
-		forEachClientAsync(t, wg, conns, func(i int, c *websocket.Conn) {
-			res := readWsResponse(t, c)
-			resbody, err := res.Body.AsWsResponseBodyRailCreated()
-			require.NoError(t, err)
-			require.Equal(t, oapi.WsResponseTypeRailCreated, res.Type)
-			// 作成されたレールのID以外の確認
-			require.Equal(t, mainRails[0], resbody.ParentRail)
-			require.Equal(t, pids[1], resbody.AttackerId)
-			require.Equal(t, pids[0], resbody.TargetId)
-
-			// レールの更新
-			if i == 0 {
-				rails[0] = append(rails[0], oapi.Rail{Id: resbody.NewRail.Id, Index: 0})
-			}
+		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+			readWsResponse[oapi.WsResponseBodyRailCreated](t, c).
+				Equal(
+					oapi.WsResponseTypeRailCreated,
+					oapi.WsResponseBodyRailCreated{
+						AttackerId: pids[1],
+						CardType:   oapi.CardTypePullShark,
+						NewRail:    oapi.Rail{Index: randint(6)},
+						ParentRail: oapi.Rail{Index: 3},
+						TargetId:   pids[0],
+					},
+					cmpopts.IgnoreFields(oapi.Rail{}, "Id"), // TODO: Idがなくなったら消す
+				)
 		})
 	})
 
@@ -139,17 +135,17 @@ func TestWs(t *testing.T) {
 
 		// 各プレイヤーは結果を受信する
 		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
-			res := readWsResponse(t, c)
-			resbody, err := res.Body.AsWsResponseBodyBlockCreated()
-			require.NoError(t, err)
-			require.Equal(t, oapi.WsResponseTypeBlockCreated, res.Type)
-			require.Equal(t, oapi.WsResponseBodyBlockCreated{
-				AttackerId: pids[1],
-				TargetId:   pids[0],
-				CardType:   oapi.CardTypePairExtraordinaire,
-				Delay:      2,
-				Attack:     30,
-			}, resbody)
+			readWsResponse[oapi.WsResponseBodyBlockCreated](t, c).
+				Equal(
+					oapi.WsResponseTypeBlockCreated,
+					oapi.WsResponseBodyBlockCreated{
+						Attack:     30,
+						AttackerId: pids[1],
+						CardType:   oapi.CardTypePairExtraordinaire,
+						Delay:      2,
+						TargetId:   pids[0],
+					},
+				)
 		})
 	})
 
@@ -166,15 +162,15 @@ func TestWs(t *testing.T) {
 
 		// 各プレイヤーは結果を受信する
 		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
-			res := readWsResponse(t, c)
-			resbody, err := res.Body.AsWsResponseBodyLifeChanged()
-			require.NoError(t, err)
-			require.Equal(t, oapi.WsResponseTypeLifeChanged, res.Type)
-			require.Equal(t, oapi.WsResponseBodyLifeChanged{
-				CardType: oapi.CardTypeNone,
-				PlayerId: pids[0],
-				NewLife:  99,
-			}, resbody)
+			readWsResponse[oapi.WsResponseBodyLifeChanged](t, c).
+				Equal(
+					oapi.WsResponseTypeLifeChanged,
+					oapi.WsResponseBodyLifeChanged{
+						CardType: oapi.CardTypeNone,
+						PlayerId: pids[0],
+						NewLife:  99,
+					},
+				)
 		})
 	})
 }

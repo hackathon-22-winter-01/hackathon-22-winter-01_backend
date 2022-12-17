@@ -8,20 +8,23 @@ import (
 )
 
 func PlayerFromDomain(dp *domain.Player) Player {
-	rails := []Rail{{Id: dp.Main.ID}}
+	const mainIndex = consts.RailLimit / 2
 
+	rails := make([]Rail, consts.RailLimit)
 	if l := len(dp.BranchEvents); l > 0 {
 		rails = make([]Rail, len(dp.BranchEvents[l-1].AfterRails))
 
 		for i, r := range dp.BranchEvents[l-1].AfterRails {
 			rails[i] = Rail{Id: r.ID}
 		}
+	} else {
+		rails[mainIndex] = Rail{Id: dp.Main.ID, Index: mainIndex}
 	}
 
 	return Player{
 		Id:       dp.ID,
 		Life:     domain.CalculateLife(dp.LifeEvents),
-		MainRail: NewRail(dp.Main.ID, consts.RailLimit/2),
+		MainRail: NewRail(dp.Main.ID, mainIndex),
 		Rails:    rails,
 	}
 }

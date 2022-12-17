@@ -36,13 +36,18 @@ func forEachClientAsync(t *testing.T, wg *sync.WaitGroup, c []*websocket.Conn, f
 	wg.Wait()
 }
 
-func readWsResponse(t *testing.T, c *websocket.Conn) *oapi.WsResponse {
+func readWsResponse[T any](t *testing.T, c *websocket.Conn) *oapi.WsResponseWrapper[T] {
 	t.Helper()
+
+	var w oapi.WsResponseWrapper[T]
 
 	res := new(oapi.WsResponse)
 	require.NoError(t, c.ReadJSON(res))
 
-	return res
+	w.T = t
+	w.Res = res
+
+	return &w
 }
 
 type httpHandler struct {
@@ -56,3 +61,6 @@ func (h *httpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.t.Error(err)
 	}
 }
+
+// randint 乱数であることを明示する
+type randint = int
