@@ -1,0 +1,10 @@
+type: 'runtime'
+startup: |
+  go mod download
+  go build -o main
+https: on
+entrypoint: './main --port 8080 --production'
+http_proxy: 80
+branch:
+  master: null
+  main: null
