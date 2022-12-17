@@ -427,7 +427,7 @@ func (h *wsHandler) handleOoops(reqbody oapi.WsRequestBodyCardEventForAll, now t
 	var res []*oapi.WsResponse
 
 	for _, targetPlayer := range h.room.Players {
-		targetRailID, ok := getNonBlockingRailID(targetPlayer, true)
+		targetRail, ok := getNonBlockingRail(targetPlayer, true)
 		if !ok {
 			targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
 				uuid.New(),
@@ -450,12 +450,11 @@ func (h *wsHandler) handleOoops(reqbody oapi.WsRequestBodyCardEventForAll, now t
 			cardType,
 			now,
 			domain.BlockEventTypeCreated,
-			h.playerID,
 			targetPlayer.ID,
-			targetRailID,
+			targetRail.ID,
 		))
 
-		r, err := oapi.NewWsResponseBlockCreated(now, h.playerID, targetPlayer.ID, delay, attack)
+		r, err := oapi.NewWsResponseBlockCreated(now, h.playerID, targetPlayer.ID, oapi.CardTypeOoops, delay, attack)
 		if err != nil {
 			return nil, err
 		}
