@@ -461,6 +461,8 @@ components:
           $ref: '#/components/schemas/PlayerId'
         cardType:
           $ref: '#/components/schemas/CardType'
+        railIndex:
+          $ref: '#/components/schemas/RailIndex'
         delay:
           type: integer
           minimum: 1
@@ -476,6 +478,7 @@ components:
         - attackerId
         - targetId
         - cardType
+        - railIndex
         - delay
         - attack
       description: 新規障害物の作成情報

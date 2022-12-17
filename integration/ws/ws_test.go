@@ -139,6 +139,7 @@ func TestWs(t *testing.T) {
 				Attack:     30,
 				AttackerId: ps[1].ID,
 				CardType:   oapi.CardTypePairExtraordinaire,
+				RailIndex:  randint(6),
 				Delay:      2,
 				TargetId:   ps[0].ID,
 			})
