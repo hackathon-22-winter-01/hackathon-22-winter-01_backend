@@ -463,7 +463,8 @@ components:
           maximum: 5
           description: 障害物を解消するために必要な秒数
         attack:
-          type: integer
+          type: number
+          format: float
           minimum: 10
           maximum: 50
           description: 障害物と衝突したときに与えるダメージ
@@ -497,6 +498,7 @@ components:
         - railId
         - playerId
         - new
+      description: 障害物と衝突したときの情報
     WsResponseBodyGameOverred:
       type: object
       properties:

@@ -218,7 +218,7 @@ type WsResponseBodyBlockCanceled struct {
 	RailId RailId `json:"railId"`
 }
 
-// WsResponseBodyBlockCrashed defines model for WsResponseBodyBlockCrashed.
+// WsResponseBodyBlockCrashed 障害物と衝突したときの情報
 type WsResponseBodyBlockCrashed struct {
 	// New 変動後のライフ
 	New float32 `json:"new"`
@@ -233,7 +233,7 @@ type WsResponseBodyBlockCrashed struct {
 // WsResponseBodyBlockCreated 新規障害物の作成情報
 type WsResponseBodyBlockCreated struct {
 	// Attack 障害物と衝突したときに与えるダメージ
-	Attack int `json:"attack"`
+	Attack float32 `json:"attack"`
 
 	// AttackerId プレイヤーUUID
 	AttackerId PlayerId `json:"attackerId"`

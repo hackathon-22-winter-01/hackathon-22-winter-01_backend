@@ -61,7 +61,7 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			domain.CardTypeNone,
 			jst.Now(),
 			domain.LifeEventTypeDamaged,
-			float32(attack),
+			attack,
 		))
 
 		res, err = oapi.NewWsResponseBlockCrashed(now, domain.CalculateLife(target.LifeEvents), target.ID, b.RailId)
