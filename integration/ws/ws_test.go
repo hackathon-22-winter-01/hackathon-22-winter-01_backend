@@ -232,4 +232,18 @@ func TestWs(t *testing.T) {
 				TargetId:   ps[1].ID,
 			})
 	})
+
+	// プレイヤー2がプレイヤー1に対して"LGTM"カードを出す
+	// 可能ならレールに妨害を発生させるが全てのレールに既に妨害があるので無効となる
+	oapi.WriteWsRequest(t, conns[2], tCardEvent, bCardEvent{
+		Id:       uuid.New(),
+		TargetId: ps[1].ID,
+		Type:     oapi.CardTypeLgtm,
+	})
+
+	// 各プレイヤーは結果を受信する
+	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		readWsResponse[any](t, c).
+			Equal(tNoop, nil)
+	})
 }
