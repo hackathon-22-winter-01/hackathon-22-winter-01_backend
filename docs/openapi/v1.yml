@@ -138,6 +138,8 @@ components:
         - lgtm
         - pullShark
         - starstruck
+        - zeroDay
+        - ooops
         - none
       description: カードの効果の種類
     LifeEventType:
@@ -277,6 +279,7 @@ components:
             - $ref: '#/components/schemas/WsRequestBodyLifeEvent'
             - $ref: '#/components/schemas/WsRequestBodyCardEvent'
             - $ref: '#/components/schemas/WsRequestBodyBlockEvent'
+            - $ref: '#/components/schemas/WsRequestBodycardForAllEvent'
           description: イベントの情報
       required:
         - type
@@ -290,6 +293,7 @@ components:
         - lifeEvent
         - cardEvent
         - blockEvent
+        - cardForAllEvent
       description: イベントの種類
     WsRequestBodyGameStartEvent:
       title: WsRequestBodyGameStartEvent
@@ -337,6 +341,18 @@ components:
         - type
         - rail
       description: ブロックに関するイベントの情報
+    WsRequestBodycardForAllEvent:
+      title: WsRequestBodycardForAllEvent
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/CardId'
+        type:
+          $ref: '#/components/schemas/CardType'
+      required:
+        - id
+        - type
+      description: 全プレイヤーに影響を与えるカードに関するイベントの情報
     WsResponse:
       title: WsResponse
       type: object
