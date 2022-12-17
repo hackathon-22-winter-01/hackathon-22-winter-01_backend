@@ -9,6 +9,7 @@ import (
 func PlayerFromDomain(dp *domain.Player) Player {
 	return Player{
 		Id:   dp.ID,
+		Name: dp.Name,
 		Life: domain.CalculateLife(dp.LifeEvents),
 	}
 }
