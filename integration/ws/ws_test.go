@@ -17,6 +17,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var (
+	roomRepo = repoimpl.NewRoomRepository()
+	streamer = ws.NewStreamer(ws.NewHub(roomRepo))
+)
+
 func TestWs(t *testing.T) {
 	var (
 		conns = make([]*websocket.Conn, consts.PlayerLimit)
@@ -29,25 +34,17 @@ func TestWs(t *testing.T) {
 		wg = new(sync.WaitGroup)
 	)
 
-	// 部屋を作成
-	roomRepo := repoimpl.NewRoomRepository()
+	// 部屋を作成 & 全員が参加
 	room, err := roomRepo.CreateRoom(ps[0])
 	require.NoError(t, err)
-
-	// プレイヤー1~3を部屋に参加
-	for i := 1; i < consts.PlayerLimit; i++ {
-		err := roomRepo.JoinRoom(room.ID, ps[i])
-		require.NoError(t, err)
-	}
-
-	// Streamerを起動
-	h := ws.NewHub(roomRepo)
-	s := ws.NewStreamer(h)
+	require.NoError(t, roomRepo.JoinRoom(room.ID, ps[1]))
+	require.NoError(t, roomRepo.JoinRoom(room.ID, ps[2]))
+	require.NoError(t, roomRepo.JoinRoom(room.ID, ps[3]))
 
 	// n個のクライアントをWebsocketに接続
 	for i := 0; i < consts.PlayerLimit; i++ {
 		// Websocketクライアントを接続
-		server := httptest.NewServer(&httpHandler{t, s, ps[i].ID})
+		server := httptest.NewServer(&httpHandler{t, streamer, ps[i].ID})
 		server.URL = "ws" + strings.TrimPrefix(server.URL, "http")
 		c, _, err := websocket.DefaultDialer.Dial(server.URL, nil)
 		require.NoError(t, err)
