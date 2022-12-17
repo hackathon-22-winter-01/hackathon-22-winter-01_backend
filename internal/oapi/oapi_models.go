@@ -48,7 +48,6 @@ const (
 	WsResponseTypeBlockCanceled WsResponseType = "blockCanceled"
 	WsResponseTypeBlockCrashed  WsResponseType = "blockCrashed"
 	WsResponseTypeBlockCreated  WsResponseType = "blockCreated"
-	WsResponseTypeCardReset     WsResponseType = "cardReset"
 	WsResponseTypeConnected     WsResponseType = "connected"
 	WsResponseTypeGameOverred   WsResponseType = "gameOverred"
 	WsResponseTypeGameStarted   WsResponseType = "gameStarted"
@@ -252,15 +251,6 @@ type WsResponseBodyBlockCreated struct {
 
 	// TargetId プレイヤーUUID
 	TargetId PlayerId `json:"targetId"`
-}
-
-// WsResponseBodyCardReset 各プレイヤーのカードのリセット情報
-type WsResponseBodyCardReset = []struct {
-	// Cards リセットされたカードのリスト
-	Cards []Card `json:"cards"`
-
-	// PlayerId プレイヤーUUID
-	PlayerId PlayerId `json:"playerId"`
 }
 
 // WsResponseBodyConnected 接続したプレイヤーのID
@@ -517,32 +507,6 @@ func (t *WsResponse_Body) FromWsResponseBodyLifeChanged(v WsResponseBodyLifeChan
 
 // MergeWsResponseBodyLifeChanged performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyLifeChanged
 func (t *WsResponse_Body) MergeWsResponseBodyLifeChanged(v WsResponseBodyLifeChanged) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JsonMerge(b, t.union)
-	t.union = merged
-	return err
-}
-
-// AsWsResponseBodyCardReset returns the union data inside the WsResponse_Body as a WsResponseBodyCardReset
-func (t WsResponse_Body) AsWsResponseBodyCardReset() (WsResponseBodyCardReset, error) {
-	var body WsResponseBodyCardReset
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromWsResponseBodyCardReset overwrites any union data inside the WsResponse_Body as the provided WsResponseBodyCardReset
-func (t *WsResponse_Body) FromWsResponseBodyCardReset(v WsResponseBodyCardReset) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeWsResponseBodyCardReset performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyCardReset
-func (t *WsResponse_Body) MergeWsResponseBodyCardReset(v WsResponseBodyCardReset) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err

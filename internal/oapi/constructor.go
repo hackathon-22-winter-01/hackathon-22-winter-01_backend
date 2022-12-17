@@ -56,18 +56,6 @@ func NewWsResponseLifeChanged(eventTime time.Time, playerID uuid.UUID, newLife f
 	return res, nil
 }
 
-func NewWsResponseCardReset(eventTime time.Time) (*WsResponse, error) {
-	b := WsResponseBodyCardReset{}
-
-	res := WsResponseFromType(WsResponseTypeCardReset, eventTime)
-
-	if err := res.Body.FromWsResponseBodyCardReset(b); err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
 func NewWsResponseRailCreated(eventTime time.Time, newRail, parentRail Rail, attackerID, targetID uuid.UUID, cardType CardType) (*WsResponse, error) {
 	b := WsResponseBodyRailCreated{
 		NewRail:    newRail,
@@ -122,7 +110,7 @@ func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, target
 func NewWsResponseBlockCanceled(eventTime time.Time, targetID uuid.UUID, rail Rail) (*WsResponse, error) {
 	b := WsResponseBodyBlockCanceled{
 		TargetId: targetID,
-		Rail: rail,
+		Rail:     rail,
 	}
 
 	res := WsResponseFromType(WsResponseTypeBlockCanceled, eventTime)

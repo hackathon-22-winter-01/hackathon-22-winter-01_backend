@@ -345,7 +345,6 @@ components:
             - $ref: '#/components/schemas/WsResponseBodyConnected'
             - $ref: '#/components/schemas/WsResponseBodyGameStarted'
             - $ref: '#/components/schemas/WsResponseBodyLifeChanged'
-            - $ref: '#/components/schemas/WsResponseBodyCardReset'
             - $ref: '#/components/schemas/WsResponseBodyRailCreated'
             - $ref: '#/components/schemas/WsResponseBodyRailMerged'
             - $ref: '#/components/schemas/WsResponseBodyBlockCreated'
@@ -369,7 +368,6 @@ components:
         - connected
         - gameStarted
         - lifeChanged
-        - cardReset
         - railCreated
         - railMerged
         - blockCreated
@@ -409,22 +407,6 @@ components:
         - playerId
         - newLife
       description: ライフの変動情報
-    WsResponseBodyCardReset:
-      type: array
-      items:
-        type: object
-        properties:
-          playerId:
-            $ref: '#/components/schemas/PlayerId'
-          cards:
-            type: array
-            items:
-              $ref: '#/components/schemas/Card'
-            description: リセットされたカードのリスト
-        required:
-          - playerId
-          - cards
-      description: 各プレイヤーのカードのリセット情報
     WsResponseBodyRailCreated:
       type: object
       properties:
