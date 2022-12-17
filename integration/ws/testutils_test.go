@@ -14,15 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func mustWriteWsRequest(t *testing.T, c *websocket.Conn, typ oapi.WsRequestType, body oapi.WsRequest_Body) {
-	t.Helper()
-
-	require.NoError(t, c.WriteJSON(oapi.WsRequest{
-		Type: typ,
-		Body: body,
-	}))
-}
-
 func forEachClientAsync(t *testing.T, wg *sync.WaitGroup, c []*websocket.Conn, f func(int, *websocket.Conn)) {
 	t.Helper()
 
