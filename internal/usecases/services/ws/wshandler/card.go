@@ -210,6 +210,7 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 		h.playerID,
 		reqbody.TargetId,
 		oapi.CardTypeRefactoring,
+		targetRail.Index,
 		delay,
 		attack,
 	)
@@ -253,6 +254,7 @@ func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent
 		h.playerID,
 		reqbody.TargetId,
 		oapi.CardTypePairExtraordinaire,
+		targetRail.Index,
 		delay,
 		attack,
 	)
@@ -296,6 +298,7 @@ func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 		h.playerID,
 		reqbody.TargetId,
 		oapi.CardTypeLgtm,
+		targetRail.Index,
 		delay,
 		attack,
 	)
@@ -412,6 +415,7 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 		h.playerID,
 		reqbody.TargetId,
 		oapi.CardTypeStarstruck,
+		targetRail.Index,
 		delay,
 		attack,
 	)
@@ -455,6 +459,7 @@ func (h *wsHandler) handleZeroDay(reqbody oapi.WsRequestBodyCardEvent, now time.
 		h.playerID,
 		reqbody.TargetId,
 		oapi.CardTypeZeroDay,
+		targetRail.Index,
 		delay,
 		attack,
 	)
@@ -498,7 +503,15 @@ func (h *wsHandler) handleOoops(reqbody oapi.WsRequestBodyCardForAllEvent, now t
 			targetRail.Index,
 		))
 
-		r, err := oapi.NewWsResponseBlockCreated(now, h.playerID, targetPlayer.ID, oapi.CardTypeOoops, delay, attack)
+		r, err := oapi.NewWsResponseBlockCreated(
+			now,
+			h.playerID,
+			targetPlayer.ID,
+			oapi.CardTypeOoops,
+			targetRail.Index,
+			delay,
+			attack,
+		)
 		if err != nil {
 			return nil, err
 		}

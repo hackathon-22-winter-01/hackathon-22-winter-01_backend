@@ -92,11 +92,12 @@ func NewWsResponseRailMerged(eventTime time.Time, childRail, parentRail RailInde
 	return res, nil
 }
 
-func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, targetID uuid.UUID, cardType CardType, delay int, attack float32) (*WsResponse, error) {
+func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, targetID uuid.UUID, cardType CardType, railIndex int, delay int, attack float32) (*WsResponse, error) {
 	b := WsResponseBodyBlockCreated{
 		AttackerId: attackerID,
 		TargetId:   targetID,
 		CardType:   cardType,
+		RailIndex:  railIndex,
 		Delay:      delay,
 		Attack:     attack,
 	}

@@ -262,6 +262,9 @@ type WsResponseBodyBlockCreated struct {
 	// Delay 障害物を解消するために必要な秒数
 	Delay int `json:"delay"`
 
+	// RailIndex レールのインデックス
+	RailIndex RailIndex `json:"railIndex"`
+
 	// TargetId プレイヤーUUID
 	TargetId PlayerId `json:"targetId"`
 }
