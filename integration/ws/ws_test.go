@@ -146,6 +146,7 @@ func TestWs(t *testing.T) {
 			require.Equal(t, oapi.WsResponseBodyBlockCreated{
 				AttackerId: pids[1],
 				TargetId:   pids[0],
+				CardType:   oapi.CardTypePairExtraordinaire,
 				Delay:      2,
 				Attack:     30,
 			}, resbody)
@@ -170,6 +171,7 @@ func TestWs(t *testing.T) {
 			require.NoError(t, err)
 			require.Equal(t, oapi.WsResponseTypeLifeChanged, res.Type)
 			require.Equal(t, oapi.WsResponseBodyLifeChanged{
+				CardType: oapi.CardTypeNone,
 				PlayerId: pids[0],
 				NewLife:  99,
 			}, resbody)
