@@ -361,28 +361,29 @@ func getNonBlockingRailID(p *domain.Player, allowMain bool) (uuid.UUID, bool) {
 		}
 	}
 
-	railIDs := []uuid.UUID{p.Main.ID}
+	shuffleRails := []*domain.Rail{p.Main}
 
 	if l := len(p.BranchEvents); l > 0 {
 		rails := p.BranchEvents[l-1].AfterRails
-		railIDs = make([]uuid.UUID, len(rails))
+		shuffleRails = make([]*domain.Rail, len(rails))
+		copy(shuffleRails, rails[:])
 
-		for i, r := range rails {
-			railIDs[i] = r.ID
-		}
-
-		rand.Shuffle(len(railIDs), func(i, j int) {
-			railIDs[i], railIDs[j] = railIDs[j], railIDs[i]
+		rand.Shuffle(len(shuffleRails), func(i, j int) {
+			shuffleRails[i], shuffleRails[j] = shuffleRails[j], shuffleRails[i]
 		})
 	}
 
-	for _, id := range railIDs {
-		if _, ok := blockBranchIDs[id]; !ok {
-			if !allowMain && id == p.Main.ID {
+	for _, r := range shuffleRails {
+		if r == nil {
+			continue
+		}
+
+		if _, ok := blockBranchIDs[r.ID]; !ok {
+			if !allowMain && r.ID == p.Main.ID {
 				continue
 			}
 
-			return id, true
+			return r.ID, true
 		}
 	}
 
