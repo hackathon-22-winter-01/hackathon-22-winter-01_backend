@@ -205,7 +205,7 @@ components:
       title: RailIndex
       type: integer
       minimum: 0
-      maximum: 7
+      maximum: 6
       description: レールのインデックス
     Life:
       title: Life
