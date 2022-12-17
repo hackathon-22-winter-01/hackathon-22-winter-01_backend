@@ -105,10 +105,10 @@ func TestWs(t *testing.T) {
 		readWsResponse[bGameStarted](t, c).
 			Equal(tGameStarted, bGameStarted{
 				Players: []oapi.Player{
-					{Id: ps[0].ID, Life: consts.MaxLife},
-					{Id: ps[1].ID, Life: consts.MaxLife},
-					{Id: ps[2].ID, Life: consts.MaxLife},
-					{Id: ps[3].ID, Life: consts.MaxLife},
+					{Id: ps[0].ID, Name: "player0", Life: consts.MaxLife},
+					{Id: ps[1].ID, Name: "player1", Life: consts.MaxLife},
+					{Id: ps[2].ID, Name: "player2", Life: consts.MaxLife},
+					{Id: ps[3].ID, Name: "player3", Life: consts.MaxLife},
 				},
 			})
 	})

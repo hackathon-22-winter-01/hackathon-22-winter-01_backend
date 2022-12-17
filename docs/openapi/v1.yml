@@ -195,10 +195,14 @@ components:
         id:
           $ref: '#/components/schemas/PlayerId'
           description: プレイヤーのレールのリスト
+        name:
+          type: string
+          description: プレイヤーの名前
         life:
           $ref: '#/components/schemas/Life'
       required:
         - id
+        - name
         - life
       description: プレイヤー情報
     RailIndex:

@@ -107,6 +107,9 @@ type Player struct {
 
 	// Life ライフ
 	Life Life `json:"life"`
+
+	// Name プレイヤーの名前
+	Name string `json:"name"`
 }
 
 // PlayerId プレイヤーUUID
