@@ -2,6 +2,8 @@ package ws_test
 
 import (
 	"net/http"
+	"net/http/httptest"
+	"strings"
 	"sync"
 	"testing"
 
@@ -60,6 +62,15 @@ func (h *httpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err := h.s.ServeWS(w, r, h.pid); err != nil {
 		h.t.Error(err)
 	}
+}
+
+func connectToWs(t *testing.T, streamer ws.Streamer, playerID uuid.UUID) *websocket.Conn {
+	server := httptest.NewServer(&httpHandler{t, streamer, playerID})
+	server.URL = "ws" + strings.TrimPrefix(server.URL, "http")
+	c, _, err := websocket.DefaultDialer.Dial(server.URL, nil)
+	require.NoError(t, err)
+
+	return c
 }
 
 // randint 乱数であることを明示する

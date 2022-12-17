@@ -1,8 +1,6 @@
 package ws_test
 
 import (
-	"net/http/httptest"
-	"strings"
 	"sync"
 	"testing"
 
@@ -44,12 +42,9 @@ func TestWs(t *testing.T) {
 	// n個のクライアントをWebsocketに接続
 	for i := 0; i < consts.PlayerLimit; i++ {
 		// Websocketクライアントを接続
-		server := httptest.NewServer(&httpHandler{t, streamer, ps[i].ID})
-		server.URL = "ws" + strings.TrimPrefix(server.URL, "http")
-		c, _, err := websocket.DefaultDialer.Dial(server.URL, nil)
-		require.NoError(t, err)
-
+		c := connectToWs(t, streamer, ps[i].ID)
 		conns[i] = c
+
 		defer c.Close()
 
 		// 接続を確認
