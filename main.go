@@ -28,7 +28,7 @@ func main() {
 	e := echo.New()
 
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		Root:       "bin/frontend/dist/*",
+		Root:       "bin/frontend/dist",
 		Filesystem: http.FS(dist),
 	}))
 	e.Use(middleware.Logger())

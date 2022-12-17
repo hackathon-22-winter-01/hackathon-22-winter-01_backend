@@ -32,6 +32,7 @@ test:
 FRONTEND_PATH := ./bin/frontend
 update-frontend:
 	[ -d $(FRONTEND_PATH) ] || git clone git@github.com:hackathon-22-winter-01/front-end.git $(FRONTEND_PATH)
+	git pull origin main
 	yarn --cwd $(FRONTEND_PATH) install
 	yarn --cwd $(FRONTEND_PATH) build
 	go run main.go
