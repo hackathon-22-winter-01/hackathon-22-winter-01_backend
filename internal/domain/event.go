@@ -31,9 +31,9 @@ func NewJustCardEvent(id uuid.UUID, cardType CardType, createdAt time.Time) *Jus
 // BlockEvent 妨害イベントの情報
 type BlockEvent struct {
 	commonEvent
-	Type         BlockEventType
-	AttackerID   uuid.UUID
-	TargetRailID uuid.UUID
+	Type            BlockEventType
+	AttackerID      uuid.UUID
+	TargetRailIndex int
 }
 
 // BlockEventType 妨害イベントの種類
@@ -45,16 +45,16 @@ const (
 	BlockEventTypeCrashed
 )
 
-func NewBlockEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ BlockEventType, attackerID, targetRailID uuid.UUID) *BlockEvent {
+func NewBlockEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ BlockEventType, attackerID uuid.UUID, targetRailIndex int) *BlockEvent {
 	return &BlockEvent{
 		commonEvent: commonEvent{
 			ID:        id,
 			CardType:  cardType,
 			CreatedAt: createdAt,
 		},
-		Type:         typ,
-		AttackerID:   attackerID,
-		TargetRailID: targetRailID,
+		Type:            typ,
+		AttackerID:      attackerID,
+		TargetRailIndex: targetRailIndex,
 	}
 }
 

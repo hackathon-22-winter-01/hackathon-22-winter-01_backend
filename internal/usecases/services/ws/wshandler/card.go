@@ -103,7 +103,7 @@ func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 	var targetRailIndex int
 
 	for i, r := range afterRails {
-		if r.ID != targetRail.ID {
+		if r.Index != targetRail.Index {
 			afterRails[i] = nil
 			targetRailIndex = i
 
@@ -122,8 +122,8 @@ func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 
 	res, err := oapi.NewWsResponseRailMerged(
 		now,
-		oapi.NewRail(targetRail.ID, targetRailIndex),
-		oapi.NewRail(targetPlayer.Main.ID, consts.RailLimit/2),
+		targetRailIndex,
+		consts.RailLimit/2,
 		h.playerID,
 		oapi.CardTypeYolo,
 	)
@@ -202,7 +202,7 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 		now,
 		domain.BlockEventTypeCreated,
 		h.playerID,
-		targetRail.ID,
+		targetRail.Index,
 	))
 
 	res, err := oapi.NewWsResponseBlockCreated(
@@ -245,7 +245,7 @@ func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent
 		now,
 		domain.BlockEventTypeCreated,
 		h.playerID,
-		targetRail.ID,
+		targetRail.Index,
 	))
 
 	res, err := oapi.NewWsResponseBlockCreated(
@@ -288,7 +288,7 @@ func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 		now,
 		domain.BlockEventTypeCreated,
 		h.playerID,
-		targetRail.ID,
+		targetRail.Index,
 	))
 
 	res, err := oapi.NewWsResponseBlockCreated(
@@ -332,9 +332,9 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
 	}
 
-	railID := uuid.New()
+	// railID := uuid.New()
 	newRailIndex := emptys[rand.Intn(len(emptys))]
-	afterRails[newRailIndex] = domain.NewRail(railID)
+	afterRails[newRailIndex] = domain.NewRail(newRailIndex)
 
 	targetPlayer.BranchEvents = append(targetPlayer.BranchEvents, domain.NewBranchEvent(
 		uuid.New(),
@@ -346,19 +346,19 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 	))
 
 	// newRailIndexからmainに向かってサーチし、始めに見つかったレールを親とする
-	parent := oapi.NewRail(targetPlayer.Main.ID, consts.RailLimit/2)
+	parent := consts.RailLimit / 2
 
 	if newRailIndex < consts.RailLimit {
 		for i := newRailIndex + 1; i < consts.RailLimit/2; i++ {
 			if afterRails[i] != nil {
-				parent = oapi.NewRail(afterRails[i].ID, i)
+				parent = i
 				break
 			}
 		}
 	} else {
 		for i := newRailIndex - 1; i >= consts.RailLimit/2; i-- {
-			if afterRails[i].ID != uuid.Nil {
-				parent = oapi.NewRail(afterRails[i].ID, i)
+			if afterRails[i] != nil {
+				parent = i
 				break
 			}
 		}
@@ -366,7 +366,7 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 
 	res, err := oapi.NewWsResponseRailCreated(
 		now,
-		oapi.NewRail(railID, newRailIndex),
+		newRailIndex,
 		parent,
 		h.playerID,
 		targetPlayer.ID,
@@ -404,7 +404,7 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 		now,
 		domain.BlockEventTypeCreated,
 		h.playerID,
-		targetRail.ID,
+		targetRail.Index,
 	))
 
 	res, err := oapi.NewWsResponseBlockCreated(
@@ -447,7 +447,7 @@ func (h *wsHandler) handleZeroDay(reqbody oapi.WsRequestBodyCardEvent, now time.
 		now,
 		domain.BlockEventTypeCreated,
 		h.playerID,
-		targetRail.ID,
+		targetRail.Index,
 	))
 
 	res, err := oapi.NewWsResponseBlockCreated(
@@ -495,7 +495,7 @@ func (h *wsHandler) handleOoops(reqbody oapi.WsRequestBodycardForAllEvent, now t
 			now,
 			domain.BlockEventTypeCreated,
 			targetPlayer.ID,
-			targetRail.ID,
+			targetRail.Index,
 		))
 
 		r, err := oapi.NewWsResponseBlockCreated(now, h.playerID, targetPlayer.ID, oapi.CardTypeOoops, delay, attack)
@@ -513,14 +513,14 @@ func (h *wsHandler) handleOoops(reqbody oapi.WsRequestBodycardForAllEvent, now t
 // 既にブロックされているブランチは取得できない
 func getNonBlockingRail(p *domain.Player, allowMain bool) (*domain.Rail, bool) {
 	// 既にブロックされているブランチのIDを取得
-	blockBranchIDs := make(map[uuid.UUID]struct{})
+	blockBranchIDs := make(map[int]struct{})
 
 	for _, e := range p.BlockEvents {
 		switch e.Type {
 		case domain.BlockEventTypeCreated:
-			blockBranchIDs[e.TargetRailID] = struct{}{}
+			blockBranchIDs[e.TargetRailIndex] = struct{}{}
 		case domain.BlockEventTypeCanceled:
-			delete(blockBranchIDs, e.TargetRailID)
+			delete(blockBranchIDs, e.TargetRailIndex)
 		}
 	}
 
@@ -541,8 +541,8 @@ func getNonBlockingRail(p *domain.Player, allowMain bool) (*domain.Rail, bool) {
 			continue
 		}
 
-		if _, ok := blockBranchIDs[r.ID]; !ok {
-			if !allowMain && r.ID == p.Main.ID {
+		if _, ok := blockBranchIDs[r.Index]; !ok {
+			if !allowMain && r.Index == p.Main.Index {
 				continue
 			}
 

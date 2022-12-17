@@ -2,30 +2,14 @@ package oapi
 
 import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/log"
 	"go.uber.org/zap"
 )
 
 func PlayerFromDomain(dp *domain.Player) Player {
-	const mainIndex = consts.RailLimit / 2
-
-	rails := make([]Rail, consts.RailLimit)
-	if l := len(dp.BranchEvents); l > 0 {
-		rails = make([]Rail, len(dp.BranchEvents[l-1].AfterRails))
-
-		for i, r := range dp.BranchEvents[l-1].AfterRails {
-			rails[i] = Rail{Id: r.ID}
-		}
-	} else {
-		rails[mainIndex] = Rail{Id: dp.Main.ID, Index: mainIndex}
-	}
-
 	return Player{
-		Id:       dp.ID,
-		Life:     domain.CalculateLife(dp.LifeEvents),
-		MainRail: NewRail(dp.Main.ID, mainIndex),
-		Rails:    rails,
+		Id:   dp.ID,
+		Life: domain.CalculateLife(dp.LifeEvents),
 	}
 }
 

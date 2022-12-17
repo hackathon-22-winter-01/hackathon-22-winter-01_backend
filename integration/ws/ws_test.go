@@ -4,7 +4,6 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
@@ -68,13 +67,12 @@ func TestWs(t *testing.T) {
 				oapi.WsResponseTypeGameStarted,
 				oapi.WsResponseBodyGameStarted{
 					Players: []oapi.Player{
-						{Id: ps[0].ID, Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
-						{Id: ps[1].ID, Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
-						{Id: ps[2].ID, Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
-						{Id: ps[3].ID, Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
+						{Id: ps[0].ID, Life: consts.MaxLife},
+						{Id: ps[1].ID, Life: consts.MaxLife},
+						{Id: ps[2].ID, Life: consts.MaxLife},
+						{Id: ps[3].ID, Life: consts.MaxLife},
 					},
 				},
-				cmpopts.IgnoreFields(oapi.Rail{}, "Id"),
 			)
 	})
 
@@ -101,11 +99,10 @@ func TestWs(t *testing.T) {
 					oapi.WsResponseBodyRailCreated{
 						AttackerId: ps[1].ID,
 						CardType:   oapi.CardTypePullShark,
-						NewRail:    oapi.Rail{Index: randint(6)},
-						ParentRail: oapi.Rail{Index: 3},
+						NewRail:    randint(6),
+						ParentRail: 3,
 						TargetId:   ps[0].ID,
 					},
-					cmpopts.IgnoreFields(oapi.Rail{}, "Id"), // TODO: Idがなくなったら消す
 				)
 		})
 	})
