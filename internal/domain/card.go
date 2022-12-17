@@ -1,6 +1,10 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"errors"
+
+	"github.com/google/uuid"
+)
 
 // Card プレイヤーが使用するカードの情報
 type Card struct {
@@ -75,5 +79,34 @@ func NewCard(id uuid.UUID, typ CardType) *Card {
 	return &Card{
 		ID:   id,
 		Type: typ,
+	}
+}
+
+// DelayAndAttack 妨害値と攻撃力を返す
+// いずれかがない場合はエラーを返す
+func (t CardType) DelayAndAttack() (int, int, error) {
+	errCannotUse := errors.New("このカードを妨害に使用することはできません")
+
+	switch t {
+	case CardTypeYolo:
+		return 0, 0, errCannotUse
+	case CardTypeGalaxyBrain:
+		return 0, 0, errCannotUse
+	case CardTypeOpenSourcerer:
+		return 0, 0, errCannotUse
+	case CardTypeRefactoring:
+		return 1, 5, nil
+	case CardTypePairExtraordinaire:
+		return 2, 30, nil
+	case CardTypeLgtm:
+		return 3, 20, nil
+	case CardTypePullShark:
+		return 0, 0, errCannotUse
+	case CardTypeStarstruck:
+		return 5, 50, nil
+	case CardTypeNone:
+		return 0, 0, errCannotUse
+	default:
+		return 0, 0, errCannotUse
 	}
 }
