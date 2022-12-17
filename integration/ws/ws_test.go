@@ -1,7 +1,6 @@
 package ws_test
 
 import (
-	"fmt"
 	"net/http/httptest"
 	"strings"
 	"sync"
@@ -21,23 +20,23 @@ import (
 func TestWs(t *testing.T) {
 	var (
 		conns = make([]*websocket.Conn, consts.PlayerLimit)
-		pids  = make([]uuid.UUID, consts.PlayerLimit)
-		wg    = new(sync.WaitGroup)
+		ps    = []*domain.Player{
+			domain.NewPlayer(uuid.MustParse("194a6a3c-4278-4be4-ba8e-2c3528d92b8f"), "player0"),
+			domain.NewPlayer(uuid.MustParse("cf8b3659-31c4-439b-88b6-4d90dc7b6df9"), "player1"),
+			domain.NewPlayer(uuid.MustParse("b46b92b4-ad86-43e9-93d6-216dd9efefd7"), "player2"),
+			domain.NewPlayer(uuid.MustParse("07a86224-7419-47b7-965e-5ed4a6b05b22"), "player3"),
+		}
+		wg = new(sync.WaitGroup)
 	)
-
-	// プレイヤーIDのセットアップ
-	for i := 0; i < consts.PlayerLimit; i++ {
-		pids[i] = uuid.New()
-	}
 
 	// 部屋を作成
 	roomRepo := repoimpl.NewRoomRepository()
-	room, err := roomRepo.CreateRoom(domain.NewPlayer(pids[0], "player0"))
+	room, err := roomRepo.CreateRoom(ps[0])
 	require.NoError(t, err)
 
 	// プレイヤー1~3を部屋に参加
 	for i := 1; i < consts.PlayerLimit; i++ {
-		err := roomRepo.JoinRoom(room.ID, domain.NewPlayer(pids[i], fmt.Sprintf("player%d", i)))
+		err := roomRepo.JoinRoom(room.ID, ps[i])
 		require.NoError(t, err)
 	}
 
@@ -48,7 +47,7 @@ func TestWs(t *testing.T) {
 	// n個のクライアントをWebsocketに接続
 	for i := 0; i < consts.PlayerLimit; i++ {
 		// Websocketクライアントを接続
-		server := httptest.NewServer(&httpHandler{t, s, pids[i]})
+		server := httptest.NewServer(&httpHandler{t, s, ps[i].ID})
 		server.URL = "ws" + strings.TrimPrefix(server.URL, "http")
 		c, _, err := websocket.DefaultDialer.Dial(server.URL, nil)
 		require.NoError(t, err)
@@ -60,7 +59,7 @@ func TestWs(t *testing.T) {
 		readWsResponse[oapi.WsResponseBodyConnected](t, c).
 			Equal(
 				oapi.WsResponseTypeConnected,
-				oapi.WsResponseBodyConnected{PlayerId: pids[i]},
+				oapi.WsResponseBodyConnected{PlayerId: ps[i].ID},
 			)
 	}
 
@@ -78,10 +77,10 @@ func TestWs(t *testing.T) {
 				oapi.WsResponseTypeGameStarted,
 				oapi.WsResponseBodyGameStarted{
 					Players: []oapi.Player{
-						{Id: pids[0], Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
-						{Id: pids[1], Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
-						{Id: pids[2], Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
-						{Id: pids[3], Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
+						{Id: ps[0].ID, Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
+						{Id: ps[1].ID, Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
+						{Id: ps[2].ID, Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
+						{Id: ps[3].ID, Life: consts.MaxLife, MainRail: oapi.Rail{Index: 3}, Rails: []oapi.Rail{{}, {}, {}, {Index: 3}, {}, {}, {}}},
 					},
 				},
 				cmpopts.IgnoreFields(oapi.Rail{}, "Id"),
@@ -98,7 +97,7 @@ func TestWs(t *testing.T) {
 		require.NoError(t, b.FromWsRequestBodyCardEvent(
 			oapi.WsRequestBodyCardEvent{
 				Id:       uuid.New(),
-				TargetId: pids[0],
+				TargetId: ps[0].ID,
 				Type:     oapi.CardTypePullShark,
 			},
 		))
@@ -110,11 +109,11 @@ func TestWs(t *testing.T) {
 				Equal(
 					oapi.WsResponseTypeRailCreated,
 					oapi.WsResponseBodyRailCreated{
-						AttackerId: pids[1],
+						AttackerId: ps[1].ID,
 						CardType:   oapi.CardTypePullShark,
 						NewRail:    oapi.Rail{Index: randint(6)},
 						ParentRail: oapi.Rail{Index: 3},
-						TargetId:   pids[0],
+						TargetId:   ps[0].ID,
 					},
 					cmpopts.IgnoreFields(oapi.Rail{}, "Id"), // TODO: Idがなくなったら消す
 				)
@@ -127,7 +126,7 @@ func TestWs(t *testing.T) {
 		require.NoError(t, b.FromWsRequestBodyCardEvent(
 			oapi.WsRequestBodyCardEvent{
 				Id:       uuid.New(),
-				TargetId: pids[0],
+				TargetId: ps[0].ID,
 				Type:     oapi.CardTypePairExtraordinaire,
 			},
 		))
@@ -140,10 +139,10 @@ func TestWs(t *testing.T) {
 					oapi.WsResponseTypeBlockCreated,
 					oapi.WsResponseBodyBlockCreated{
 						Attack:     30,
-						AttackerId: pids[1],
+						AttackerId: ps[1].ID,
 						CardType:   oapi.CardTypePairExtraordinaire,
 						Delay:      2,
-						TargetId:   pids[0],
+						TargetId:   ps[0].ID,
 					},
 				)
 		})
@@ -167,7 +166,7 @@ func TestWs(t *testing.T) {
 					oapi.WsResponseTypeLifeChanged,
 					oapi.WsResponseBodyLifeChanged{
 						CardType: oapi.CardTypeNone,
-						PlayerId: pids[0],
+						PlayerId: ps[0].ID,
 						NewLife:  99,
 					},
 				)
