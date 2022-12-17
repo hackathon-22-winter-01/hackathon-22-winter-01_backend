@@ -108,27 +108,21 @@ type Player struct {
 	// Life ライフ
 	Life Life `json:"life"`
 
-	// MainRail レール情報
-	MainRail Rail `json:"mainRail"`
+	// MainRail レールのインデックス
+	MainRail RailIndex `json:"mainRail"`
 
 	// Rails プレイヤーのレールのリスト
-	Rails []Rail `json:"rails"`
+	Rails []RailIndex `json:"rails"`
 }
 
 // PlayerId プレイヤーUUID
 type PlayerId = openapi_types.UUID
 
-// Rail レール情報
-type Rail struct {
-	// Id レールUUID
-	Id RailId `json:"id"`
-
-	// Index レールのインデックス
-	Index int `json:"index"`
-}
-
 // RailId レールUUID
 type RailId = openapi_types.UUID
+
+// RailIndex レールのインデックス
+type RailIndex = int
 
 // Room 部屋情報
 type Room struct {
@@ -173,8 +167,8 @@ type WsRequestBodyBlockEvent struct {
 	// CardType カードの効果の種類
 	CardType CardType `json:"cardType"`
 
-	// Rail レール情報
-	Rail Rail `json:"rail"`
+	// RailIndex レールのインデックス
+	RailIndex RailIndex `json:"railIndex"`
 
 	// Type ブロックに関するイベントの種類
 	Type BlockEventType `json:"type"`
@@ -238,8 +232,8 @@ type WsResponseBodyBlockCanceled struct {
 	// CardType カードの効果の種類
 	CardType CardType `json:"cardType"`
 
-	// Rail レール情報
-	Rail Rail `json:"rail"`
+	// RailIndex レールのインデックス
+	RailIndex RailIndex `json:"railIndex"`
 
 	// TargetId プレイヤーUUID
 	TargetId PlayerId `json:"targetId"`
@@ -253,8 +247,8 @@ type WsResponseBodyBlockCrashed struct {
 	// NewLife ライフ
 	NewLife Life `json:"newLife"`
 
-	// Rail レール情報
-	Rail Rail `json:"rail"`
+	// RailIndex レールのインデックス
+	RailIndex RailIndex `json:"railIndex"`
 
 	// TargetId プレイヤーUUID
 	TargetId PlayerId `json:"targetId"`
@@ -316,11 +310,11 @@ type WsResponseBodyRailCreated struct {
 	// CardType カードの効果の種類
 	CardType CardType `json:"cardType"`
 
-	// NewRail レール情報
-	NewRail Rail `json:"newRail"`
+	// NewRail レールのインデックス
+	NewRail RailIndex `json:"newRail"`
 
-	// ParentRail レール情報
-	ParentRail Rail `json:"parentRail"`
+	// ParentRail レールのインデックス
+	ParentRail RailIndex `json:"parentRail"`
 
 	// TargetId プレイヤーUUID
 	TargetId PlayerId `json:"targetId"`
@@ -331,11 +325,11 @@ type WsResponseBodyRailMerged struct {
 	// CardType カードの効果の種類
 	CardType CardType `json:"cardType"`
 
-	// ChildRail レール情報
-	ChildRail Rail `json:"childRail"`
+	// ChildRail レールのインデックス
+	ChildRail RailIndex `json:"childRail"`
 
-	// ParentRail レール情報
-	ParentRail Rail `json:"parentRail"`
+	// ParentRail レールのインデックス
+	ParentRail RailIndex `json:"parentRail"`
 
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`

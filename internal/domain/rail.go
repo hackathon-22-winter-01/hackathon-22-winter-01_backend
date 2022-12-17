@@ -1,19 +1,18 @@
 package domain
 
 import (
-	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
 )
 
 // Rail 路線の情報
 type Rail struct {
-	ID uuid.UUID
+	Index int
 }
 
 // NewRail 新しい路線を作成する
-func NewRail(railID uuid.UUID) *Rail {
+func NewRail(railIndex int) *Rail {
 	return &Rail{
-		ID: railID,
+		Index: railIndex,
 	}
 }
 

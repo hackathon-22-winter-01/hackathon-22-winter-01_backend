@@ -21,8 +21,8 @@ func TestWs(t *testing.T) {
 	var (
 		conns     = make([]*websocket.Conn, consts.PlayerLimit)
 		pids      = make([]uuid.UUID, consts.PlayerLimit)
-		mainRails = make([]oapi.Rail, consts.PlayerLimit)
-		rails     = make([][]oapi.Rail, consts.PlayerLimit)
+		mainRails = make([]oapi.RailIndex, consts.PlayerLimit)
+		rails     = make([][]oapi.RailIndex, consts.PlayerLimit)
 		wg        = new(sync.WaitGroup)
 	)
 
@@ -120,7 +120,7 @@ func TestWs(t *testing.T) {
 
 			// レールの更新
 			if i == 0 {
-				rails[0] = append(rails[0], oapi.Rail{Id: resbody.NewRail.Id, Index: 0})
+				rails[0] = append(rails[0], 0)
 			}
 		})
 	})

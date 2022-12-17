@@ -33,10 +33,10 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			jst.Now(),
 			domain.BlockEventTypeCanceled,
 			target.ID,
-			b.Rail.Id,
+			b.RailIndex,
 		))
 
-		res, err = oapi.NewWsResponseBlockCanceled(now, h.playerID, b.Rail, b.CardType)
+		res, err = oapi.NewWsResponseBlockCanceled(now, h.playerID, b.RailIndex, b.CardType)
 		if err != nil {
 			return err
 		}
@@ -48,10 +48,10 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			jst.Now(),
 			domain.BlockEventTypeCrashed,
 			target.ID,
-			b.Rail.Id,
+			b.RailIndex,
 		))
 
-		cardType := getCardTypeFromRailID(target, b.Rail.Id)
+		cardType := getCardTypeFromRailID(target, b.RailIndex)
 
 		_, attack, err := cardType.DelayAndAttack()
 		if err != nil {
@@ -70,7 +70,7 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			now,
 			domain.CalculateLife(target.LifeEvents),
 			target.ID,
-			b.Rail,
+			b.RailIndex,
 			b.CardType,
 		)
 		if err != nil {
@@ -88,11 +88,11 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 	return nil
 }
 
-func getCardTypeFromRailID(p *domain.Player, railID uuid.UUID) domain.CardType {
+func getCardTypeFromRailID(p *domain.Player, railIndex int) domain.CardType {
 	res := domain.CardTypeNone
 
 	for _, e := range p.BlockEvents {
-		if e.TargetRailID == railID {
+		if e.TargetRailIndex == railIndex {
 			res = e.CardType
 		}
 	}

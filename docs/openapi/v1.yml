@@ -195,12 +195,12 @@ components:
         id:
           $ref: '#/components/schemas/PlayerId'
         mainRail:
-          $ref: '#/components/schemas/Rail'
-          description: メインのレール
+          $ref: '#/components/schemas/RailIndex'
+          description: メインのレールのインデックス
         rails:
           type: array
           items:
-            $ref: '#/components/schemas/Rail'
+            $ref: '#/components/schemas/RailIndex'
           description: プレイヤーのレールのリスト
         life:
           $ref: '#/components/schemas/Life'
@@ -210,21 +210,12 @@ components:
         - rails
         - life
       description: プレイヤー情報
-    Rail:
-      title: Rail
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/RailId'
-        index:
-          type: integer
-          minimum: 0
-          maximum: 7
-          description: レールのインデックス
-      required:
-        - id
-        - index
-      description: レール情報
+    RailIndex:
+      title: RailIndex
+      type: integer
+      minimum: 0
+      maximum: 7
+      description: レールのインデックス
     Life:
       title: Life
       type: number
@@ -335,12 +326,12 @@ components:
           $ref: '#/components/schemas/BlockEventType'
         cardType:
           $ref: '#/components/schemas/CardType'
-        rail:
-          $ref: '#/components/schemas/Rail'
+        railIndex:
+          $ref: '#/components/schemas/RailIndex'
       required:
         - type
         - cardType
-        - rail
+        - railIndex
       description: ブロックに関するイベントの情報
     WsRequestBodycardForAllEvent:
       title: WsRequestBodycardForAllEvent
@@ -434,11 +425,11 @@ components:
       type: object
       properties:
         newRail:
-          $ref: '#/components/schemas/Rail'
-          description: 新規に作成されたレール
+          $ref: '#/components/schemas/RailIndex'
+          description: 新規に作成されたレールのインデックス
         parentRail:
-          $ref: '#/components/schemas/Rail'
-          description: 分岐元のレール
+          $ref: '#/components/schemas/RailIndex'
+          description: 分岐元のレールのインデックス
         attackerId:
           $ref: '#/components/schemas/PlayerId'
         targetId:
@@ -456,11 +447,11 @@ components:
       type: object
       properties:
         childRail:
-          $ref: '#/components/schemas/Rail'
-          description: マージされたレール
+          $ref: '#/components/schemas/RailIndex'
+          description: マージされたレールのインデックス
         parentRail:
-          $ref: '#/components/schemas/Rail'
-          description: 結合先のレール
+          $ref: '#/components/schemas/RailIndex'
+          description: 結合先のレールのインデックス
         playerId:
           $ref: '#/components/schemas/PlayerId'
         cardType:
@@ -503,13 +494,13 @@ components:
       properties:
         targetId:
           $ref: '#/components/schemas/PlayerId'
-        rail:
-          $ref: '#/components/schemas/Rail'
+        railIndex:
+          $ref: '#/components/schemas/RailIndex'
         cardType:
           $ref: '#/components/schemas/CardType'
       required:
         - targetId
-        - rail
+        - railIndex
         - cardType
       description: 障害物の解消情報
     WsResponseBodyBlockCrashed:
@@ -517,9 +508,9 @@ components:
       properties:
         targetId:
           $ref: '#/components/schemas/PlayerId'
-        rail:
-          $ref: '#/components/schemas/Rail'
-          description: 衝突したレール
+        railIndex:
+          $ref: '#/components/schemas/RailIndex'
+          description: 衝突したレールのインデックス
         cardType:
           $ref: '#/components/schemas/CardType'
         newLife:
@@ -527,7 +518,7 @@ components:
           description: 変動後のライフ
       required:
         - targetId
-        - rail
+        - railIndex
         - cardType
         - newLife
       description: 障害物と衝突したときの情報
