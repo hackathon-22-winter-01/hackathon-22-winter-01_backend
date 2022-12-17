@@ -111,12 +111,13 @@ func (h *wsHandler) handleGalaxyBrain(reqbody oapi.WsRequestBodyCardEvent, now t
 func (h *wsHandler) handleOpenSourcerer(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
 	cardType := domain.CardTypeOpenSourcerer
 
+	nowLife := domain.CalculateLife(targetPlayer.LifeEvents)
 	targetPlayer.LifeEvents = append(targetPlayer.LifeEvents, domain.NewLifeEvent(
 		uuid.New(),
 		cardType,
 		now,
 		domain.LifeEventTypeHealed,
-		30,
+		consts.MaxLife-nowLife,
 	))
 
 	res, err := oapi.NewWsResponseLifeChanged(now, h.playerID, domain.CalculateLife(targetPlayer.LifeEvents))
