@@ -41,7 +41,6 @@ func NewWsResponseGameStarted(eventTime time.Time, players []Player) (*WsRespons
 	return res, nil
 }
 
-// TODO: ゲーム開始後のレスポンスは必ず事前にdomainにイベントを登録するためconverter.goで生成するのがよさそう
 func NewWsResponseLifeChanged(eventTime time.Time, playerID uuid.UUID, newLife float32) (*WsResponse, error) {
 	b := WsResponseBodyLifeChanged{
 		PlayerId: playerID,
