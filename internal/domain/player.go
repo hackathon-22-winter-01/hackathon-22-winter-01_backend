@@ -19,7 +19,7 @@ func NewPlayer(id uuid.UUID, name string) *Player {
 	return &Player{
 		ID:           id,
 		Name:         name,
-		Main:         NewRail(),
+		Main:         NewRail(uuid.New()),
 		BlockEvents:  make([]*BlockEvent, 0),
 		BranchEvents: make([]*BranchEvent, 0),
 		LifeEvents:   make([]*LifeEvent, 0),

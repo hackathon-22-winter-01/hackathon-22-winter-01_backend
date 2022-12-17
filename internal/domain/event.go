@@ -109,7 +109,7 @@ type BranchEvent struct {
 	Type       BranchEventType
 	AttackerID uuid.UUID
 	TargetID   uuid.UUID
-	AfterRails []*Rail
+	AfterRails Rails
 }
 
 // BranchEventType イベントの種類
@@ -124,7 +124,7 @@ const (
 	BranchEventMerged
 )
 
-func NewBranchEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ BranchEventType, attackerID, targetID uuid.UUID, afterRails []*Rail) *BranchEvent {
+func NewBranchEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ BranchEventType, attackerID, targetID uuid.UUID, afterRails Rails) *BranchEvent {
 	return &BranchEvent{
 		commonEvent: commonEvent{
 			ID:        id,
