@@ -46,7 +46,7 @@ func (h *wsHandler) handleLifeEvent(body oapi.WsRequest_Body) error {
 		res, err = oapi.NewWsResponseLifeChanged(
 			now,
 			h.playerID,
-			oapi.CardTypeNone,
+			nil,
 			life,
 		)
 		if err != nil {

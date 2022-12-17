@@ -160,10 +160,12 @@ func (h *wsHandler) handleOpenSourcerer(reqbody oapi.WsRequestBodyCardEvent, now
 		consts.MaxLife-nowLife,
 	))
 
+	oapiCardType := oapi.CardTypeOpenSourcerer
+
 	res, err := oapi.NewWsResponseLifeChanged(
 		now,
 		h.playerID,
-		oapi.CardTypeOpenSourcerer,
+		&oapiCardType,
 		domain.CalculateLife(targetPlayer.LifeEvents),
 	)
 	if err != nil {

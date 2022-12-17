@@ -408,7 +408,6 @@ components:
           description: 変動後のライフ
       required:
         - playerId
-        - cardType
         - newLife
       description: ライフの変動情報
     WsResponseBodyRailCreated:
@@ -505,13 +504,9 @@ components:
           description: 衝突したレールのインデックス
         cardType:
           $ref: '#/components/schemas/CardType'
-        newLife:
-          $ref: '#/components/schemas/Life'
-          description: 変動後のライフ
       required:
         - targetId
         - railIndex
-        - newLife
       description: 障害物と衝突したときの情報
     WsResponseBodyGameOverred:
       type: object

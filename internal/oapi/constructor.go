@@ -41,7 +41,7 @@ func NewWsResponseGameStarted(eventTime time.Time, players []Player) (*WsRespons
 	return res, nil
 }
 
-func NewWsResponseLifeChanged(eventTime time.Time, playerID uuid.UUID, cardType CardType, newLife float32) (*WsResponse, error) {
+func NewWsResponseLifeChanged(eventTime time.Time, playerID uuid.UUID, cardType *CardType, newLife float32) (*WsResponse, error) {
 	b := WsResponseBodyLifeChanged{
 		PlayerId: playerID,
 		CardType: cardType,
@@ -127,9 +127,8 @@ func NewWsResponseBlockCanceled(eventTime time.Time, targetID uuid.UUID, rail Ra
 	return res, nil
 }
 
-func NewWsResponseBlockCrashed(eventTime time.Time, newLife float32, targetID uuid.UUID, rail RailIndex, cardType *CardType) (*WsResponse, error) {
+func NewWsResponseBlockCrashed(eventTime time.Time, targetID uuid.UUID, rail RailIndex, cardType *CardType) (*WsResponse, error) {
 	b := WsResponseBodyBlockCrashed{
-		NewLife:   newLife,
 		TargetId:  targetID,
 		RailIndex: rail,
 		CardType:  cardType,

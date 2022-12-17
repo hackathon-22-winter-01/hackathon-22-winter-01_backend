@@ -41,6 +41,10 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			return err
 		}
 
+		if err := h.sender.Broadcast(h.room.ID, res); err != nil {
+			return err
+		}
+
 	case oapi.BlockEventTypeCrashed:
 		target.BlockEvents = append(target.BlockEvents, domain.NewBlockEvent(
 			uuid.New(),
@@ -68,7 +72,6 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 
 		res, err = oapi.NewWsResponseBlockCrashed(
 			now,
-			domain.CalculateLife(target.LifeEvents),
 			target.ID,
 			b.RailIndex,
 			b.CardType,
@@ -77,12 +80,26 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			return err
 		}
 
+		if err := h.sender.Broadcast(h.room.ID, res); err != nil {
+			return err
+		}
+
+		res, err = oapi.NewWsResponseLifeChanged(
+			now,
+			target.ID,
+			b.CardType,
+			domain.CalculateLife(target.LifeEvents),
+		)
+		if err != nil {
+			return err
+		}
+
+		if err := h.sender.Broadcast(h.room.ID, res); err != nil {
+			return err
+		}
+
 	default:
 		return errors.New("invalid block type")
-	}
-
-	if err := h.sender.Broadcast(h.room.ID, res); err != nil {
-		return err
 	}
 
 	return nil
