@@ -490,25 +490,28 @@ components:
     WsResponseBodyBlockCanceled:
       type: object
       properties:
+        targetId:
+          $ref: '#/components/schemas/PlayerId'
         rail:
           $ref: '#/components/schemas/Rail'
       required:
+        - targetId
         - rail
       description: 障害物の解消情報
     WsResponseBodyBlockCrashed:
       type: object
       properties:
+        targetId:
+          $ref: '#/components/schemas/PlayerId'
         rail:
           $ref: '#/components/schemas/Rail'
           description: 衝突したレール
-        playerId:
-          $ref: '#/components/schemas/PlayerId'
         newLife:
           $ref: '#/components/schemas/Life'
           description: 変動後のライフ
       required:
+        - targetId
         - rail
-        - playerId
         - newLife
       description: 障害物と衝突したときの情報
     WsResponseBodyGameOverred:

@@ -119,8 +119,9 @@ func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, target
 	return res, nil
 }
 
-func NewWsResponseBlockCanceled(eventTime time.Time, rail Rail) (*WsResponse, error) {
+func NewWsResponseBlockCanceled(eventTime time.Time, targetID uuid.UUID, rail Rail) (*WsResponse, error) {
 	b := WsResponseBodyBlockCanceled{
+		TargetId: targetID,
 		Rail: rail,
 	}
 
@@ -133,10 +134,10 @@ func NewWsResponseBlockCanceled(eventTime time.Time, rail Rail) (*WsResponse, er
 	return res, nil
 }
 
-func NewWsResponseBlockCrashed(eventTime time.Time, newLife float32, playerID uuid.UUID, rail Rail) (*WsResponse, error) {
+func NewWsResponseBlockCrashed(eventTime time.Time, newLife float32, targetID uuid.UUID, rail Rail) (*WsResponse, error) {
 	b := WsResponseBodyBlockCrashed{
 		NewLife:  newLife,
-		PlayerId: playerID,
+		TargetId: targetID,
 		Rail:     rail,
 	}
 

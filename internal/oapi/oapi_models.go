@@ -222,6 +222,9 @@ type WsResponse_Body struct {
 type WsResponseBodyBlockCanceled struct {
 	// Rail レール情報
 	Rail Rail `json:"rail"`
+
+	// TargetId プレイヤーUUID
+	TargetId PlayerId `json:"targetId"`
 }
 
 // WsResponseBodyBlockCrashed 障害物と衝突したときの情報
@@ -229,11 +232,11 @@ type WsResponseBodyBlockCrashed struct {
 	// NewLife ライフ
 	NewLife Life `json:"newLife"`
 
-	// PlayerId プレイヤーUUID
-	PlayerId PlayerId `json:"playerId"`
-
 	// Rail レール情報
 	Rail Rail `json:"rail"`
+
+	// TargetId プレイヤーUUID
+	TargetId PlayerId `json:"targetId"`
 }
 
 // WsResponseBodyBlockCreated 新規障害物の作成情報

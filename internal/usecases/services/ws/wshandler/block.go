@@ -36,7 +36,7 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			b.Rail.Id,
 		))
 
-		res, err = oapi.NewWsResponseBlockCanceled(now, b.Rail)
+		res, err = oapi.NewWsResponseBlockCanceled(now, h.playerID, b.Rail)
 		if err != nil {
 			return err
 		}
