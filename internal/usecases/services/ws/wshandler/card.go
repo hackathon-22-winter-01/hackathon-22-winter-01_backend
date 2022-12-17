@@ -305,6 +305,44 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 	return res, nil
 }
 
+// クライアント側で全員に飛ばしてもらう想定。
+func (h *wsHandler) handleOoops(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+	cardType := domain.CardTypeOoops
+
+	targetRailID, ok := getNonBlockingRailID(targetPlayer, true)
+	if !ok {
+		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
+			uuid.New(),
+			cardType,
+			now,
+		))
+
+		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
+	}
+
+	delay, attack, err := cardType.DelayAndAttack()
+	if err != nil {
+		return nil, err
+	}
+
+	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
+		uuid.New(),
+		cardType,
+		now,
+		domain.BlockEventTypeCreated,
+		h.playerID,
+		targetPlayer.ID,
+		targetRailID,
+	))
+
+	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
 // getNonBlockingRailID 現状のレールからランダムにブロック対象のレールを取得する
 // 既にブロックされているブランチは取得できない
 func getNonBlockingRailID(p *domain.Player, allowMain bool) (uuid.UUID, bool) {
