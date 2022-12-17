@@ -194,20 +194,11 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/PlayerId'
-        mainRail:
-          $ref: '#/components/schemas/RailIndex'
-          description: メインのレールのインデックス
-        rails:
-          type: array
-          items:
-            $ref: '#/components/schemas/RailIndex'
           description: プレイヤーのレールのリスト
         life:
           $ref: '#/components/schemas/Life'
       required:
         - id
-        - mainRail
-        - rails
         - life
       description: プレイヤー情報
     RailIndex:

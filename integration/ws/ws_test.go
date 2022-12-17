@@ -85,8 +85,7 @@ func TestWs(t *testing.T) {
 
 			// レールを記録しておく
 			if i == 0 {
-				mainRails[j] = p.MainRail
-				rails[j] = p.Rails
+				mainRails[j] = consts.RailLimit / 2
 			}
 		}
 	})

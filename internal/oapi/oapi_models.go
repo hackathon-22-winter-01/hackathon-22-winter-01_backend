@@ -107,12 +107,6 @@ type Player struct {
 
 	// Life ライフ
 	Life Life `json:"life"`
-
-	// MainRail レールのインデックス
-	MainRail RailIndex `json:"mainRail"`
-
-	// Rails プレイヤーのレールのリスト
-	Rails []RailIndex `json:"rails"`
 }
 
 // PlayerId プレイヤーUUID
