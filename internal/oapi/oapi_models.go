@@ -22,12 +22,14 @@ const (
 	CardTypeGalaxyBrain        CardType = "galaxyBrain"
 	CardTypeLgtm               CardType = "lgtm"
 	CardTypeNone               CardType = "none"
+	CardTypeOoops              CardType = "ooops"
 	CardTypeOpenSourcerer      CardType = "openSourcerer"
 	CardTypePairExtraordinaire CardType = "pairExtraordinaire"
 	CardTypePullShark          CardType = "pullShark"
 	CardTypeRefactoring        CardType = "refactoring"
 	CardTypeStarstruck         CardType = "starstruck"
 	CardTypeYolo               CardType = "yolo"
+	CardTypeZeroDay            CardType = "zeroDay"
 )
 
 // Defines values for LifeEventType.
@@ -38,10 +40,11 @@ const (
 
 // Defines values for WsRequestType.
 const (
-	WsRequestTypeBlockEvent     WsRequestType = "blockEvent"
-	WsRequestTypeCardEvent      WsRequestType = "cardEvent"
-	WsRequestTypeGameStartEvent WsRequestType = "gameStartEvent"
-	WsRequestTypeLifeEvent      WsRequestType = "lifeEvent"
+	WsRequestTypeBlockEvent      WsRequestType = "blockEvent"
+	WsRequestTypeCardEvent       WsRequestType = "cardEvent"
+	WsRequestTypeCardForAllEvent WsRequestType = "cardForAllEvent"
+	WsRequestTypeGameStartEvent  WsRequestType = "gameStartEvent"
+	WsRequestTypeLifeEvent       WsRequestType = "lifeEvent"
 )
 
 // Defines values for WsResponseType.
@@ -168,7 +171,7 @@ type WsRequest_Body struct {
 // WsRequestBodyBlockEvent ブロックに関するイベントの情報
 type WsRequestBodyBlockEvent struct {
 	// CardType カードの効果の種類
-	CardType CardType `json:"cardType"`
+	CardType *CardType `json:"cardType,omitempty"`
 
 	// Rail レール情報
 	Rail Rail `json:"rail"`
@@ -201,6 +204,15 @@ type WsRequestBodyLifeEvent struct {
 	Type LifeEventType `json:"type"`
 }
 
+// WsRequestBodycardForAllEvent 全プレイヤーに影響を与えるカードに関するイベントの情報
+type WsRequestBodycardForAllEvent struct {
+	// Id カードUUID
+	Id CardId `json:"id"`
+
+	// Type カードの効果の種類
+	Type CardType `json:"type"`
+}
+
 // WsRequestType イベントの種類
 type WsRequestType string
 
@@ -224,7 +236,7 @@ type WsResponse_Body struct {
 // WsResponseBodyBlockCanceled 障害物の解消情報
 type WsResponseBodyBlockCanceled struct {
 	// CardType カードの効果の種類
-	CardType CardType `json:"cardType"`
+	CardType *CardType `json:"cardType,omitempty"`
 
 	// Rail レール情報
 	Rail Rail `json:"rail"`
@@ -236,7 +248,7 @@ type WsResponseBodyBlockCanceled struct {
 // WsResponseBodyBlockCrashed 障害物と衝突したときの情報
 type WsResponseBodyBlockCrashed struct {
 	// CardType カードの効果の種類
-	CardType CardType `json:"cardType"`
+	CardType *CardType `json:"cardType,omitempty"`
 
 	// NewLife ライフ
 	NewLife Life `json:"newLife"`
@@ -438,6 +450,32 @@ func (t *WsRequest_Body) FromWsRequestBodyBlockEvent(v WsRequestBodyBlockEvent) 
 
 // MergeWsRequestBodyBlockEvent performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodyBlockEvent
 func (t *WsRequest_Body) MergeWsRequestBodyBlockEvent(v WsRequestBodyBlockEvent) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsWsRequestBodycardForAllEvent returns the union data inside the WsRequest_Body as a WsRequestBodycardForAllEvent
+func (t WsRequest_Body) AsWsRequestBodycardForAllEvent() (WsRequestBodycardForAllEvent, error) {
+	var body WsRequestBodycardForAllEvent
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWsRequestBodycardForAllEvent overwrites any union data inside the WsRequest_Body as the provided WsRequestBodycardForAllEvent
+func (t *WsRequest_Body) FromWsRequestBodycardForAllEvent(v WsRequestBodycardForAllEvent) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWsRequestBodycardForAllEvent performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodycardForAllEvent
+func (t *WsRequest_Body) MergeWsRequestBodycardForAllEvent(v WsRequestBodycardForAllEvent) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
