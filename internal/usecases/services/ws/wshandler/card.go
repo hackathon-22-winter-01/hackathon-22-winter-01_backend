@@ -501,7 +501,7 @@ func getNonBlockingRail(p *domain.Player, allowMain bool) (*domain.Rail, bool) {
 	usedRails := domain.CalcUsedRails(p.BranchEvents)
 	blockedRails := domain.CalcBlockedRails(p.BlockEvents)
 
-	// 存在しているかつブロックされていているブランチを対象にする
+	// 存在しているかつブロックされていないレールを対象にする
 	targetRails := make([]int, 0)
 
 	for i := 0; i < consts.RailLimit; i++ {
@@ -509,7 +509,7 @@ func getNonBlockingRail(p *domain.Player, allowMain bool) (*domain.Rail, bool) {
 			continue
 		}
 
-		if usedRails[i] && blockedRails[i] {
+		if usedRails[i] && !blockedRails[i] {
 			targetRails = append(targetRails, i)
 		}
 	}

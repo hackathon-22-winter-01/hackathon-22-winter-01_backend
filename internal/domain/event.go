@@ -154,18 +154,19 @@ func NewBranchEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ Br
 // CalcUsedRails 使用中のレールのインデックスを取得する
 // unusedRails[i] == true ならばレールiは使用中
 func CalcUsedRails(events []*BranchEvent) [consts.RailLimit]bool {
-	unusedRails := [consts.RailLimit]bool{}
+	usedRails := [consts.RailLimit]bool{}
+	usedRails[consts.RailLimit/2] = true // mainレールは必ず使用中
 
 	for _, e := range events {
 		switch e.Type {
 		case BranchEventCreated:
-			unusedRails[e.ChildRailIndex] = true
+			usedRails[e.ChildRailIndex] = true
 		case BranchEventMerged:
-			unusedRails[e.ChildRailIndex] = false
+			usedRails[e.ChildRailIndex] = false
 		}
 	}
 
-	return unusedRails
+	return usedRails
 }
 
 // GetParentRailIndex
