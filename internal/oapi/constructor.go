@@ -133,9 +133,9 @@ func NewWsResponseBlockCanceled(eventTime time.Time, railID uuid.UUID) (*WsRespo
 	return res, nil
 }
 
-func NewWsResponseGameOverred(eventTime time.Time, playerId uuid.UUID) (*WsResponse, error) {
+func NewWsResponseGameOverred(eventTime time.Time, playerID uuid.UUID) (*WsResponse, error) {
 	b := WsResponseBodyGameOverred{
-		PlayerId: playerId,
+		PlayerId: playerID,
 	}
 
 	res := WsResponseFromType(WsResponseTypeGameOverred, eventTime)
