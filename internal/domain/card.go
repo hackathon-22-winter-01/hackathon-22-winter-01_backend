@@ -3,7 +3,6 @@ package domain
 import (
 	"errors"
 	"math/rand"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -96,8 +95,6 @@ func NewCard(id uuid.UUID, typ CardType) *Card {
 // いずれかがない場合はエラーを返す
 func (t CardType) DelayAndAttack() (int, float32, error) {
 	errCannotUse := errors.New("このカードを妨害に使用することはできません")
-
-	rand.Seed(time.Now().UnixNano())
 
 	switch t {
 	case CardTypeYolo:
