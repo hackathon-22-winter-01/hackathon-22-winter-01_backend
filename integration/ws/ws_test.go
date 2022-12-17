@@ -162,7 +162,7 @@ func TestWs(t *testing.T) {
 	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
 		readWsResponse[bLifeChanged](t, c).
 			Equal(tLifeChanged, bLifeChanged{
-				CardType: oapi.CardTypeNone,
+				CardType: nil,
 				PlayerId: ps[0].ID,
 				NewLife:  99,
 			})
