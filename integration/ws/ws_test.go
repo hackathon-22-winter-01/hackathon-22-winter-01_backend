@@ -1,3 +1,4 @@
+// nolint wsl
 package ws_test
 
 import (
@@ -38,15 +39,12 @@ func TestWs(t *testing.T) {
 	require.NoError(t, roomRepo.JoinRoom(room.ID, ps[2]))
 	require.NoError(t, roomRepo.JoinRoom(room.ID, ps[3]))
 
-	// n個のクライアントをWebsocketに接続
+	// 全員のクライアントをWebsocketに接続&確認
 	for i := 0; i < consts.PlayerLimit; i++ {
-		// Websocketクライアントを接続
 		c := connectToWs(t, streamer, ps[i].ID)
 		conns[i] = c
-
 		defer c.Close()
 
-		// 接続を確認
 		readWsResponse[oapi.WsResponseBodyConnected](t, c).
 			Equal(
 				oapi.WsResponseTypeConnected,
@@ -76,85 +74,75 @@ func TestWs(t *testing.T) {
 			)
 	})
 
-	t.Run("プレイヤー1がプレイヤー0に対してカードを出してレールを生成する", func(t *testing.T) {
-		// NOTE:
-		// 今のところはt.Parallel()を付けずに実行する
-		// t.Parallel()をつける場合はc.Close()を実行しない必要がある
+	// プレイヤー1がプレイヤー0に対してカードを出す
+	oapi.WriteWsRequest(t, conns[1],
+		oapi.WsRequestTypeCardEvent,
+		oapi.WsRequestBodyCardEvent{
+			Id:       uuid.New(),
+			TargetId: ps[0].ID,
+			Type:     oapi.CardTypePullShark,
+		},
+	)
 
-		// プレイヤー1がプレイヤー0に対してカードを出す
-		oapi.WriteWsRequest(t, conns[1],
-			oapi.WsRequestTypeCardEvent,
-			oapi.WsRequestBodyCardEvent{
-				Id:       uuid.New(),
-				TargetId: ps[0].ID,
-				Type:     oapi.CardTypePullShark,
-			},
-		)
-
-		// 各プレイヤーは結果を受信する
-		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
-			readWsResponse[oapi.WsResponseBodyRailCreated](t, c).
-				Equal(
-					oapi.WsResponseTypeRailCreated,
-					oapi.WsResponseBodyRailCreated{
-						AttackerId: ps[1].ID,
-						CardType:   oapi.CardTypePullShark,
-						NewRail:    randint(6),
-						ParentRail: 3,
-						TargetId:   ps[0].ID,
-					},
-				)
-		})
+	// 各プレイヤーは結果を受信する
+	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		readWsResponse[oapi.WsResponseBodyRailCreated](t, c).
+			Equal(
+				oapi.WsResponseTypeRailCreated,
+				oapi.WsResponseBodyRailCreated{
+					AttackerId: ps[1].ID,
+					CardType:   oapi.CardTypePullShark,
+					NewRail:    randint(6),
+					ParentRail: 3,
+					TargetId:   ps[0].ID,
+				},
+			)
 	})
 
-	t.Run("プレイヤー1がプレイヤー0に対してカードを出して障害物を生成する", func(t *testing.T) {
-		// プレイヤー1がプレイヤー0に対してカードを出す
-		oapi.WriteWsRequest(t, conns[1],
-			oapi.WsRequestTypeCardEvent,
-			oapi.WsRequestBodyCardEvent{
-				Id:       uuid.New(),
-				TargetId: ps[0].ID,
-				Type:     oapi.CardTypePairExtraordinaire,
-			},
-		)
+	// プレイヤー1がプレイヤー0に対してカードを出す
+	oapi.WriteWsRequest(t, conns[1],
+		oapi.WsRequestTypeCardEvent,
+		oapi.WsRequestBodyCardEvent{
+			Id:       uuid.New(),
+			TargetId: ps[0].ID,
+			Type:     oapi.CardTypePairExtraordinaire,
+		},
+	)
 
-		// 各プレイヤーは結果を受信する
-		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
-			readWsResponse[oapi.WsResponseBodyBlockCreated](t, c).
-				Equal(
-					oapi.WsResponseTypeBlockCreated,
-					oapi.WsResponseBodyBlockCreated{
-						Attack:     30,
-						AttackerId: ps[1].ID,
-						CardType:   oapi.CardTypePairExtraordinaire,
-						Delay:      2,
-						TargetId:   ps[0].ID,
-					},
-				)
-		})
+	// 各プレイヤーは結果を受信する
+	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		readWsResponse[oapi.WsResponseBodyBlockCreated](t, c).
+			Equal(
+				oapi.WsResponseTypeBlockCreated,
+				oapi.WsResponseBodyBlockCreated{
+					Attack:     30,
+					AttackerId: ps[1].ID,
+					CardType:   oapi.CardTypePairExtraordinaire,
+					Delay:      2,
+					TargetId:   ps[0].ID,
+				},
+			)
 	})
 
-	t.Run("プレイヤー0が障害物に当たってライフが1減少する", func(t *testing.T) {
-		// プレイヤー0がライフ減少のリクエストを出す
-		oapi.WriteWsRequest(t, conns[0],
-			oapi.WsRequestTypeLifeEvent,
-			oapi.WsRequestBodyLifeEvent{
-				Type: oapi.LifeEventTypeDamaged,
-				Diff: 1,
-			},
-		)
+	// プレイヤー0がライフ減少のリクエストを出す
+	oapi.WriteWsRequest(t, conns[0],
+		oapi.WsRequestTypeLifeEvent,
+		oapi.WsRequestBodyLifeEvent{
+			Type: oapi.LifeEventTypeDamaged,
+			Diff: 1,
+		},
+	)
 
-		// 各プレイヤーは結果を受信する
-		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
-			readWsResponse[oapi.WsResponseBodyLifeChanged](t, c).
-				Equal(
-					oapi.WsResponseTypeLifeChanged,
-					oapi.WsResponseBodyLifeChanged{
-						CardType: oapi.CardTypeNone,
-						PlayerId: ps[0].ID,
-						NewLife:  99,
-					},
-				)
-		})
+	// 各プレイヤーは結果を受信する
+	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		readWsResponse[oapi.WsResponseBodyLifeChanged](t, c).
+			Equal(
+				oapi.WsResponseTypeLifeChanged,
+				oapi.WsResponseBodyLifeChanged{
+					CardType: oapi.CardTypeNone,
+					PlayerId: ps[0].ID,
+					NewLife:  99,
+				},
+			)
 	})
 }
