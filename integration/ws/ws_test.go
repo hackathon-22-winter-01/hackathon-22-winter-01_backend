@@ -211,4 +211,25 @@ func TestWs(t *testing.T) {
 		readWsResponse[any](t, c).
 			Equal(tNoop, nil)
 	})
+
+	// プレイヤー1が"Refactoring"カードを出す
+	// 自身のレールに妨害を発生させる
+	oapi.WriteWsRequest(t, conns[1], tCardEvent, bCardEvent{
+		Id:       uuid.New(),
+		TargetId: ps[1].ID,
+		Type:     oapi.CardTypeRefactoring,
+	})
+
+	// 各プレイヤーは結果を受信する
+	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		readWsResponse[bBlockCreated](t, c).
+			Equal(tBlockCreated, bBlockCreated{
+				Attack:     5,
+				AttackerId: ps[1].ID,
+				CardType:   oapi.CardTypeRefactoring,
+				RailIndex:  3, // 1本(main)しかない
+				Delay:      1,
+				TargetId:   ps[1].ID,
+			})
+	})
 }
