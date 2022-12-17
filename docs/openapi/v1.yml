@@ -261,7 +261,7 @@ components:
             - $ref: '#/components/schemas/WsRequestBodyLifeEvent'
             - $ref: '#/components/schemas/WsRequestBodyCardEvent'
             - $ref: '#/components/schemas/WsRequestBodyBlockEvent'
-            - $ref: '#/components/schemas/WsRequestBodycardForAllEvent'
+            - $ref: '#/components/schemas/WsRequestBodyCardForAllEvent'
           description: イベントの情報
       required:
         - type
@@ -323,8 +323,8 @@ components:
         - type
         - railIndex
       description: ブロックに関するイベントの情報
-    WsRequestBodycardForAllEvent:
-      title: WsRequestBodycardForAllEvent
+    WsRequestBodyCardForAllEvent:
+      title: WsRequestBodyCardForAllEvent
       type: object
       properties:
         id:
