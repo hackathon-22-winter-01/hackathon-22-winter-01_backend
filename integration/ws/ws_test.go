@@ -84,10 +84,17 @@ func TestWs(t *testing.T) {
 		conns[i] = c
 		defer c.Close()
 
-		readWsResponse[bConnected](t, c).
-			Equal(tConnected, bConnected{
-				PlayerId: ps[i].ID,
-			})
+		// 既に参加しているメンバー全員にプレイヤーiの接続通知を送信
+		forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+			if c == nil {
+				return
+			}
+
+			readWsResponse[bConnected](t, c).
+				Equal(tConnected, bConnected{
+					PlayerId: ps[i].ID,
+				})
+		})
 	}
 
 	// オーナーがゲーム開始リクエストを送信
