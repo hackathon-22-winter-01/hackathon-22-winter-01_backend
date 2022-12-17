@@ -113,7 +113,8 @@ func TestWs(t *testing.T) {
 			})
 	})
 
-	// プレイヤー1がプレイヤー0に対してPull Sharkカードを出す
+	// プレイヤー1がプレイヤー0に対して"Pull Shark"カードを出す
+	// 敵のレールを増やす
 	oapi.WriteWsRequest(t, conns[1], tCardEvent, bCardEvent{
 		Id:       uuid.New(),
 		TargetId: ps[0].ID,
@@ -132,7 +133,8 @@ func TestWs(t *testing.T) {
 			})
 	})
 
-	// プレイヤー1がプレイヤー0に対してカードを出す
+	// プレイヤー1がプレイヤー0に対して"Pair Extraordinaire"カードを出す
+	// レールに妨害を発生させる
 	oapi.WriteWsRequest(t, conns[1], tCardEvent, bCardEvent{
 		Id:       uuid.New(),
 		TargetId: ps[0].ID,
@@ -152,19 +154,28 @@ func TestWs(t *testing.T) {
 			})
 	})
 
-	// プレイヤー0がライフ減少のリクエストを出す
-	oapi.WriteWsRequest(t, conns[0], tLifeEvent, bLifeEvent{
-		Type: oapi.LifeEventTypeDamaged,
-		Diff: 1,
+	// プレイヤー0が"Pair Extraordinaire"の妨害に衝突しライフ減少のリクエストを出す
+	cardType := oapi.CardTypePairExtraordinaire
+	oapi.WriteWsRequest(t, conns[0], tBlockEvent, bBlockEvent{
+		CardType:  &cardType,
+		RailIndex: randint(6),
+		Type:      oapi.BlockEventTypeCrashed,
 	})
 
 	// 各プレイヤーは結果を受信する
 	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		readWsResponse[bBlockCrashed](t, c).
+			Equal(tBlockCrashed, bBlockCrashed{
+				CardType:  &cardType,
+				RailIndex: randint(6),
+				TargetId:  ps[0].ID,
+			})
+
 		readWsResponse[bLifeChanged](t, c).
 			Equal(tLifeChanged, bLifeChanged{
-				CardType: nil,
+				CardType: &cardType,
 				PlayerId: ps[0].ID,
-				NewLife:  99,
+				NewLife:  70, // = 100 - 30
 			})
 	})
 }
