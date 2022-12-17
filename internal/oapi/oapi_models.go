@@ -116,6 +116,9 @@ type PlayerId = openapi_types.UUID
 type Rail struct {
 	// Id レールUUID
 	Id RailId `json:"id"`
+
+	// Index レールのインデックス
+	Index int `json:"index"`
 }
 
 // RailId レールUUID
@@ -161,8 +164,8 @@ type WsRequest_Body struct {
 
 // WsRequestBodyBlockEvent ブロックに関するイベントの情報
 type WsRequestBodyBlockEvent struct {
-	// RailId レールUUID
-	RailId RailId `json:"railId"`
+	// Rail レール情報
+	Rail Rail `json:"rail"`
 
 	// Type ブロックに関するイベントの種類
 	Type BlockEventType `json:"type"`
@@ -214,8 +217,8 @@ type WsResponse_Body struct {
 
 // WsResponseBodyBlockCanceled 障害物の解消情報
 type WsResponseBodyBlockCanceled struct {
-	// RailId レールUUID
-	RailId RailId `json:"railId"`
+	// Rail レール情報
+	Rail Rail `json:"rail"`
 }
 
 // WsResponseBodyBlockCrashed 障害物と衝突したときの情報
@@ -226,8 +229,8 @@ type WsResponseBodyBlockCrashed struct {
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
 
-	// RailId レールUUID
-	RailId RailId `json:"railId"`
+	// Rail レール情報
+	Rail Rail `json:"rail"`
 }
 
 // WsResponseBodyBlockCreated 新規障害物の作成情報
@@ -286,11 +289,14 @@ type WsResponseBodyRailCreated struct {
 	// AttackerId プレイヤーUUID
 	AttackerId PlayerId `json:"attackerId"`
 
-	// Id レールUUID
-	Id RailId `json:"id"`
+	// CardType カードの効果の種類
+	CardType CardType `json:"cardType"`
 
-	// ParentId レールUUID
-	ParentId RailId `json:"parentId"`
+	// NewRail レール情報
+	NewRail Rail `json:"newRail"`
+
+	// ParentRail レール情報
+	ParentRail Rail `json:"parentRail"`
 
 	// TargetId プレイヤーUUID
 	TargetId PlayerId `json:"targetId"`
@@ -298,11 +304,11 @@ type WsResponseBodyRailCreated struct {
 
 // WsResponseBodyRailMerged レールのマージ情報
 type WsResponseBodyRailMerged struct {
-	// ChildId レールUUID
-	ChildId RailId `json:"childId"`
+	// ChildRail レール情報
+	ChildRail Rail `json:"childRail"`
 
-	// ParentId レールUUID
-	ParentId RailId `json:"parentId"`
+	// ParentRail レール情報
+	ParentRail Rail `json:"parentRail"`
 
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
