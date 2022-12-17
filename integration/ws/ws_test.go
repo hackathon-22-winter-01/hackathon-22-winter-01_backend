@@ -178,4 +178,23 @@ func TestWs(t *testing.T) {
 				NewLife:  70, // = 100 - 30
 			})
 	})
+
+	// プレイヤー0が自分に対して"YOLO"カードを出す
+	// 自分の妨害がないレールをマージする
+	oapi.WriteWsRequest(t, conns[0], tCardEvent, bCardEvent{
+		Id:       uuid.New(),
+		TargetId: ps[0].ID,
+		Type:     oapi.CardTypeYolo,
+	})
+
+	// 各プレイヤーは結果を受信する
+	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		readWsResponse[bRailMerged](t, c).
+			Equal(tRailMerged, bRailMerged{
+				CardType:   oapi.CardTypeYolo,
+				ChildRail:  randint(3),
+				ParentRail: 3, // TODO: childRailとparentRailが同じになることはないため直す
+				PlayerId:   ps[0].ID,
+			})
+	})
 }

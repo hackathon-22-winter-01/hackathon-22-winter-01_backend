@@ -103,6 +103,10 @@ func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 	var targetRailIndex int
 
 	for i, r := range afterRails {
+		if r == nil {
+			continue
+		}
+
 		if r.Index != targetRail.Index {
 			afterRails[i] = nil
 			targetRailIndex = i
@@ -534,7 +538,10 @@ func getNonBlockingRail(p *domain.Player, allowMain bool) (*domain.Rail, bool) {
 		switch e.Type {
 		case domain.BlockEventTypeCreated:
 			blockBranchIDs[e.TargetRailIndex] = struct{}{}
+
 		case domain.BlockEventTypeCanceled:
+			fallthrough
+		case domain.BlockEventTypeCrashed:
 			delete(blockBranchIDs, e.TargetRailIndex)
 		}
 	}
