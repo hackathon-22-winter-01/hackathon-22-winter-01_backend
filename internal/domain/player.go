@@ -12,6 +12,7 @@ type Player struct {
 	BlockEvents    []*BlockEvent
 	BranchEvents   []*BranchEvent
 	LifeEvents     []*LifeEvent
+	IsAlive        bool
 }
 
 // NewPlayer 新しいプレイヤーを作成する
@@ -24,5 +25,6 @@ func NewPlayer(id uuid.UUID, name string) *Player {
 		BlockEvents:  make([]*BlockEvent, 0),
 		BranchEvents: make([]*BranchEvent, 0),
 		LifeEvents:   make([]*LifeEvent, 0),
+		IsAlive:      true,
 	}
 }

@@ -48,6 +48,7 @@ const (
 	WsResponseTypeBlockCreated  WsResponseType = "blockCreated"
 	WsResponseTypeCardReset     WsResponseType = "cardReset"
 	WsResponseTypeConnected     WsResponseType = "connected"
+	WsResponseTypeGameOverred   WsResponseType = "gameOverred"
 	WsResponseTypeGameStarted   WsResponseType = "gameStarted"
 	WsResponseTypeLifeChanged   WsResponseType = "lifeChanged"
 	WsResponseTypeNoop          WsResponseType = "noop"
@@ -244,6 +245,12 @@ type WsResponseBodyCardReset = []struct {
 
 // WsResponseBodyConnected 接続したプレイヤーのID
 type WsResponseBodyConnected struct {
+	// PlayerId プレイヤーUUID
+	PlayerId PlayerId `json:"playerId"`
+}
+
+// WsResponseBodyGameOverred defines model for WsResponseBodyGameOverred.
+type WsResponseBodyGameOverred struct {
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
 }
@@ -617,6 +624,32 @@ func (t *WsResponse_Body) FromWsResponseBodyBlockCanceled(v WsResponseBodyBlockC
 
 // MergeWsResponseBodyBlockCanceled performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyBlockCanceled
 func (t *WsResponse_Body) MergeWsResponseBodyBlockCanceled(v WsResponseBodyBlockCanceled) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsWsResponseBodyGameOverred returns the union data inside the WsResponse_Body as a WsResponseBodyGameOverred
+func (t WsResponse_Body) AsWsResponseBodyGameOverred() (WsResponseBodyGameOverred, error) {
+	var body WsResponseBodyGameOverred
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWsResponseBodyGameOverred overwrites any union data inside the WsResponse_Body as the provided WsResponseBodyGameOverred
+func (t *WsResponse_Body) FromWsResponseBodyGameOverred(v WsResponseBodyGameOverred) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWsResponseBodyGameOverred performs a merge with any union data inside the WsResponse_Body, using the provided WsResponseBodyGameOverred
+func (t *WsResponse_Body) MergeWsResponseBodyGameOverred(v WsResponseBodyGameOverred) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
