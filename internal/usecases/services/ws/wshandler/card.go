@@ -31,7 +31,6 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		oapi.CardTypeLgtm:               h.handleLgtm,
 		oapi.CardTypePullShark:          h.handlePullShark,
 		oapi.CardTypeStarstruck:         h.handleStarstruck,
-		oapi.CardTypeOoops:              h.handleOoops,
 	}
 
 	f, ok := fmap[b.Type]
@@ -46,6 +45,35 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 
 	if err := h.sender.Broadcast(h.room.ID, res); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (h *wsHandler) handleCardEventForAll(body oapi.WsRequest_Body) error {
+	b, err := body.AsWsRequestBodyCardEventForAll()
+	if err != nil {
+		return err
+	}
+
+	fmap := map[oapi.CardType]func(reqbody oapi.WsRequestBodyCardEventForAll, now time.Time) ([]*oapi.WsResponse, error){
+		oapi.CardTypeOoops: h.handleOoops,
+	}
+
+	f, ok := fmap[b.Type]
+	if !ok {
+		return errors.New("存在しないカードです")
+	}
+
+	res, err := f(b, jst.Now())
+	if err != nil {
+		return err
+	}
+
+	for _, r := range res {
+		if err := h.sender.Broadcast(h.room.ID, r); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -305,39 +333,46 @@ func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now ti
 	return res, nil
 }
 
-// クライアント側で全員に飛ばしてもらう想定。
-func (h *wsHandler) handleOoops(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
+func (h *wsHandler) handleOoops(reqbody oapi.WsRequestBodyCardEventForAll, now time.Time) ([]*oapi.WsResponse, error) {
 	cardType := domain.CardTypeOoops
 
-	targetRailID, ok := getNonBlockingRailID(targetPlayer, true)
-	if !ok {
-		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
+	var res []*oapi.WsResponse
+
+	for _, targetPlayer := range h.room.Players {
+		targetRailID, ok := getNonBlockingRailID(targetPlayer, true)
+		if !ok {
+			targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
+				uuid.New(),
+				cardType,
+				now,
+			))
+
+			res = append(res, oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now))
+
+			continue
+		}
+
+		delay, attack, err := cardType.DelayAndAttack()
+		if err != nil {
+			return nil, err
+		}
+
+		targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
 			uuid.New(),
 			cardType,
 			now,
+			domain.BlockEventTypeCreated,
+			h.playerID,
+			targetPlayer.ID,
+			targetRailID,
 		))
 
-		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
-	}
+		r, err := oapi.NewWsResponseBlockCreated(now, h.playerID, targetPlayer.ID, delay, attack)
+		if err != nil {
+			return nil, err
+		}
 
-	delay, attack, err := cardType.DelayAndAttack()
-	if err != nil {
-		return nil, err
-	}
-
-	targetPlayer.BlockEvents = append(targetPlayer.BlockEvents, domain.NewBlockEvent(
-		uuid.New(),
-		cardType,
-		now,
-		domain.BlockEventTypeCreated,
-		h.playerID,
-		targetPlayer.ID,
-		targetRailID,
-	))
-
-	res, err := oapi.NewWsResponseBlockCreated(now, h.playerID, reqbody.TargetId, delay, attack)
-	if err != nil {
-		return nil, err
+		res = append(res, r)
 	}
 
 	return res, nil

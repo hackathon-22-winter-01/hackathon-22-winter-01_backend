@@ -38,10 +38,11 @@ const (
 
 // Defines values for WsRequestType.
 const (
-	WsRequestTypeBlockEvent     WsRequestType = "blockEvent"
-	WsRequestTypeCardEvent      WsRequestType = "cardEvent"
-	WsRequestTypeGameStartEvent WsRequestType = "gameStartEvent"
-	WsRequestTypeLifeEvent      WsRequestType = "lifeEvent"
+	WsRequestTypeBlockEvent      WsRequestType = "blockEvent"
+	WsRequestTypeCardEvent       WsRequestType = "cardEvent"
+	WsRequestTypeCardEventForAll WsRequestType = "cardEventForAll"
+	WsRequestTypeGameStartEvent  WsRequestType = "gameStartEvent"
+	WsRequestTypeLifeEvent       WsRequestType = "lifeEvent"
 )
 
 // Defines values for WsResponseType.
@@ -176,6 +177,15 @@ type WsRequestBodyCardEvent struct {
 
 	// TargetId プレイヤーUUID
 	TargetId PlayerId `json:"targetId"`
+
+	// Type カードの効果の種類
+	Type CardType `json:"type"`
+}
+
+// WsRequestBodyCardEventForAll 全プレイヤーに影響を与えるカードに関するイベントの情報
+type WsRequestBodyCardEventForAll struct {
+	// Id カードUUID
+	Id CardId `json:"id"`
 
 	// Type カードの効果の種類
 	Type CardType `json:"type"`
@@ -418,6 +428,32 @@ func (t *WsRequest_Body) FromWsRequestBodyBlockEvent(v WsRequestBodyBlockEvent) 
 
 // MergeWsRequestBodyBlockEvent performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodyBlockEvent
 func (t *WsRequest_Body) MergeWsRequestBodyBlockEvent(v WsRequestBodyBlockEvent) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsWsRequestBodyCardEventForAll returns the union data inside the WsRequest_Body as a WsRequestBodyCardEventForAll
+func (t WsRequest_Body) AsWsRequestBodyCardEventForAll() (WsRequestBodyCardEventForAll, error) {
+	var body WsRequestBodyCardEventForAll
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWsRequestBodyCardEventForAll overwrites any union data inside the WsRequest_Body as the provided WsRequestBodyCardEventForAll
+func (t *WsRequest_Body) FromWsRequestBodyCardEventForAll(v WsRequestBodyCardEventForAll) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWsRequestBodyCardEventForAll performs a merge with any union data inside the WsRequest_Body, using the provided WsRequestBodyCardEventForAll
+func (t *WsRequest_Body) MergeWsRequestBodyCardEventForAll(v WsRequestBodyCardEventForAll) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
