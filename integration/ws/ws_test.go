@@ -246,4 +246,29 @@ func TestWs(t *testing.T) {
 		readWsResponse[any](t, c).
 			Equal(tNoop, nil)
 	})
+
+	// プレイヤー0が"Refactoring"の妨害に衝突しライフ減少のリクエストを出す
+	cardType = oapi.CardTypeRefactoring
+	oapi.WriteWsRequest(t, conns[0], tBlockEvent, bBlockEvent{
+		CardType:  &cardType,
+		RailIndex: 3,
+		Type:      oapi.BlockEventTypeCrashed,
+	})
+
+	// 各プレイヤーは結果を受信する
+	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		readWsResponse[bBlockCrashed](t, c).
+			Equal(tBlockCrashed, bBlockCrashed{
+				CardType:  &cardType,
+				RailIndex: 3,
+				TargetId:  ps[0].ID,
+			})
+
+		readWsResponse[bLifeChanged](t, c).
+			Equal(tLifeChanged, bLifeChanged{
+				CardType: &cardType,
+				PlayerId: ps[0].ID,
+				NewLife:  65, // = 70 - 5
+			})
+	})
 }
