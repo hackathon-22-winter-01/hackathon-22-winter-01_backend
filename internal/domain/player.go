@@ -7,7 +7,6 @@ type Player struct {
 	ID             uuid.UUID
 	Name           string
 	Main           *Rail
-	Cards          []*Card // TODO: remove
 	JustCardEvents []*JustCardEvent
 	BlockEvents    []*BlockEvent
 	BranchEvents   []*BranchEvent
@@ -21,7 +20,6 @@ func NewPlayer(id uuid.UUID, name string) *Player {
 		ID:           id,
 		Name:         name,
 		Main:         NewRail(),
-		Cards:        make([]*Card, 0),
 		BlockEvents:  make([]*BlockEvent, 0),
 		BranchEvents: make([]*BranchEvent, 0),
 		LifeEvents:   make([]*LifeEvent, 0),
