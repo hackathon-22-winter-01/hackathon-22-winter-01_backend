@@ -47,7 +47,7 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			uuid.New(),
 			domain.CardTypeNone,
 			jst.Now(),
-			domain.BlockEventTypeCrash,
+			domain.BlockEventTypeCrashed,
 			target.ID,
 			target.ID,
 			b.RailId,

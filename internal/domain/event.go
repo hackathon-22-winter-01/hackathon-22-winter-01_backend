@@ -43,7 +43,7 @@ type BlockEventType uint8
 const (
 	BlockEventTypeCreated BlockEventType = iota
 	BlockEventTypeCanceled
-	BlockEventTypeCrash
+	BlockEventTypeCrashed
 )
 
 func NewBlockEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ BlockEventType, attackerID, targetID, targetRailID uuid.UUID) *BlockEvent {
