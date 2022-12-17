@@ -92,9 +92,9 @@ func TestWs(t *testing.T) {
 	})
 
 	t.Run("プレイヤー1がプレイヤー0に対してカードを出してレールを生成する", func(t *testing.T) {
-		// FIXME: t.Parallel()を付けて実行するとFAILする
-		// Received unexpected error:
-		// write tcp 127.0.0.1:38046->127.0.0.1:35689: use of closed network connection
+		// NOTE:
+		// 今のところはt.Parallel()を付けずに実行する
+		// t.Parallel()をつける場合はc.Close()を実行しない必要がある
 
 		// プレイヤー1がプレイヤー0に対してカードを出す
 		b := oapi.WsRequest_Body{}

@@ -198,12 +198,6 @@ components:
           items:
             $ref: '#/components/schemas/Rail'
           description: プレイヤーのレールのリスト
-        # TODO: 定義する
-        # blocks:
-        #   type: array
-        #   items:
-        #     $ref: '#/components/schemas/Block'
-        #   description: プレイヤーのブロックのリスト
         life:
           type: number
           maximum: 100
