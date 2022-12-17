@@ -15,6 +15,45 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// 短縮用の型定義
+
+const (
+	tGameStartEvent  = oapi.WsRequestTypeGameStartEvent
+	tLifeEvent       = oapi.WsRequestTypeLifeEvent
+	tCardEvent       = oapi.WsRequestTypeCardEvent
+	tBlockEvent      = oapi.WsRequestTypeBlockEvent
+	tCardForAllEvent = oapi.WsRequestTypeCardForAllEvent
+
+	tConnected     = oapi.WsResponseTypeConnected
+	tGameStarted   = oapi.WsResponseTypeGameStarted
+	tLifeChanged   = oapi.WsResponseTypeLifeChanged
+	tRailCreated   = oapi.WsResponseTypeRailCreated
+	tRailMerged    = oapi.WsResponseTypeRailMerged
+	tBlockCreated  = oapi.WsResponseTypeBlockCreated
+	tBlockCanceled = oapi.WsResponseTypeBlockCanceled
+	tBlockCrashed  = oapi.WsResponseTypeBlockCrashed
+	tGameOverred   = oapi.WsResponseTypeGameOverred
+	tNoop          = oapi.WsResponseTypeNoop
+)
+
+type (
+	bGameStartEvent  = oapi.WsRequestBodyGameStartEvent
+	bLifeEvent       = oapi.WsRequestBodyLifeEvent
+	bCardEvent       = oapi.WsRequestBodyCardEvent
+	bBlockEvent      = oapi.WsRequestBodyBlockEvent
+	bCardForAllEvent = oapi.WsRequestBodyCardForAllEvent
+
+	bConnected     = oapi.WsResponseBodyConnected
+	bGameStarted   = oapi.WsResponseBodyGameStarted
+	bLifeChanged   = oapi.WsResponseBodyLifeChanged
+	bRailCreated   = oapi.WsResponseBodyRailCreated
+	bRailMerged    = oapi.WsResponseBodyRailMerged
+	bBlockCreated  = oapi.WsResponseBodyBlockCreated
+	bBlockCanceled = oapi.WsResponseBodyBlockCanceled
+	bBlockCrashed  = oapi.WsResponseBodyBlockCrashed
+	bGameOverred   = oapi.WsResponseBodyGameOverred
+)
+
 var (
 	roomRepo = repoimpl.NewRoomRepository()
 	streamer = ws.NewStreamer(ws.NewHub(roomRepo))
@@ -45,104 +84,79 @@ func TestWs(t *testing.T) {
 		conns[i] = c
 		defer c.Close()
 
-		readWsResponse[oapi.WsResponseBodyConnected](t, c).
-			Equal(
-				oapi.WsResponseTypeConnected,
-				oapi.WsResponseBodyConnected{PlayerId: ps[i].ID},
-			)
+		readWsResponse[bConnected](t, c).
+			Equal(tConnected, bConnected{
+				PlayerId: ps[i].ID,
+			})
 	}
 
 	// オーナーがゲーム開始リクエストを送信
-	oapi.WriteWsRequest(t, conns[0],
-		oapi.WsRequestTypeGameStartEvent,
-		oapi.WsRequestBodyGameStartEvent{},
-	)
+	oapi.WriteWsRequest(t, conns[0], tGameStartEvent, bGameStartEvent{})
 
 	// 各プレイヤーはゲーム開始通知を受信
 	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
-		readWsResponse[oapi.WsResponseBodyGameStarted](t, c).
-			Equal(
-				oapi.WsResponseTypeGameStarted,
-				oapi.WsResponseBodyGameStarted{
-					Players: []oapi.Player{
-						{Id: ps[0].ID, Life: consts.MaxLife},
-						{Id: ps[1].ID, Life: consts.MaxLife},
-						{Id: ps[2].ID, Life: consts.MaxLife},
-						{Id: ps[3].ID, Life: consts.MaxLife},
-					},
+		readWsResponse[bGameStarted](t, c).
+			Equal(tGameStarted, bGameStarted{
+				Players: []oapi.Player{
+					{Id: ps[0].ID, Life: consts.MaxLife},
+					{Id: ps[1].ID, Life: consts.MaxLife},
+					{Id: ps[2].ID, Life: consts.MaxLife},
+					{Id: ps[3].ID, Life: consts.MaxLife},
 				},
-			)
+			})
 	})
 
-	// プレイヤー1がプレイヤー0に対してカードを出す
-	oapi.WriteWsRequest(t, conns[1],
-		oapi.WsRequestTypeCardEvent,
-		oapi.WsRequestBodyCardEvent{
-			Id:       uuid.New(),
-			TargetId: ps[0].ID,
-			Type:     oapi.CardTypePullShark,
-		},
-	)
+	// プレイヤー1がプレイヤー0に対してPull Sharkカードを出す
+	oapi.WriteWsRequest(t, conns[1], tCardEvent, bCardEvent{
+		Id:       uuid.New(),
+		TargetId: ps[0].ID,
+		Type:     oapi.CardTypePullShark,
+	})
 
 	// 各プレイヤーは結果を受信する
 	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
-		readWsResponse[oapi.WsResponseBodyRailCreated](t, c).
-			Equal(
-				oapi.WsResponseTypeRailCreated,
-				oapi.WsResponseBodyRailCreated{
-					AttackerId: ps[1].ID,
-					CardType:   oapi.CardTypePullShark,
-					NewRail:    randint(6),
-					ParentRail: 3,
-					TargetId:   ps[0].ID,
-				},
-			)
+		readWsResponse[bRailCreated](t, c).
+			Equal(tRailCreated, bRailCreated{
+				AttackerId: ps[1].ID,
+				CardType:   oapi.CardTypePullShark,
+				NewRail:    randint(6),
+				ParentRail: 3,
+				TargetId:   ps[0].ID,
+			})
 	})
 
 	// プレイヤー1がプレイヤー0に対してカードを出す
-	oapi.WriteWsRequest(t, conns[1],
-		oapi.WsRequestTypeCardEvent,
-		oapi.WsRequestBodyCardEvent{
-			Id:       uuid.New(),
-			TargetId: ps[0].ID,
-			Type:     oapi.CardTypePairExtraordinaire,
-		},
-	)
+	oapi.WriteWsRequest(t, conns[1], tCardEvent, bCardEvent{
+		Id:       uuid.New(),
+		TargetId: ps[0].ID,
+		Type:     oapi.CardTypePairExtraordinaire,
+	})
 
 	// 各プレイヤーは結果を受信する
 	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
-		readWsResponse[oapi.WsResponseBodyBlockCreated](t, c).
-			Equal(
-				oapi.WsResponseTypeBlockCreated,
-				oapi.WsResponseBodyBlockCreated{
-					Attack:     30,
-					AttackerId: ps[1].ID,
-					CardType:   oapi.CardTypePairExtraordinaire,
-					Delay:      2,
-					TargetId:   ps[0].ID,
-				},
-			)
+		readWsResponse[bBlockCreated](t, c).
+			Equal(tBlockCreated, bBlockCreated{
+				Attack:     30,
+				AttackerId: ps[1].ID,
+				CardType:   oapi.CardTypePairExtraordinaire,
+				Delay:      2,
+				TargetId:   ps[0].ID,
+			})
 	})
 
 	// プレイヤー0がライフ減少のリクエストを出す
-	oapi.WriteWsRequest(t, conns[0],
-		oapi.WsRequestTypeLifeEvent,
-		oapi.WsRequestBodyLifeEvent{
-			Type: oapi.LifeEventTypeDamaged,
-			Diff: 1,
-		},
-	)
+	oapi.WriteWsRequest(t, conns[0], tLifeEvent, bLifeEvent{
+		Type: oapi.LifeEventTypeDamaged,
+		Diff: 1,
+	})
 
 	// 各プレイヤーは結果を受信する
 	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
-		readWsResponse[oapi.WsResponseBodyLifeChanged](t, c).
-			Equal(
-				oapi.WsResponseTypeLifeChanged,
-				oapi.WsResponseBodyLifeChanged{
-					CardType: oapi.CardTypeNone,
-					PlayerId: ps[0].ID,
-					NewLife:  99,
-				},
-			)
+		readWsResponse[bLifeChanged](t, c).
+			Equal(tLifeChanged, bLifeChanged{
+				CardType: oapi.CardTypeNone,
+				PlayerId: ps[0].ID,
+				NewLife:  99,
+			})
 	})
 }
