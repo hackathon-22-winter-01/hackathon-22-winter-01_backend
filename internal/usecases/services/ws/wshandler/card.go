@@ -52,6 +52,12 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
 	targetRailID, ok := getNonBlockingRailID(targetPlayer, false)
 	if !ok {
+		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
+			uuid.New(),
+			domain.CardTypeYolo,
+			now,
+		))
+
 		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
 	}
 
@@ -85,7 +91,12 @@ func (h *wsHandler) handleYolo(reqbody oapi.WsRequestBodyCardEvent, now time.Tim
 }
 
 func (h *wsHandler) handleGalaxyBrain(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
-	// TODO: 何かしらのイベントを追加したい
+	targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
+		uuid.New(),
+		domain.CardTypeGalaxyBrain,
+		now,
+	))
+
 	res := oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now)
 
 	return res, nil
@@ -115,6 +126,12 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 
 	targetRailID, ok := getNonBlockingRailID(targetPlayer, true)
 	if !ok {
+		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
+			uuid.New(),
+			domain.CardTypeRefactoring,
+			now,
+		))
+
 		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
 	}
 
@@ -146,6 +163,12 @@ func (h *wsHandler) handleRefactoring(reqbody oapi.WsRequestBodyCardEvent, now t
 func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
 	targetRailID, ok := getNonBlockingRailID(targetPlayer, true)
 	if !ok {
+		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
+			uuid.New(),
+			domain.CardTypePairExtraordinaire,
+			now,
+		))
+
 		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
 	}
 
@@ -177,6 +200,12 @@ func (h *wsHandler) handlePairExtraordinaire(reqbody oapi.WsRequestBodyCardEvent
 func (h *wsHandler) handleLgtm(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
 	targetRailID, ok := getNonBlockingRailID(targetPlayer, true)
 	if !ok {
+		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
+			uuid.New(),
+			domain.CardTypeLgtm,
+			now,
+		))
+
 		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
 	}
 
@@ -232,6 +261,12 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 func (h *wsHandler) handleStarstruck(reqbody oapi.WsRequestBodyCardEvent, now time.Time, targetPlayer *domain.Player) (*oapi.WsResponse, error) {
 	targetRailID, ok := getNonBlockingRailID(targetPlayer, true)
 	if !ok {
+		targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
+			uuid.New(),
+			domain.CardTypeStarstruck,
+			now,
+		))
+
 		return oapi.WsResponseFromType(oapi.WsResponseTypeNoop, now), nil
 	}
 
