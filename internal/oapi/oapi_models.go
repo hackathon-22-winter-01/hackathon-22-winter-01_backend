@@ -166,6 +166,9 @@ type WsRequest_Body struct {
 
 // WsRequestBodyBlockEvent ブロックに関するイベントの情報
 type WsRequestBodyBlockEvent struct {
+	// CardType カードの効果の種類
+	CardType CardType `json:"cardType"`
+
 	// Rail レール情報
 	Rail Rail `json:"rail"`
 

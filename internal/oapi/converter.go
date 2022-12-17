@@ -59,3 +59,22 @@ func RoomFromDomain(dr *domain.Room) Room {
 		StartedAt: dr.StartedAt,
 	}
 }
+
+func (t CardType) ToDomain() domain.CardType {
+	m := map[CardType]domain.CardType{
+		CardTypeYolo:               domain.CardTypeYolo,
+		CardTypeGalaxyBrain:        domain.CardTypeGalaxyBrain,
+		CardTypeOpenSourcerer:      domain.CardTypeOpenSourcerer,
+		CardTypeRefactoring:        domain.CardTypeRefactoring,
+		CardTypePairExtraordinaire: domain.CardTypePairExtraordinaire,
+		CardTypeLgtm:               domain.CardTypeLgtm,
+		CardTypePullShark:          domain.CardTypePullShark,
+		CardTypeStarstruck:         domain.CardTypeStarstruck,
+	}
+
+	if t, ok := m[t]; ok {
+		return t
+	}
+
+	return domain.CardTypeNone
+}

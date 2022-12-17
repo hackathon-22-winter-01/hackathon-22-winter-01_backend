@@ -328,10 +328,13 @@ components:
       properties:
         type:
           $ref: '#/components/schemas/BlockEventType'
+        cardType:
+          $ref: '#/components/schemas/CardType'
         rail:
           $ref: '#/components/schemas/Rail'
       required:
         - type
+        - cardType
         - rail
       description: ブロックに関するイベントの情報
     WsResponse:

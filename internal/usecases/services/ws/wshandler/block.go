@@ -29,7 +29,7 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 	case oapi.BlockEventTypeCanceled:
 		target.BlockEvents = append(target.BlockEvents, domain.NewBlockEvent(
 			uuid.New(),
-			domain.CardTypeNone,
+			b.CardType.ToDomain(),
 			jst.Now(),
 			domain.BlockEventTypeCanceled,
 			target.ID,
@@ -44,7 +44,7 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 	case oapi.BlockEventTypeCrashed:
 		target.BlockEvents = append(target.BlockEvents, domain.NewBlockEvent(
 			uuid.New(),
-			domain.CardTypeNone,
+			b.CardType.ToDomain(),
 			jst.Now(),
 			domain.BlockEventTypeCrashed,
 			target.ID,
@@ -60,7 +60,7 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 
 		target.LifeEvents = append(target.LifeEvents, domain.NewLifeEvent(
 			uuid.New(),
-			domain.CardTypeNone,
+			b.CardType.ToDomain(),
 			jst.Now(),
 			domain.LifeEventTypeDamaged,
 			attack,
