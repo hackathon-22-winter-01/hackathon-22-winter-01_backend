@@ -91,6 +91,9 @@ type JoinRoomRequest struct {
 	RoomId RoomId `json:"roomId"`
 }
 
+// Life ライフ
+type Life = float32
+
 // LifeEventType ライフに関するイベントの種類
 type LifeEventType string
 
@@ -99,8 +102,8 @@ type Player struct {
 	// Id プレイヤーUUID
 	Id PlayerId `json:"id"`
 
-	// Life プレイヤーのライフ
-	Life float32 `json:"life"`
+	// Life ライフ
+	Life Life `json:"life"`
 
 	// MainRail レール情報
 	MainRail Rail `json:"mainRail"`
@@ -223,8 +226,8 @@ type WsResponseBodyBlockCanceled struct {
 
 // WsResponseBodyBlockCrashed 障害物と衝突したときの情報
 type WsResponseBodyBlockCrashed struct {
-	// New 変動後のライフ
-	New float32 `json:"new"`
+	// NewLife ライフ
+	NewLife Life `json:"newLife"`
 
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`
@@ -277,8 +280,8 @@ type WsResponseBodyGameStarted struct {
 
 // WsResponseBodyLifeChanged ライフの変動情報
 type WsResponseBodyLifeChanged struct {
-	// New 変動後のライフ
-	New float32 `json:"new"`
+	// NewLife ライフ
+	NewLife Life `json:"newLife"`
 
 	// PlayerId プレイヤーUUID
 	PlayerId PlayerId `json:"playerId"`

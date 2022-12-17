@@ -44,7 +44,7 @@ func NewWsResponseGameStarted(eventTime time.Time, players []Player) (*WsRespons
 func NewWsResponseLifeChanged(eventTime time.Time, playerID uuid.UUID, newLife float32) (*WsResponse, error) {
 	b := WsResponseBodyLifeChanged{
 		PlayerId: playerID,
-		New:      newLife,
+		NewLife:  newLife,
 	}
 
 	res := WsResponseFromType(WsResponseTypeLifeChanged, eventTime)
@@ -135,9 +135,9 @@ func NewWsResponseBlockCanceled(eventTime time.Time, rail Rail) (*WsResponse, er
 
 func NewWsResponseBlockCrashed(eventTime time.Time, newLife float32, playerID uuid.UUID, rail Rail) (*WsResponse, error) {
 	b := WsResponseBodyBlockCrashed{
-		New:      newLife,
+		NewLife:  newLife,
 		PlayerId: playerID,
-		Rail:   rail,
+		Rail:     rail,
 	}
 
 	res := WsResponseFromType(WsResponseTypeBlockCrashed, eventTime)
@@ -163,9 +163,9 @@ func NewWsResponseGameOverred(eventTime time.Time, playerID uuid.UUID) (*WsRespo
 	return res, nil
 }
 
-func NewRail(id uuid.UUID, index int) Rail{
+func NewRail(id uuid.UUID, index int) Rail {
 	return Rail{
-		Id: id,
+		Id:    id,
 		Index: index,
 	}
 }

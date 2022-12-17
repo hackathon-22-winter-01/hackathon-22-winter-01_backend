@@ -171,7 +171,7 @@ func TestWs(t *testing.T) {
 			require.Equal(t, oapi.WsResponseTypeLifeChanged, res.Type)
 			require.Equal(t, oapi.WsResponseBodyLifeChanged{
 				PlayerId: pids[0],
-				New:      99,
+				NewLife:  99,
 			}, resbody)
 		})
 	})

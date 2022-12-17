@@ -200,15 +200,11 @@ components:
             $ref: '#/components/schemas/Rail'
           description: プレイヤーのレールのリスト
         life:
-          type: number
-          maximum: 100
-          minimum: 0
-          description: プレイヤーのライフ
+          $ref: '#/components/schemas/Life'
       required:
         - id
         - mainRail
         - rails
-        # - blocks
         - life
       description: プレイヤー情報
     Rail:
@@ -226,6 +222,12 @@ components:
         - id
         - index
       description: レール情報
+    Life:
+      title: Life
+      type: number
+      maximum: 100
+      minimum: 0
+      description: ライフ
     CreateRoomRequest:
       title: CreateRoomRequest
       type: object
@@ -400,14 +402,12 @@ components:
       properties:
         playerId:
           $ref: '#/components/schemas/PlayerId'
-        new:
-          type: number
-          maximum: 100
-          minimum: 0
+        newLife:
+          $ref: '#/components/schemas/Life'
           description: 変動後のライフ
       required:
         - playerId
-        - new
+        - newLife
       description: ライフの変動情報
     WsResponseBodyCardReset:
       type: array
@@ -503,15 +503,13 @@ components:
           description: 衝突したレール
         playerId:
           $ref: '#/components/schemas/PlayerId'
-        new:
-          type: number
-          maximum: 100
-          minimum: 0
+        newLife:
+          $ref: '#/components/schemas/Life'
           description: 変動後のライフ
       required:
         - rail
         - playerId
-        - new
+        - newLife
       description: 障害物と衝突したときの情報
     WsResponseBodyGameOverred:
       type: object
