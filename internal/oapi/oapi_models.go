@@ -159,7 +159,7 @@ type WsRequest_Body struct {
 // WsRequestBodyBlockEvent ブロックに関するイベントの情報
 type WsRequestBodyBlockEvent struct {
 	// CardType カードの効果の種類
-	CardType CardType `json:"cardType"`
+	CardType *CardType `json:"cardType,omitempty"`
 
 	// RailIndex レールのインデックス
 	RailIndex RailIndex `json:"railIndex"`
@@ -224,7 +224,7 @@ type WsResponse_Body struct {
 // WsResponseBodyBlockCanceled 障害物の解消情報
 type WsResponseBodyBlockCanceled struct {
 	// CardType カードの効果の種類
-	CardType CardType `json:"cardType"`
+	CardType *CardType `json:"cardType,omitempty"`
 
 	// RailIndex レールのインデックス
 	RailIndex RailIndex `json:"railIndex"`
@@ -236,7 +236,7 @@ type WsResponseBodyBlockCanceled struct {
 // WsResponseBodyBlockCrashed 障害物と衝突したときの情報
 type WsResponseBodyBlockCrashed struct {
 	// CardType カードの効果の種類
-	CardType CardType `json:"cardType"`
+	CardType *CardType `json:"cardType,omitempty"`
 
 	// NewLife ライフ
 	NewLife Life `json:"newLife"`

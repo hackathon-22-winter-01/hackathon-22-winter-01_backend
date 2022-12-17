@@ -321,7 +321,6 @@ components:
           $ref: '#/components/schemas/RailIndex'
       required:
         - type
-        - cardType
         - railIndex
       description: ブロックに関するイベントの情報
     WsRequestBodycardForAllEvent:
@@ -492,7 +491,6 @@ components:
       required:
         - targetId
         - railIndex
-        - cardType
       description: 障害物の解消情報
     WsResponseBodyBlockCrashed:
       type: object
@@ -510,7 +508,6 @@ components:
       required:
         - targetId
         - railIndex
-        - cardType
         - newLife
       description: 障害物と衝突したときの情報
     WsResponseBodyGameOverred:

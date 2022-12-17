@@ -110,7 +110,7 @@ func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, target
 	return res, nil
 }
 
-func NewWsResponseBlockCanceled(eventTime time.Time, targetID uuid.UUID, rail RailIndex, cardType CardType) (*WsResponse, error) {
+func NewWsResponseBlockCanceled(eventTime time.Time, targetID uuid.UUID, rail RailIndex, cardType *CardType) (*WsResponse, error) {
 	b := WsResponseBodyBlockCanceled{
 		TargetId:  targetID,
 		RailIndex: rail,
@@ -126,7 +126,7 @@ func NewWsResponseBlockCanceled(eventTime time.Time, targetID uuid.UUID, rail Ra
 	return res, nil
 }
 
-func NewWsResponseBlockCrashed(eventTime time.Time, newLife float32, targetID uuid.UUID, rail RailIndex, cardType CardType) (*WsResponse, error) {
+func NewWsResponseBlockCrashed(eventTime time.Time, newLife float32, targetID uuid.UUID, rail RailIndex, cardType *CardType) (*WsResponse, error) {
 	b := WsResponseBodyBlockCrashed{
 		NewLife:   newLife,
 		TargetId:  targetID,
