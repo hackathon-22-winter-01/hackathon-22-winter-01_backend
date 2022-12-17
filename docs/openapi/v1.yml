@@ -151,6 +151,7 @@ components:
       type: string
       enum:
         - canceled
+        - crashed
       description: ブロックに関するイベントの種類
     Card:
       title: Card
@@ -216,12 +217,8 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/RailId'
-        hasBlock:
-          type: boolean
-          description: 妨害されているかどうか
       required:
         - id
-        - hasBlock
       description: レール情報
     CreateRoomRequest:
       title: CreateRoomRequest
@@ -345,6 +342,7 @@ components:
             - $ref: '#/components/schemas/WsResponseBodyRailMerged'
             - $ref: '#/components/schemas/WsResponseBodyBlockCreated'
             - $ref: '#/components/schemas/WsResponseBodyBlockCanceled'
+            - $ref: '#/components/schemas/WsResponseBodyBlockCrashed'
             - $ref: '#/components/schemas/WsResponseBodyGameOverred'
           description: イベントの情報
         eventTime:
@@ -368,6 +366,7 @@ components:
         - railMerged
         - blockCreated
         - blockCanceled
+        - blockCrashed
         - gameOverred
         - noop
       description: イベントの種類
@@ -464,7 +463,8 @@ components:
           maximum: 5
           description: 障害物を解消するために必要な秒数
         attack:
-          type: integer
+          type: number
+          format: float
           minimum: 10
           maximum: 50
           description: 障害物と衝突したときに与えるダメージ
@@ -482,6 +482,23 @@ components:
       required:
         - railId
       description: 障害物の解消情報
+    WsResponseBodyBlockCrashed:
+      type: object
+      properties:
+        railId:
+          $ref: '#/components/schemas/RailId'
+        playerId:
+          $ref: '#/components/schemas/PlayerId'
+        new:
+          type: number
+          maximum: 100
+          minimum: 0
+          description: 変動後のライフ
+      required:
+        - railId
+        - playerId
+        - new
+      description: 障害物と衝突したときの情報
     WsResponseBodyGameOverred:
       type: object
       properties:

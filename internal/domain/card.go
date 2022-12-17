@@ -84,7 +84,7 @@ func NewCard(id uuid.UUID, typ CardType) *Card {
 
 // DelayAndAttack 妨害値と攻撃力を返す
 // いずれかがない場合はエラーを返す
-func (t CardType) DelayAndAttack() (int, int, error) {
+func (t CardType) DelayAndAttack() (int, float32, error) {
 	errCannotUse := errors.New("このカードを妨害に使用することはできません")
 
 	switch t {

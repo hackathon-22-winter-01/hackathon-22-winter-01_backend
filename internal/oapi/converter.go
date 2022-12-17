@@ -7,7 +7,7 @@ import (
 )
 
 func PlayerFromDomain(dp *domain.Player) Player {
-	rails := []Rail{{Id: dp.Main.ID, HasBlock: false}}
+	rails := []Rail{{Id: dp.Main.ID}}
 
 	if l := len(dp.BranchEvents); l > 0 {
 		rails = make([]Rail, len(dp.BranchEvents[l-1].AfterRails))

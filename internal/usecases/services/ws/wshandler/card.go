@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
 )
 
 func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
@@ -37,7 +38,7 @@ func (h *wsHandler) handleCardEvent(body oapi.WsRequest_Body) error {
 		return errors.New("存在しないカードです")
 	}
 
-	res, err := f(b, time.Now(), target)
+	res, err := f(b, jst.Now(), target)
 	if err != nil {
 		return err
 	}

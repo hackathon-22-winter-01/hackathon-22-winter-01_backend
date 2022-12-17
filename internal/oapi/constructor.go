@@ -101,7 +101,7 @@ func NewWsResponseRailMerged(eventTime time.Time, childID, parentID, playerID uu
 	return res, nil
 }
 
-func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, targetID uuid.UUID, delay int, attack int) (*WsResponse, error) {
+func NewWsResponseBlockCreated(eventTime time.Time, attackerID uuid.UUID, targetID uuid.UUID, delay int, attack float32) (*WsResponse, error) {
 	b := WsResponseBodyBlockCreated{
 		AttackerId: attackerID,
 		TargetId:   targetID,
@@ -126,6 +126,22 @@ func NewWsResponseBlockCanceled(eventTime time.Time, railID uuid.UUID) (*WsRespo
 	res := WsResponseFromType(WsResponseTypeBlockCanceled, eventTime)
 
 	if err := res.Body.FromWsResponseBodyBlockCanceled(b); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func NewWsResponseBlockCrashed(eventTime time.Time, newLife float32, playerID uuid.UUID, railID uuid.UUID) (*WsResponse, error) {
+	b := WsResponseBodyBlockCrashed{
+		New:      newLife,
+		PlayerId: playerID,
+		RailId:   railID,
+	}
+
+	res := WsResponseFromType(WsResponseTypeBlockCrashed, eventTime)
+
+	if err := res.Body.FromWsResponseBodyBlockCrashed(b); err != nil {
 		return nil, err
 	}
 

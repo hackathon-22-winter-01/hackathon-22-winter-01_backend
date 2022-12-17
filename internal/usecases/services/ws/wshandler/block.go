@@ -42,6 +42,37 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 			return err
 		}
 
+	case oapi.BlockEventTypeCrashed:
+		target.BlockEvents = append(target.BlockEvents, domain.NewBlockEvent(
+			uuid.New(),
+			domain.CardTypeNone,
+			jst.Now(),
+			domain.BlockEventTypeCrashed,
+			target.ID,
+			target.ID,
+			b.RailId,
+		))
+
+		cardType := getCardTypeFromRailID(target, b.RailId)
+
+		_, attack, err := cardType.DelayAndAttack()
+		if err != nil {
+			return err
+		}
+
+		target.LifeEvents = append(target.LifeEvents, domain.NewLifeEvent(
+			uuid.New(),
+			domain.CardTypeNone,
+			jst.Now(),
+			domain.LifeEventTypeDamaged,
+			attack,
+		))
+
+		res, err = oapi.NewWsResponseBlockCrashed(now, domain.CalculateLife(target.LifeEvents), target.ID, b.RailId)
+		if err != nil {
+			return err
+		}
+
 	default:
 		return errors.New("invalid block type")
 	}
@@ -51,4 +82,16 @@ func (h *wsHandler) handleBlockEvent(reqbody oapi.WsRequest_Body) error {
 	}
 
 	return nil
+}
+
+func getCardTypeFromRailID(p *domain.Player, railID uuid.UUID) domain.CardType {
+	res := domain.CardTypeNone
+
+	for _, e := range p.BlockEvents {
+		if e.TargetRailID == railID {
+			res = e.CardType
+		}
+	}
+
+	return res
 }
