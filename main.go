@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/handler"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
@@ -23,6 +24,9 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodOptions},
+	}))
 
 	roomRepo := repoimpl.NewRoomRepository()
 	hub := ws.NewHub(roomRepo)
