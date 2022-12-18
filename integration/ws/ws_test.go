@@ -197,4 +197,78 @@ func TestWs(t *testing.T) {
 				PlayerId:   ps[0].ID,
 			})
 	})
+
+	// プレイヤー1が"Galaxy Brain"カードを出す
+	// バックエンドでは何もしないので空のBodyを返す
+	oapi.WriteWsRequest(t, conns[1], tCardEvent, bCardEvent{
+		Id:       uuid.New(),
+		TargetId: ps[0].ID,
+		Type:     oapi.CardTypeGalaxyBrain,
+	})
+
+	// 各プレイヤーは結果を受信する
+	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		readWsResponse[any](t, c).
+			Equal(tNoop, nil)
+	})
+
+	// プレイヤー1が"Refactoring"カードを出す
+	// 自身のレールに妨害を発生させる
+	oapi.WriteWsRequest(t, conns[1], tCardEvent, bCardEvent{
+		Id:       uuid.New(),
+		TargetId: ps[1].ID,
+		Type:     oapi.CardTypeRefactoring,
+	})
+
+	// 各プレイヤーは結果を受信する
+	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		readWsResponse[bBlockCreated](t, c).
+			Equal(tBlockCreated, bBlockCreated{
+				Attack:     5,
+				AttackerId: ps[1].ID,
+				CardType:   oapi.CardTypeRefactoring,
+				RailIndex:  3, // 1本(main)しかない
+				Delay:      1,
+				TargetId:   ps[1].ID,
+			})
+	})
+
+	// プレイヤー2がプレイヤー1に対して"LGTM"カードを出す
+	// 可能ならレールに妨害を発生させるが全てのレールに既に妨害があるので無効となる
+	oapi.WriteWsRequest(t, conns[2], tCardEvent, bCardEvent{
+		Id:       uuid.New(),
+		TargetId: ps[1].ID,
+		Type:     oapi.CardTypeLgtm,
+	})
+
+	// 各プレイヤーは結果を受信する
+	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		readWsResponse[any](t, c).
+			Equal(tNoop, nil)
+	})
+
+	// プレイヤー0が"Refactoring"の妨害に衝突しライフ減少のリクエストを出す
+	cardType = oapi.CardTypeRefactoring
+	oapi.WriteWsRequest(t, conns[0], tBlockEvent, bBlockEvent{
+		CardType:  &cardType,
+		RailIndex: 3,
+		Type:      oapi.BlockEventTypeCrashed,
+	})
+
+	// 各プレイヤーは結果を受信する
+	forEachClientAsync(t, wg, conns, func(_ int, c *websocket.Conn) {
+		readWsResponse[bBlockCrashed](t, c).
+			Equal(tBlockCrashed, bBlockCrashed{
+				CardType:  &cardType,
+				RailIndex: 3,
+				TargetId:  ps[0].ID,
+			})
+
+		readWsResponse[bLifeChanged](t, c).
+			Equal(tLifeChanged, bLifeChanged{
+				CardType: &cardType,
+				PlayerId: ps[0].ID,
+				NewLife:  65, // = 70 - 5
+			})
+	})
 }
