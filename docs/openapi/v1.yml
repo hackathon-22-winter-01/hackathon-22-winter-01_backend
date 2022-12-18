@@ -16,7 +16,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Room'
+                $ref: '#/components/schemas/RoomResponse'
       operationId: createRoom
       description: 新しい部屋を作成する
       requestBody:
@@ -56,7 +56,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RoomResponse'
+                $ref: '#/components/schemas/Room'
       operationId: getRoom
       description: 部屋の情報を取得する
       parameters:
