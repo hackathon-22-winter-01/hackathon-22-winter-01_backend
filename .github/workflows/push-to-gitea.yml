@@ -25,7 +25,7 @@ jobs:
       - name: commit (include build)
         run: |
           git add .
-          git commit -m "[build] ${{ github.event.head_commit.id }}"
+          git commit -m "[build] ${{ github.event.head_commit.id }}" --allow-empty
       - name: Push changes
         env:
           GIT_SSH_COMMAND: ssh -i ~/deploy_key.pem -o StrictHostKeyChecking=no -F /dev/null
