@@ -16,15 +16,6 @@ type ServerInterface interface {
 	// GET /ping
 	// (GET /ping)
 	Ping(ctx echo.Context) error
-	// joinRoom
-	// (POST /rooms/join)
-	JoinRoom(ctx echo.Context) error
-	// createRoom
-	// (POST /rooms/new)
-	CreateRoom(ctx echo.Context) error
-	// getRoom
-	// (GET /rooms/{roomId})
-	GetRoom(ctx echo.Context, roomId RoomId) error
 	// GET /ws
 	// (GET /ws)
 	ConnectToWs(ctx echo.Context, params ConnectToWsParams) error
@@ -41,40 +32,6 @@ func (w *ServerInterfaceWrapper) Ping(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.Ping(ctx)
-	return err
-}
-
-// JoinRoom converts echo context to params.
-func (w *ServerInterfaceWrapper) JoinRoom(ctx echo.Context) error {
-	var err error
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.JoinRoom(ctx)
-	return err
-}
-
-// CreateRoom converts echo context to params.
-func (w *ServerInterfaceWrapper) CreateRoom(ctx echo.Context) error {
-	var err error
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.CreateRoom(ctx)
-	return err
-}
-
-// GetRoom converts echo context to params.
-func (w *ServerInterfaceWrapper) GetRoom(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "roomId" -------------
-	var roomId RoomId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "roomId", runtime.ParamLocationPath, ctx.Param("roomId"), &roomId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter roomId: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetRoom(ctx, roomId)
 	return err
 }
 
@@ -125,9 +82,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.GET(baseURL+"/ping", wrapper.Ping)
-	router.POST(baseURL+"/rooms/join", wrapper.JoinRoom)
-	router.POST(baseURL+"/rooms/new", wrapper.CreateRoom)
-	router.GET(baseURL+"/rooms/:roomId", wrapper.GetRoom)
 	router.GET(baseURL+"/ws", wrapper.ConnectToWs)
 
 }

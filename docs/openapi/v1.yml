@@ -5,67 +5,6 @@ info:
 servers:
   - url: 'http://localhost:8080'
 paths:
-  /rooms/new:
-    post:
-      summary: createRoom
-      tags:
-        - rooms
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomResponse'
-      operationId: createRoom
-      description: 新しい部屋を作成する
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateRoomRequest'
-        description: 部屋の情報
-  /rooms/join:
-    post:
-      summary: joinRoom
-      tags:
-        - rooms
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomResponse'
-      operationId: joinRoom
-      description: 部屋に参加する
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/JoinRoomRequest'
-        description: 部屋の情報
-  /rooms/{roomId}:
-    get:
-      summary: getRoom
-      tags:
-        - rooms
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Room'
-      operationId: getRoom
-      description: 部屋の情報を取得する
-      parameters:
-        - name: roomId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/RoomId'
-          description: ルームUUID
   /ping:
     get:
       summary: GET /ping
@@ -106,11 +45,6 @@ paths:
           - `type`が`XXX`のとき`body`の型は`#/components/schemas/WsResponseBodyXXX`です
 components:
   schemas:
-    RoomId:
-      title: RoomId
-      type: string
-      format: uuid
-      description: ルームUUID
     PlayerId:
       title: PlayerId
       type: string
@@ -168,26 +102,6 @@ components:
         - id
         - type
       description: カード情報
-    Room:
-      title: Room
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/RoomId'
-        players:
-          type: array
-          items:
-            $ref: '#/components/schemas/Player'
-          description: プレイヤーのリスト
-        startedAt:
-          type: string
-          format: date-time
-          description: ゲーム開始時刻
-      required:
-        - id
-        - players
-        - startedAt
-      description: 部屋情報
     Player:
       title: Player
       type: object
@@ -217,42 +131,6 @@ components:
       maximum: 100
       minimum: 0
       description: ライフ
-    CreateRoomRequest:
-      title: CreateRoomRequest
-      type: object
-      properties:
-        playerName:
-          type: string
-          description: プレイヤーの名前
-      required:
-        - playerName
-      description: 部屋を作成する際に送信するリクエスト
-    JoinRoomRequest:
-      title: JoinRoomRequest
-      type: object
-      properties:
-        roomId:
-          $ref: '#/components/schemas/RoomId'
-          description: 部屋のID
-        playerName:
-          type: string
-          description: プレイヤーの名前
-      required:
-        - roomId
-        - playerName
-      description: 部屋に参加する際に送信するリクエスト
-    RoomResponse:
-      title: RoomResponse
-      type: object
-      properties:
-        playerId:
-          $ref: '#/components/schemas/PlayerId'
-        room:
-          $ref: '#/components/schemas/Room'
-      required:
-        - room
-        - playerId
-      description: 部屋の情報
     WsRequest:
       title: WsRequest
       type: object
@@ -524,5 +402,3 @@ tags:
     description: Ping API
   - name: ws
     description: Websocket API
-  - name: rooms
-    description: Rooms API

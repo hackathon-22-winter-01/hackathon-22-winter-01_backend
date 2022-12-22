@@ -3,8 +3,6 @@ package handler
 import (
 	"net/http"
 
-	"github.com/google/uuid"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws"
@@ -31,59 +29,4 @@ func (h *Handler) ConnectToWs(c echo.Context, params oapi.ConnectToWsParams) err
 	}
 
 	return nil
-}
-
-func (h *Handler) JoinRoom(c echo.Context) error {
-	req := new(oapi.JoinRoomRequest)
-	if err := c.Bind(req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	playerID := uuid.New()
-	player := domain.NewPlayer(playerID, req.PlayerName)
-
-	err := h.r.JoinRoom(req.RoomId, player)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-
-	room, err := h.r.FindRoom(req.RoomId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-
-	return c.JSON(http.StatusOK, oapi.RoomResponse{
-		PlayerId: playerID,
-		Room:     oapi.RoomFromDomain(room),
-	})
-}
-
-func (h *Handler) CreateRoom(c echo.Context) error {
-	req := new(oapi.CreateRoomRequest)
-
-	if err := c.Bind(req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	playerID := uuid.New()
-	player := domain.NewPlayer(playerID, req.PlayerName)
-
-	room, err := h.r.CreateRoom(player)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-
-	return c.JSON(http.StatusOK, oapi.RoomResponse{
-		PlayerId: playerID,
-		Room:     oapi.RoomFromDomain(room),
-	})
-}
-
-func (h *Handler) GetRoom(c echo.Context, roomID oapi.RoomId) error {
-	room, err := h.r.FindRoom(roomID)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-
-	return c.JSON(http.StatusOK, oapi.RoomFromDomain(room))
 }
