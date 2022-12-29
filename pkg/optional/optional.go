@@ -12,3 +12,7 @@ func NewFromPtr[T any](v *T) Of[T] {
 
 	return Of[T]{V: *v, OK: true}
 }
+
+func (v Of[T]) Value() (T, bool) {
+	return v.V, v.OK
+}

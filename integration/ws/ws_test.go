@@ -72,25 +72,13 @@ func TestWs(t *testing.T) {
 		wg = new(sync.WaitGroup)
 	)
 
-	// TODO: ws接続時に部屋を作成or参加するので必要なくなる
-	// 部屋を作成 & 全員が参加
-	room, err := roomRepo.CreateRoom(ps[0])
-	require.NoError(t, err)
-	require.NoError(t, roomRepo.JoinRoom(room.ID, ps[1]))
-	require.NoError(t, roomRepo.JoinRoom(room.ID, ps[2]))
-	require.NoError(t, roomRepo.JoinRoom(room.ID, ps[3]))
-
 	// 全員のクライアントをWebsocketに接続&確認
-	var roomID uuid.UUID
+	var roomID *uuid.UUID
 	for i := 0; i < consts.PlayerLimit; i++ {
-		if i == 0 {
-			roomID = room.ID // TODO: ws接続時に作成するようになったらuuid.New()を使う
-		}
-
 		c := connectToWs(t, streamer, ws.ServeWsOpts{
 			PlayerID:   ps[i].ID,
 			PlayerName: ps[i].Name,
-			RoomID:     optional.NewFromPtr(&roomID),
+			RoomID:     optional.NewFromPtr(roomID),
 		})
 		conns[i] = c
 		defer c.Close()
@@ -106,6 +94,12 @@ func TestWs(t *testing.T) {
 					PlayerId: ps[i].ID,
 				})
 		})
+
+		if i == 0 {
+			room, err := roomRepo.FindRoomFromPlayerID(ps[i].ID)
+			require.NoError(t, err)
+			roomID = &room.ID
+		}
 	}
 
 	// オーナーがゲーム開始リクエストを送信
