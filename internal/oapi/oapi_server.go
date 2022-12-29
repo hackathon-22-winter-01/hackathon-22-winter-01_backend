@@ -41,11 +41,18 @@ func (w *ServerInterfaceWrapper) ConnectToWs(ctx echo.Context) error {
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ConnectToWsParams
-	// ------------- Required query parameter "playerId" -------------
+	// ------------- Required query parameter "name" -------------
 
-	err = runtime.BindQueryParameter("form", true, true, "playerId", ctx.QueryParams(), &params.PlayerId)
+	err = runtime.BindQueryParameter("form", true, true, "name", ctx.QueryParams(), &params.Name)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter playerId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter name: %s", err))
+	}
+
+	// ------------- Optional query parameter "roomId" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "roomId", ctx.QueryParams(), &params.RoomId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter roomId: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments

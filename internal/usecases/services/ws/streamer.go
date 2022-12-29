@@ -8,13 +8,20 @@ import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/log"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/optional"
 	"github.com/shiguredo/websocket"
 	"go.uber.org/zap"
 )
 
 type Streamer interface {
 	Run()
-	ServeWS(w http.ResponseWriter, r *http.Request, uid uuid.UUID) error
+	ServeWS(w http.ResponseWriter, r *http.Request, opts ServeWsOpts) error
+}
+
+type ServeWsOpts struct {
+	PlayerID   uuid.UUID
+	PlayerName string
+	RoomID     optional.Of[uuid.UUID]
 }
 
 type streamer struct {
@@ -41,13 +48,13 @@ func (s *streamer) Run() {
 	go s.hub.Run()
 }
 
-func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, playerID uuid.UUID) error {
+func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, opts ServeWsOpts) error {
 	conn, err := s.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return fmt.Errorf("failed to upgrade the HTTP server connection to the WebSocket protocol: %w", err)
 	}
 
-	client, err := s.addNewClient(playerID, conn)
+	client, err := s.addNewClient(opts.PlayerID, conn)
 	if err != nil {
 		return fmt.Errorf("failed to add new client: %w", err)
 	}
@@ -63,12 +70,13 @@ func (s *streamer) ServeWS(w http.ResponseWriter, r *http.Request, playerID uuid
 		}
 	}()
 
-	res, err := oapi.NewWsResponseConnected(jst.Now(), playerID)
+	res, err := oapi.NewWsResponseConnected(jst.Now(), opts.PlayerID)
 	if err != nil {
 		return fmt.Errorf("failed to send connected: %w", err)
 	}
 
-	room, err := s.hub.roomRepo.FindRoomFromPlayerID(playerID)
+	// TODO: roomIDが指定されていれば参加、されていなければ作成する
+	room, err := s.hub.roomRepo.FindRoomFromPlayerID(opts.PlayerID)
 	if err != nil {
 		return fmt.Errorf("failed to find room from player id: %w", err)
 	}

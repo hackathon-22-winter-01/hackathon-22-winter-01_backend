@@ -25,12 +25,24 @@ paths:
       tags:
         - ws
       parameters:
-        - name: playerId
+        - name: name
           schema:
-            $ref: '#/components/schemas/PlayerId'
+            type: string
           in: query
           required: true
-          description: ユーザーUUID
+          description: ユーザー名
+        - name: roomId
+          schema:
+            $ref: '#/components/schemas/RoomId'
+          in: query
+          required: false
+          description: ルームID (指定しない場合は部屋を作成する)
+        # TODO: implement
+        # - name: random
+        #   type: boolean
+        #   in: query
+        #   required: false
+        #   description: ランダムマッチに参加するかどうか
       responses:
         '200':
           description: OK
@@ -45,6 +57,11 @@ paths:
           - `type`が`XXX`のとき`body`の型は`#/components/schemas/WsResponseBodyXXX`です
 components:
   schemas:
+    RoomId:
+      title: RoomId
+      type: string
+      format: uuid
+      description: ルームUUID
     PlayerId:
       title: PlayerId
       type: string

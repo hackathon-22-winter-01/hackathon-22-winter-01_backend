@@ -106,6 +106,9 @@ type RailId = openapi_types.UUID
 // RailIndex レールのインデックス
 type RailIndex = int
 
+// RoomId ルームUUID
+type RoomId = openapi_types.UUID
+
 // WsRequest Websocket接続中にサーバーに送信するオブジェクト
 type WsRequest struct {
 	// Body イベントの情報
@@ -298,8 +301,11 @@ type WsResponseType string
 
 // ConnectToWsParams defines parameters for ConnectToWs.
 type ConnectToWsParams struct {
-	// PlayerId ユーザーUUID
-	PlayerId PlayerId `form:"playerId" json:"playerId"`
+	// Name ユーザー名
+	Name string `form:"name" json:"name"`
+
+	// RoomId ルームID (指定しない場合は部屋を作成する)
+	RoomId *RoomId `form:"roomId,omitempty" json:"roomId,omitempty"`
 }
 
 // AsWsRequestBodyGameStartEvent returns the union data inside the WsRequest_Body as a WsRequestBodyGameStartEvent
