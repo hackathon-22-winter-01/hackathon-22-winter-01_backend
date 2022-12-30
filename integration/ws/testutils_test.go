@@ -7,7 +7,6 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws"
 	"github.com/shiguredo/websocket"
@@ -44,19 +43,19 @@ func readWsResponse[T any](t *testing.T, c *websocket.Conn) *oapi.WsResponseWrap
 }
 
 type httpHandler struct {
-	t   *testing.T
-	s   ws.Streamer
-	pid uuid.UUID
+	t    *testing.T
+	s    ws.Streamer
+	opts ws.ServeWsOpts
 }
 
 func (h *httpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if err := h.s.ServeWS(w, r, h.pid); err != nil {
+	if err := h.s.ServeWS(w, r, h.opts); err != nil {
 		h.t.Error(err)
 	}
 }
 
-func connectToWs(t *testing.T, streamer ws.Streamer, playerID uuid.UUID) *websocket.Conn {
-	server := httptest.NewServer(&httpHandler{t, streamer, playerID})
+func connectToWs(t *testing.T, streamer ws.Streamer, opts ws.ServeWsOpts) *websocket.Conn {
+	server := httptest.NewServer(&httpHandler{t, streamer, opts})
 	server.URL = "ws" + strings.TrimPrefix(server.URL, "http")
 	c, _, err := websocket.DefaultDialer.Dial(server.URL, nil)
 	require.NoError(t, err)
