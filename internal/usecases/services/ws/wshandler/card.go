@@ -448,7 +448,7 @@ func (h *wsHandler) handleOoops(reqbody oapi.WsRequestBodyCardForAllEvent, now t
 
 	var res []*oapi.WsResponse
 
-	for _, targetPlayer := range h.room.Players {
+	for _, targetPlayer := range h.room.Players.Clone() {
 		targetRail, ok := getNonBlockingRail(targetPlayer, true)
 		if !ok {
 			targetPlayer.JustCardEvents = append(targetPlayer.JustCardEvents, domain.NewJustCardEvent(
