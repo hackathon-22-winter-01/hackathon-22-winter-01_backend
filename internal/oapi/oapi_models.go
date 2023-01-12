@@ -79,21 +79,6 @@ type CardId = openapi_types.UUID
 // CardType カードの効果の種類
 type CardType string
 
-// CreateRoomRequest 部屋を作成する際に送信するリクエスト
-type CreateRoomRequest struct {
-	// PlayerName プレイヤーの名前
-	PlayerName string `json:"playerName"`
-}
-
-// JoinRoomRequest 部屋に参加する際に送信するリクエスト
-type JoinRoomRequest struct {
-	// PlayerName プレイヤーの名前
-	PlayerName string `json:"playerName"`
-
-	// RoomId ルームUUID
-	RoomId RoomId `json:"roomId"`
-}
-
 // Life ライフ
 type Life = float32
 
@@ -121,29 +106,8 @@ type RailId = openapi_types.UUID
 // RailIndex レールのインデックス
 type RailIndex = int
 
-// Room 部屋情報
-type Room struct {
-	// Id ルームUUID
-	Id RoomId `json:"id"`
-
-	// Players プレイヤーのリスト
-	Players []Player `json:"players"`
-
-	// StartedAt ゲーム開始時刻
-	StartedAt time.Time `json:"startedAt"`
-}
-
 // RoomId ルームUUID
 type RoomId = openapi_types.UUID
-
-// RoomResponse 部屋の情報
-type RoomResponse struct {
-	// PlayerId プレイヤーUUID
-	PlayerId PlayerId `json:"playerId"`
-
-	// Room 部屋情報
-	Room Room `json:"room"`
-}
 
 // WsRequest Websocket接続中にサーバーに送信するオブジェクト
 type WsRequest struct {
@@ -337,15 +301,12 @@ type WsResponseType string
 
 // ConnectToWsParams defines parameters for ConnectToWs.
 type ConnectToWsParams struct {
-	// PlayerId ユーザーUUID
-	PlayerId PlayerId `form:"playerId" json:"playerId"`
+	// Name ユーザー名
+	Name string `form:"name" json:"name"`
+
+	// RoomId ルームID (指定しない場合は部屋を作成する)
+	RoomId *RoomId `form:"roomId,omitempty" json:"roomId,omitempty"`
 }
-
-// JoinRoomJSONRequestBody defines body for JoinRoom for application/json ContentType.
-type JoinRoomJSONRequestBody = JoinRoomRequest
-
-// CreateRoomJSONRequestBody defines body for CreateRoom for application/json ContentType.
-type CreateRoomJSONRequestBody = CreateRoomRequest
 
 // AsWsRequestBodyGameStartEvent returns the union data inside the WsRequest_Body as a WsRequestBodyGameStartEvent
 func (t WsRequest_Body) AsWsRequestBodyGameStartEvent() (WsRequestBodyGameStartEvent, error) {

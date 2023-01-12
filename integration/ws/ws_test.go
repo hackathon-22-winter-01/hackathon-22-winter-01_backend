@@ -11,6 +11,7 @@ import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository/repoimpl"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/optional"
 	"github.com/shiguredo/websocket"
 	"github.com/stretchr/testify/require"
 )
@@ -71,16 +72,14 @@ func TestWs(t *testing.T) {
 		wg = new(sync.WaitGroup)
 	)
 
-	// 部屋を作成 & 全員が参加
-	room, err := roomRepo.CreateRoom(ps[0])
-	require.NoError(t, err)
-	require.NoError(t, roomRepo.JoinRoom(room.ID, ps[1]))
-	require.NoError(t, roomRepo.JoinRoom(room.ID, ps[2]))
-	require.NoError(t, roomRepo.JoinRoom(room.ID, ps[3]))
-
 	// 全員のクライアントをWebsocketに接続&確認
+	var roomID *uuid.UUID
 	for i := 0; i < consts.PlayerLimit; i++ {
-		c := connectToWs(t, streamer, ps[i].ID)
+		c := connectToWs(t, streamer, ws.ServeWsOpts{
+			PlayerID:   ps[i].ID,
+			PlayerName: ps[i].Name,
+			RoomID:     optional.NewFromPtr(roomID),
+		})
 		conns[i] = c
 		defer c.Close()
 
@@ -95,6 +94,12 @@ func TestWs(t *testing.T) {
 					PlayerId: ps[i].ID,
 				})
 		})
+
+		if i == 0 {
+			room, err := roomRepo.FindRoomFromPlayerID(ps[i].ID)
+			require.NoError(t, err)
+			roomID = &room.ID
+		}
 	}
 
 	// オーナーがゲーム開始リクエストを送信

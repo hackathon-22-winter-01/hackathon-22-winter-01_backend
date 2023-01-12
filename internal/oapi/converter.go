@@ -34,20 +34,6 @@ func CardFromDomain(dc *domain.Card) Card {
 	}
 }
 
-func RoomFromDomain(dr *domain.Room) Room {
-	var PLayers = make([]Player, len(dr.Players))
-
-	for i, p := range dr.Players {
-		PLayers[i] = PlayerFromDomain(p)
-	}
-
-	return Room{
-		Id:        dr.ID,
-		Players:   PLayers,
-		StartedAt: dr.StartedAt,
-	}
-}
-
 func (t CardType) ToDomain() domain.CardType {
 	m := map[CardType]domain.CardType{
 		CardTypeYolo:               domain.CardTypeYolo,

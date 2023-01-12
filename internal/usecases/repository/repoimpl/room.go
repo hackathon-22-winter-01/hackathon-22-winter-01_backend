@@ -33,7 +33,7 @@ func (r *roomRepository) FindRoomFromPlayerID(playerID uuid.UUID) (*domain.Room,
 	var room *domain.Room
 
 	r.roomMap.Range(func(_ uuid.UUID, value *domain.Room) bool {
-		for _, player := range value.Players {
+		for _, player := range value.Players.Clone() {
 			if player.ID == playerID {
 				room = value
 				return false
@@ -55,11 +55,11 @@ func (r *roomRepository) JoinRoom(roomID uuid.UUID, player *domain.Player) error
 		return errors.New("部屋が存在しません")
 	}
 
-	if len(room.Players) >= consts.PlayerLimit {
+	if len(room.Players.Clone()) >= consts.PlayerLimit {
 		return errors.New("部屋が満員です")
 	}
 
-	room.Players = append(room.Players, player)
+	room.Players.Append(player)
 
 	return nil
 }
@@ -69,7 +69,7 @@ func (r *roomRepository) CreateRoom(player *domain.Player) (*domain.Room, error)
 
 	room := domain.NewRoom(roomID)
 
-	room.Players = []*domain.Player{player}
+	room.Players.Append(player)
 
 	_, ok := r.roomMap.LoadOrStore(roomID, room)
 

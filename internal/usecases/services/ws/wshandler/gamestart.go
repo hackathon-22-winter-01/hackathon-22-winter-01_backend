@@ -13,16 +13,18 @@ func (h *wsHandler) handleGameStartEvent(body oapi.WsRequest_Body) error {
 		return err
 	}
 
-	if len(h.room.Players) < 2 {
+	dp := h.room.Players.Clone()
+
+	if len(dp) < 2 {
 		return errors.New("プレイヤーが2人未満です")
 	}
 
-	if h.playerID != h.room.Players[0].ID {
+	if h.playerID != dp[0].ID {
 		return errors.New("ゲームを開始する権限はありません")
 	}
 
-	players := make([]oapi.Player, len(h.room.Players))
-	for i, p := range h.room.Players {
+	players := make([]oapi.Player, len(dp))
+	for i, p := range dp {
 		players[i] = oapi.PlayerFromDomain(p)
 	}
 
