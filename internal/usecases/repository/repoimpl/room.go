@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/config"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/sync"
 )
 
@@ -55,7 +55,7 @@ func (r *roomRepository) JoinRoom(roomID uuid.UUID, player *domain.Player) error
 		return errors.New("部屋が存在しません")
 	}
 
-	if len(room.Players.Clone()) >= consts.PlayerLimit {
+	if len(room.Players.Clone()) >= config.PlayerLimit {
 		return errors.New("部屋が満員です")
 	}
 

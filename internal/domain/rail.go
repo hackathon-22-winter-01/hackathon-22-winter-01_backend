@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/config"
 )
 
 // Rail 路線の情報
@@ -16,13 +16,13 @@ func NewRail(railIndex int) *Rail {
 	}
 }
 
-type Rails [consts.RailLimit]*Rail
+type Rails [config.RailLimit]*Rail
 
 func NewRails(mainRail *Rail) Rails {
 	rails := Rails{}
 
 	// 真ん中にmainを入れる
-	rails[consts.RailLimit/2] = mainRail
+	rails[config.RailLimit/2] = mainRail
 
 	return rails
 }

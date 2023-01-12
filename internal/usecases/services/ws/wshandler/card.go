@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/domain"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/config"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/jst"
 )
 
@@ -145,7 +145,7 @@ func (h *wsHandler) handleOpenSourcerer(reqbody oapi.WsRequestBodyCardEvent, now
 		cardType,
 		now,
 		domain.LifeEventTypeHealed,
-		consts.MaxLife-nowLife,
+		config.MaxLife-nowLife,
 	))
 
 	oapiCardType := oapi.CardTypeOpenSourcerer
@@ -306,9 +306,9 @@ func (h *wsHandler) handlePullShark(reqbody oapi.WsRequestBodyCardEvent, now tim
 	blockedRails := domain.CalcBlockedRails(targetPlayer.BlockEvents)
 
 	// usedRails[i] == false && blockedRails[i] == false のとき、レールiは空いている
-	emptyRails := make([]int, 0, consts.RailLimit)
+	emptyRails := make([]int, 0, config.RailLimit)
 
-	for i := 0; i < consts.RailLimit; i++ {
+	for i := 0; i < config.RailLimit; i++ {
 		if !usedRails[i] && !blockedRails[i] {
 			emptyRails = append(emptyRails, i)
 		}
@@ -504,8 +504,8 @@ func getNonBlockingRail(p *domain.Player, allowMain bool) (*domain.Rail, bool) {
 	// 存在しているかつブロックされていないレールを対象にする
 	targetRails := make([]int, 0)
 
-	for i := 0; i < consts.RailLimit; i++ {
-		if !allowMain && i == consts.RailLimit/2 {
+	for i := 0; i < config.RailLimit; i++ {
+		if !allowMain && i == config.RailLimit/2 {
 			continue
 		}
 

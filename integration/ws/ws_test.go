@@ -10,7 +10,7 @@ import (
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/oapi"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/repository/repoimpl"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/internal/usecases/services/ws"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/config"
 	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/optional"
 	"github.com/shiguredo/websocket"
 	"github.com/stretchr/testify/require"
@@ -62,7 +62,7 @@ var (
 
 func TestWs(t *testing.T) {
 	var (
-		conns = make([]*websocket.Conn, consts.PlayerLimit)
+		conns = make([]*websocket.Conn, config.PlayerLimit)
 		ps    = []*domain.Player{
 			domain.NewPlayer(uuid.MustParse("194a6a3c-4278-4be4-ba8e-2c3528d92b8f"), "player0"),
 			domain.NewPlayer(uuid.MustParse("cf8b3659-31c4-439b-88b6-4d90dc7b6df9"), "player1"),
@@ -74,7 +74,7 @@ func TestWs(t *testing.T) {
 
 	// 全員のクライアントをWebsocketに接続&確認
 	var roomID *uuid.UUID
-	for i := 0; i < consts.PlayerLimit; i++ {
+	for i := 0; i < config.PlayerLimit; i++ {
 		c := connectToWs(t, streamer, ws.ServeWsOpts{
 			PlayerID:   ps[i].ID,
 			PlayerName: ps[i].Name,
@@ -110,10 +110,10 @@ func TestWs(t *testing.T) {
 		readWsResponse[bGameStarted](t, c).
 			Equal(tGameStarted, bGameStarted{
 				Players: []oapi.Player{
-					{Id: ps[0].ID, Name: "player0", Life: consts.MaxLife},
-					{Id: ps[1].ID, Name: "player1", Life: consts.MaxLife},
-					{Id: ps[2].ID, Name: "player2", Life: consts.MaxLife},
-					{Id: ps[3].ID, Name: "player3", Life: consts.MaxLife},
+					{Id: ps[0].ID, Name: "player0", Life: config.MaxLife},
+					{Id: ps[1].ID, Name: "player1", Life: config.MaxLife},
+					{Id: ps[2].ID, Name: "player2", Life: config.MaxLife},
+					{Id: ps[3].ID, Name: "player3", Life: config.MaxLife},
 				},
 			})
 	})
