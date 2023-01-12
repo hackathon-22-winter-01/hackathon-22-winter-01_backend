@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/consts"
+	"github.com/hackathon-22-winter-01/hackathon-22-winter-01_backend/pkg/config"
 )
 
 // commonEvent 共通のイベント情報
@@ -60,8 +60,8 @@ func NewBlockEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ Blo
 
 // CalcBlockedRails ブロックされているレールのインデックスを取得する
 // blockedEvents[i] == true ならば i 番目のレールがブロックされている
-func CalcBlockedRails(events []*BlockEvent) [consts.RailLimit]bool {
-	blockedRails := [consts.RailLimit]bool{}
+func CalcBlockedRails(events []*BlockEvent) [config.RailLimit]bool {
+	blockedRails := [config.RailLimit]bool{}
 
 	for _, e := range events {
 		switch e.Type {
@@ -106,7 +106,7 @@ func NewLifeEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ Life
 }
 
 func CalculateLife(events []*LifeEvent) float32 {
-	life := consts.MaxLife
+	life := config.MaxLife
 
 	for _, e := range events {
 		switch e.Type {
@@ -153,9 +153,9 @@ func NewBranchEvent(id uuid.UUID, cardType CardType, createdAt time.Time, typ Br
 
 // CalcUsedRails 使用中のレールのインデックスを取得する
 // unusedRails[i] == true ならばレールiは使用中
-func CalcUsedRails(events []*BranchEvent) [consts.RailLimit]bool {
-	usedRails := [consts.RailLimit]bool{}
-	usedRails[consts.RailLimit/2] = true // mainレールは必ず使用中
+func CalcUsedRails(events []*BranchEvent) [config.RailLimit]bool {
+	usedRails := [config.RailLimit]bool{}
+	usedRails[config.RailLimit/2] = true // mainレールは必ず使用中
 
 	for _, e := range events {
 		switch e.Type {
@@ -171,18 +171,18 @@ func CalcUsedRails(events []*BranchEvent) [consts.RailLimit]bool {
 
 // GetParentRailIndex
 // newRailIndexからmain方向に向かって一番近い使用中のレールを親として分岐させる
-func GetParentRailIndex(childRailIndex int, usedRails [consts.RailLimit]bool) int {
-	parentRailIndex := consts.RailLimit / 2
+func GetParentRailIndex(childRailIndex int, usedRails [config.RailLimit]bool) int {
+	parentRailIndex := config.RailLimit / 2
 
-	if childRailIndex < consts.RailLimit/2 {
-		for i := childRailIndex + 1; i < consts.RailLimit/2; i++ {
+	if childRailIndex < config.RailLimit/2 {
+		for i := childRailIndex + 1; i < config.RailLimit/2; i++ {
 			if usedRails[i] {
 				parentRailIndex = i
 				break
 			}
 		}
 	} else {
-		for i := childRailIndex - 1; i >= consts.RailLimit/2; i-- {
+		for i := childRailIndex - 1; i >= config.RailLimit/2; i-- {
 			if usedRails[i] {
 				parentRailIndex = i
 				break
